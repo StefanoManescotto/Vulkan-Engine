@@ -1,0 +1,35 @@
+# IDE (CLion / JetBrains)
+.idea/
+*.iws
+*.iml
+
+cmake-build-*/
+
+# C++ Build Directories
+build/
+bin/
+lib/
+out/
+
+# Compiled Object & Library Files
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Vulkan / Shader Specific
+*.spv
+
+# CMake Cache & Presets
+CMakeUserPresets.json
+CMakeCache.txt
+CMakeFiles/
