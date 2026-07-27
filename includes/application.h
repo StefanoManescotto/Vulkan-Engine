@@ -3,31 +3,30 @@
 #define VK_NO_PROTOTYPES
 #include <SDL3/SDL_vulkan.h>
 #include <string>
-#include <vulkan/vulkan.h>
+// #include <vulkan/vulkan.h>
 #include <vector>
 #include <array>
-#include <string>
 #include <shaderc/shaderc.hpp>
+
+#include "swapchain.h"
+#include "device.h"
 
 struct SDL_Window;
 struct VmaAllocator_T;
-typedef struct VmaAllocator_T* VmaAllocator;
+typedef VmaAllocator_T* VmaAllocator;
 struct VmaAllocation_T;
-typedef struct VmaAllocation_T* VmaAllocation;
+typedef VmaAllocation_T* VmaAllocation;
 
 struct FrameResources {
     VkCommandPool commandPool = nullptr;
     VkCommandBuffer commandBuffer = nullptr;
 
     VkSemaphore imageAcquiredSemaphore = nullptr;
-    VkSemaphore renderCompleteSemaphore = nullptr;
 };
 
 class Application {
     constexpr static uint32_t VulkanVersion{VK_API_VERSION_1_4};
     constexpr static uint32_t MaxFramesInFlight{2};
-    constexpr static VkFormat swapchainFormat{VK_FORMAT_B8G8R8A8_SRGB};
-    constexpr static VkFormat depthFormat{VK_FORMAT_D32_SFLOAT};
 
     SDL_Window *window = nullptr;
     uint32_t width = 1280;
@@ -38,27 +37,20 @@ class Application {
 
     // vulkan core
     VkInstance vulkanInstance = nullptr;
-    VkPhysicalDevice physicalDevice = nullptr;
-    VkDevice device = nullptr;
+    Device device;
+    // VkPhysicalDevice physicalDevice = nullptr;
+    // VkDevice device = nullptr;
     VkSurfaceKHR surface = nullptr;
     VmaAllocator vmaAllocator = nullptr;
 
     // queue related
-    uint32_t gfxQueueFamIdx = UINT32_MAX;
-    VkQueue gfxQueue = nullptr;
+    // uint32_t gfxQueueFamIdx = UINT32_MAX;
+    // VkQueue gfxQueue = nullptr;
 
     // swapchain related
-    VkSwapchainKHR swapchain = nullptr;
-    std::vector<VkImage> swapchainImages;
-    std::vector<VkImageView> swapchainImageViews;
-    // std::vector<VkSemaphore> renderCompleteSemaphores;
+    Swapchain swapchain;
+    SwapchainConfig config;
     bool requireSwapchainRecreate = false;
-    uint32_t swapchainWidth = 0;
-    uint32_t swapchainHeight = 0;
-
-    VkImage depthImage = nullptr;
-    VkImageView depthImageView = nullptr;
-    VmaAllocation depthImageAllocation = nullptr;
 
     // graphics pipeline related
     VkPipelineLayout pipelineLayout = nullptr;
@@ -84,9 +76,6 @@ class Application {
     bool createDevice(VkPhysicalDevice physicalDevice);
 
     bool initializeVMA();
-
-    bool createSwapchain(uint32_t width, uint32_t height);
-    void destroySwapchain();
 
     VkShaderModule createShaderModule(const std::string &fileName, shaderc_shader_kind kind) const;
     bool createShaders();

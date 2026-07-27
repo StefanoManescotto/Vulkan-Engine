@@ -12,7 +12,13 @@ find_package(fmt REQUIRED)
 
 add_executable(Vulkan_Engine src/main.cpp
         src/application.cpp
-        includes/application.h)
+        includes/application.h
+        src/swapchain.cpp
+        includes/swapchain.h
+        src/device.cpp
+        includes/device.h
+        src/shader.cpp
+        src/shader.h)
 
 target_include_directories(Vulkan_Engine PRIVATE includes)
 
