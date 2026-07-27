@@ -6,6 +6,7 @@
 #include <vector>
 #include <fmt/base.h>
 #include <SDL3/SDL_events.h>
+#include <SDL3/SDL_vulkan.h>
 
 struct vec2 {
     float x = 0.0f;
@@ -34,6 +35,9 @@ public:
     Window(uint32_t width, uint32_t height);
     ~Window();
 
+    /// Creates the VkSurfaceKHR
+    void createSurface(VkInstance vkInstance);
+
     /**
      * @brief Cycles through all window events.
      * @return false if the event is SDL_EVENT_QUIT, true otherwise.
@@ -45,6 +49,8 @@ public:
     int getWidth() const { return m_width; }
 
     int getHeight() const { return m_height; }
+
+    VkSurfaceKHR getSurface() const { return m_surface; }
 
     /// Return the mouse position in the window on the current frame
     vec2 getMousePosition() const { return m_mousePosition; };
@@ -66,6 +72,9 @@ public:
     /// Destroys the SDL window.
     void destroyWindow();
 
+    /// Destroys the VkSurface
+    void destroySurface();
+
     /**
      * @brief Update the old keyboard and mouse position states.
      */
@@ -73,6 +82,7 @@ public:
 
 private:
     SDL_Window* m_window = nullptr;
+    VkSurfaceKHR m_surface = nullptr;
 
     uint32_t m_width = 1280;
     uint32_t m_height = 720;
@@ -83,6 +93,7 @@ private:
     vec2 m_mousePosition;
     vec2 m_oldMousePosition;
 
-    // std::unordered_map<SDL_Scancode, bool> m_keys;
+    VkInstance vkInstance;
+
     // std::unordered_map<uint8_t, bool> m_mouseButtons;
 };

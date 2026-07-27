@@ -7,6 +7,8 @@
 #include <stdexcept>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
+#include <volk.h>
+#include <SDL3/SDL_vulkan.h>
 
 Window::Window(uint32_t width, uint32_t height) {
     m_width = width;
@@ -14,6 +16,7 @@ Window::Window(uint32_t width, uint32_t height) {
 }
 
 Window::~Window() {
+    destroySurface();
     destroyWindow();
 }
 
@@ -37,6 +40,13 @@ void Window::createWindow() {
     }
 
     m_oldKeyboardState.resize(SDL_SCANCODE_COUNT, false);
+}
+
+void Window::createSurface(VkInstance vkInstance) {
+    this->vkInstance = vkInstance;
+    if (!SDL_Vulkan_CreateSurface(m_window, vkInstance, nullptr, &m_surface)) {
+        throw std::runtime_error("Error creating surface");
+    }
 }
 
 bool Window::pollEvents() {
@@ -67,8 +77,16 @@ bool Window::pollEvents() {
 void Window::destroyWindow() {
     if (m_window) {
         SDL_DestroyWindow(m_window);
+        m_window = nullptr;
     }
     SDL_Quit();
+}
+
+void Window::destroySurface() {
+    if (m_surface) {
+        vkDestroySurfaceKHR(vkInstance, m_surface, nullptr);
+        m_surface = nullptr;
+    }
 }
 
 void Window::updateInputState() {

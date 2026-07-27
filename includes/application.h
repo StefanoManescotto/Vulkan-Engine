@@ -48,7 +48,7 @@ private:
     Device device;
     // VkPhysicalDevice physicalDevice = nullptr;
     // VkDevice device = nullptr;
-    VkSurfaceKHR surface = nullptr;
+    // VkSurfaceKHR surface = nullptr;
     VmaAllocator vmaAllocator = nullptr;
 
     // queue related
@@ -76,7 +76,7 @@ private:
     bool initializeVulkan();
     bool createVulkanInstance();
 
-    bool createSurface();
+    // bool createSurface();
 
     bool findGraphicsQueue();
 

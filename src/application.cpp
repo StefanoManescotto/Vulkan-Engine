@@ -67,9 +67,7 @@ void Application::shutdown() {
     }
 
     // cleanup Vulkan
-    if (surface) {
-        vkDestroySurfaceKHR(vulkanInstance, surface, nullptr);
-    }
+    window.destroySurface();
 
     device.destroyDevice();
 
@@ -102,12 +100,9 @@ bool Application::initializeVulkan() {
         return false;
     }
 
-    if (!createSurface()) {
-        showError("Couldn't create window surface");
-        return false;
-    }
+    window.createSurface(vulkanInstance);
 
-    device.create(surface);
+    device.create(window.getSurface());
     device.findPhysicalDevice(vulkanInstance, config.imageFormat);
     device.findGraphicsQueue();
     device.createDevice();
@@ -118,7 +113,7 @@ bool Application::initializeVulkan() {
     }
 
     swapchain.create(device.handle(), device.getPhysicalDevice(), vmaAllocator);
-    swapchain.createSwapchain(surface, config);
+    swapchain.createSwapchain(window.getSurface(), config);
 
     shader.createShaders(device.handle());
 
@@ -178,13 +173,6 @@ bool Application::createVulkanInstance() {
     }
 
     volkLoadInstance(vulkanInstance);
-    return true;
-}
-
-bool Application::createSurface() {
-    if (!SDL_Vulkan_CreateSurface(window.handle(), vulkanInstance, nullptr, &surface)) {
-        return false;
-    }
     return true;
 }
 
@@ -413,7 +401,7 @@ bool Application::createCommandBuffers() {
 void Application::render() {
     if (requireSwapchainRecreate) {
         config.configExtent = {.width = width, .height = height};
-        swapchain.recreateSwapchain(surface, config);
+        swapchain.recreateSwapchain(window.getSurface(), config);
         requireSwapchainRecreate = false;
     }
 
