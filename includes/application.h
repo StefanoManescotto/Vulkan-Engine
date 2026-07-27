@@ -10,6 +10,8 @@
 
 #include "swapchain.h"
 #include "device.h"
+#include "shader.h"
+#include "window.h"
 
 struct SDL_Window;
 struct VmaAllocator_T;
@@ -25,10 +27,16 @@ struct FrameResources {
 };
 
 class Application {
+public:
+    bool initialize();
+    void shutdown();
+    void run();
+
+private:
     constexpr static uint32_t VulkanVersion{VK_API_VERSION_1_4};
     constexpr static uint32_t MaxFramesInFlight{2};
 
-    SDL_Window *window = nullptr;
+    Window window;
     uint32_t width = 1280;
     uint32_t height = 720;
     bool running = false;
@@ -57,8 +65,7 @@ class Application {
     VkPipeline pipeline = nullptr;
 
     // shader resources
-    VkShaderModule vertShader = nullptr;
-    VkShaderModule fragShader = nullptr;
+    Shader shader;
 
     // frame and synchronization resources
     VkSemaphore timelineSemaphore = nullptr;
@@ -71,14 +78,9 @@ class Application {
 
     bool createSurface();
 
-    VkPhysicalDevice findPhysicalDevice();
     bool findGraphicsQueue();
-    bool createDevice(VkPhysicalDevice physicalDevice);
 
     bool initializeVMA();
-
-    VkShaderModule createShaderModule(const std::string &fileName, shaderc_shader_kind kind) const;
-    bool createShaders();
 
     VkPipeline createGraphicsPipeline();
     bool createSyncResources();
@@ -86,8 +88,5 @@ class Application {
 
     void render();
 
-public:
-    bool initialize();
-    void shutdown();
-    void run();
+    void manageInputs();
 };

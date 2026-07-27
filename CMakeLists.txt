@@ -18,7 +18,10 @@ add_executable(Vulkan_Engine src/main.cpp
         src/device.cpp
         includes/device.h
         src/shader.cpp
-        src/shader.h)
+        includes/shader.h
+        src/window.cpp
+        includes/window.h
+)
 
 target_include_directories(Vulkan_Engine PRIVATE includes)
 

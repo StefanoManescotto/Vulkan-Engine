@@ -8,26 +8,29 @@
 #include <thirdparty/vk_mem_alloc.h>
 
 #include <fmt/printf.h>
-#include <iostream>
-#include <sstream>
 #include <fstream>
 
 void Application::showError(const std::string &errorMessasge) const {
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", errorMessasge.c_str(), window);
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", errorMessasge.c_str(), window.handle());
+}
+
+void Application::manageInputs() {
+    if (window.isKeyPressed(SDL_SCANCODE_A)) {
+        fmt::print("Pressed A - {} {}\n", window.getMousePosition().x, window.getMousePosition().y);
+    }
+    if (window.isKeyPressed(SDL_SCANCODE_S)) {
+        fmt::print("Pressed S - {}\n", window.getMouseDelta());
+    }
+
+    window.updateInputState();
 }
 
 bool Application::initialize() {
-    SDL_InitSubSystem(SDL_INIT_VIDEO);
-    window = SDL_CreateWindow("Vulkan Learning", width, height, SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
-    if (!window) {
-        showError("Error creating window");
-        return false;
-    }
+    window.createWindow();
 
     if (!initializeVulkan()) {
         return false;
     }
-
     return true;
 }
 
@@ -54,12 +57,7 @@ void Application::shutdown() {
     }
 
     // cleanup shaders
-    if (vertShader) {
-        vkDestroyShaderModule(device.handle(), vertShader, nullptr);
-    }
-    if (fragShader) {
-        vkDestroyShaderModule(device.handle(), fragShader, nullptr);
-    }
+    shader.destroyShaders();
 
     swapchain.destroySwapchain();
 
@@ -80,27 +78,17 @@ void Application::shutdown() {
     }
     volkFinalize();
 
-    // cleanup SDL
-    if (window) {
-        SDL_DestroyWindow(window);
-    }
-    SDL_Quit();
+    window.destroyWindow();
 }
 
 void Application::run() {
     running = true;
     while (running) {
-        SDL_Event event{0};
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_EVENT_QUIT) {
-                running = false;
-                break;
-            } else if (event.type == SDL_EVENT_WINDOW_RESIZED) {
-                width = event.window.data1;
-                height = event.window.data2;
-                break;
-            }
+        if (!window.pollEvents()) {
+            running = false;
+            break;
         }
+        manageInputs();
 
         render();
     }
@@ -121,9 +109,7 @@ bool Application::initializeVulkan() {
 
     device.create(surface);
     device.findPhysicalDevice(vulkanInstance, config.imageFormat);
-
     device.findGraphicsQueue();
-
     device.createDevice();
 
     if (!initializeVMA()) {
@@ -134,10 +120,7 @@ bool Application::initializeVulkan() {
     swapchain.create(device.handle(), device.getPhysicalDevice(), vmaAllocator);
     swapchain.createSwapchain(surface, config);
 
-    if (!createShaders()) {
-        showError("Error creating shader modules");
-        return false;
-    }
+    shader.createShaders(device.handle());
 
     if (pipeline = createGraphicsPipeline(); !pipeline) {
         showError("Unable to initialize the graphics pipeline");
@@ -199,59 +182,15 @@ bool Application::createVulkanInstance() {
 }
 
 bool Application::createSurface() {
-    if (!SDL_Vulkan_CreateSurface(window, vulkanInstance, nullptr, &surface)) {
+    if (!SDL_Vulkan_CreateSurface(window.handle(), vulkanInstance, nullptr, &surface)) {
         return false;
     }
     return true;
 }
 
-VkPhysicalDevice Application::findPhysicalDevice() {
-    // enumerate all physical devices
-    uint32_t physDeviceCount = 0;
-    vkEnumeratePhysicalDevices(vulkanInstance, &physDeviceCount, nullptr);
-    std::vector<VkPhysicalDevice> physicalDevices(physDeviceCount);
-    vkEnumeratePhysicalDevices(vulkanInstance, &physDeviceCount, physicalDevices.data());
-
-    VkPhysicalDevice physicalDevice = nullptr;
-    if (physDeviceCount) {
-        // if you have issues, you can always just hardcode a GPU index while learning
-        physicalDevice = physicalDevices[0]; // default to first GPU
-        // look through list and see if a dGPU exists
-        for (auto &pDev: physicalDevices) {
-            VkPhysicalDeviceProperties props{};
-            vkGetPhysicalDeviceProperties(pDev, &props);
-            if (props.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-                physicalDevice = pDev;
-                break;
-            }
-        }
-    }
-
-    // ensure the desired swapchain format is supported
-    uint32_t formatCount = 0;
-    vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, nullptr);
-    std::vector<VkSurfaceFormatKHR> surfaceFormats(formatCount);
-    vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, surfaceFormats.data());
-
-    bool formatSupported = false;
-    for (const VkSurfaceFormatKHR &surfFormat: surfaceFormats) {
-        if (surfFormat.format == config.imageFormat) {
-            formatSupported = true;
-            break;
-        }
-    }
-    if (!formatSupported) {
-        showError("Requested swapchain format is not supported by the surface");
-        return nullptr;
-    }
-
-    return physicalDevice;
-}
-
 bool Application::initializeVMA() {
     VmaVulkanFunctions vmaFuncInfo{};
-    VmaAllocatorCreateInfo vmaAllocInfo
-    {
+    VmaAllocatorCreateInfo vmaAllocInfo {
         .flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT,
         .physicalDevice = device.getPhysicalDevice(),
         .device = device.handle(),
@@ -268,58 +207,6 @@ bool Application::initializeVMA() {
     }
     return true;
 }
-
-// VkShaderModule Application::createShaderModule(const std::string &fileName, shaderc_shader_kind kind) const {
-//     // read shader file from disk
-//     const std::string shaderPath = SHADER_DIR + fileName;
-//     const std::string src = readTextFile(shaderPath);
-//     if (src.empty()) {
-//         showError("Specified shader file doesn't exist: " + shaderPath);
-//         return nullptr;
-//     }
-//
-//     // compile the shader to SPIR-V
-//     fmt::print("Compiling shader: {}\n", shaderPath);
-//     fflush(stdout);
-//
-//     shaderc::Compiler compiler;
-//     shaderc::CompileOptions opts;
-//     opts.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_4);
-//     opts.SetTargetSpirv(shaderc_spirv_version_1_6);
-//     opts.SetOptimizationLevel(shaderc_optimization_level_performance);
-//     shaderc::CompilationResult result = compiler.CompileGlslToSpv(src, kind, fileName.c_str(), opts);
-//
-//     if (result.GetCompilationStatus() != shaderc_compilation_status_success) {
-//         std::cerr << "Shader Compilation Error: " << result.GetErrorMessage() << std::endl;
-//         return nullptr;
-//     }
-//     std::vector<uint32_t> spv = {result.cbegin(), result.cend()};
-//
-//     // pass spir-v to vulkan and create shader-module
-//     VkShaderModuleCreateInfo moduleCreateInfo
-//     {
-//         .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-//         .codeSize = spv.size() * sizeof(uint32_t),
-//         .pCode = spv.data()
-//     };
-//     VkShaderModule shaderModule = nullptr;
-//     if (vkCreateShaderModule(device.handle(), &moduleCreateInfo, nullptr, &shaderModule) != VK_SUCCESS) {
-//         showError("Error creating shader module");
-//         return nullptr;
-//     }
-//     return shaderModule;
-// }
-//
-// bool Application::createShaders() {
-//     // create the shader modules that we'll need for the graphics pipeline
-//     if (vertShader = createShaderModule("shader.vert", shaderc_vertex_shader); !vertShader) {
-//         return false;
-//     }
-//     if (fragShader = createShaderModule("shader.frag", shaderc_fragment_shader); !fragShader) {
-//         return false;
-//     }
-//     return true;
-// }
 
 VkPipeline Application::createGraphicsPipeline() {
     // need to define a pipeline layout
@@ -341,13 +228,13 @@ VkPipeline Application::createGraphicsPipeline() {
         {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
             .stage = VK_SHADER_STAGE_VERTEX_BIT,
-            .module = vertShader,
+            .module = shader.getVertexShader(),
             .pName = entryPoint
         },
         {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
             .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-            .module = fragShader,
+            .module = shader.getFragmentShader(),
             .pName = entryPoint
         }
     };
@@ -488,10 +375,6 @@ bool Application::createSyncResources() {
             showError("Error creating the per-frame image-acquire semaphore");
             return false;
         }
-        // if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &res.renderCompleteSemaphore) != VK_SUCCESS) {
-        //     showError("Error creating the per-frame render complete semaphore");
-        //     return false;
-        // }
     }
 
     return true;
