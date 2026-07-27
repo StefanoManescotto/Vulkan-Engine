@@ -19,25 +19,12 @@ std::string readTextFile(const std::string &filePath) {
     return {};
 }
 
-VkShaderModule Shader::getVertexShader() const {
-    return vertShader;
-}
-
-VkShaderModule Shader::getFragmentShader() const {
-    return fragShader;
-}
-
 VkShaderModule Shader::createShaderModule(const std::string &fileName, shaderc_shader_kind kind, VkDevice device) const {
-    // read shader file from disk
     const std::string shaderPath = SHADER_DIR + fileName;
     const std::string src = readTextFile(shaderPath);
     if (src.empty()) {
         throw std::runtime_error("Specified shader file doesn't exist: " + shaderPath);
     }
-
-    // compile the shader to SPIR-V
-    // fmt::print("Compiling shader: {}\n", shaderPath);
-    // fflush(stdout);
 
     shaderc::Compiler compiler;
     shaderc::CompileOptions opts;
@@ -51,8 +38,7 @@ VkShaderModule Shader::createShaderModule(const std::string &fileName, shaderc_s
     }
     std::vector<uint32_t> spv = {result.cbegin(), result.cend()};
 
-    VkShaderModuleCreateInfo moduleCreateInfo
-    {
+    VkShaderModuleCreateInfo moduleCreateInfo {
         .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
         .codeSize = spv.size() * sizeof(uint32_t),
         .pCode = spv.data()
@@ -61,14 +47,31 @@ VkShaderModule Shader::createShaderModule(const std::string &fileName, shaderc_s
     if (vkCreateShaderModule(device, &moduleCreateInfo, nullptr, &shaderModule) != VK_SUCCESS) {
         throw std::runtime_error("Error creating shader module");
     }
+
     return shaderModule;
 }
 
+Shader::~Shader() {
+    destroyShaders();
+}
+
 void Shader::createShaders(VkDevice device) {
-    if (vertShader = createShaderModule("shader.vert", shaderc_vertex_shader, device); !vertShader) {
+    this->m_device = device;
+    if (m_vertShader = createShaderModule("shader.vert", shaderc_vertex_shader, device); !m_vertShader) {
         throw std::runtime_error("Error creating vertex shader module");
     }
-    if (fragShader = createShaderModule("shader.frag", shaderc_fragment_shader, device); !fragShader) {
+    if (m_fragShader = createShaderModule("shader.frag", shaderc_fragment_shader, device); !m_fragShader) {
         throw std::runtime_error("Error creating fragment shader module");
+    }
+}
+
+void Shader::destroyShaders() {
+    if (m_vertShader) {
+        vkDestroyShaderModule(m_device, m_vertShader, nullptr);
+        m_vertShader = nullptr;
+    }
+    if (m_fragShader) {
+        vkDestroyShaderModule(m_device, m_fragShader, nullptr);
+        m_fragShader = nullptr;
     }
 }
