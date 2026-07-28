@@ -21,6 +21,8 @@ add_executable(Vulkan_Engine src/main.cpp
         includes/shader.h
         src/window.cpp
         includes/window.h
+        src/pipeline.cpp
+        includes/pipeline.h
 )
 
 target_include_directories(Vulkan_Engine PRIVATE includes)

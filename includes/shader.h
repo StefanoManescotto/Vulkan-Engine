@@ -12,6 +12,9 @@ public:
     Shader() = default;
     ~Shader();
 
+    Shader(const Shader&) = delete;
+    Shader& operator=(const Shader&) = delete;
+
     /// @brief Creates the vertex and fragment shaders module.
     /// @param device The VkDevice needed to create the shader modules.
     void createShaders(VkDevice device);

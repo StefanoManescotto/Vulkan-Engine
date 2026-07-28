@@ -10,11 +10,14 @@
 #include <fmt/printf.h>
 #include <fstream>
 
-void Application::showError(const std::string &errorMessasge) const {
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", errorMessasge.c_str(), window.handle());
+void Application::showError(const std::string &errorMessage) const {
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", errorMessage.c_str(), window.handle());
 }
 
 void Application::manageInputs() {
+    if (window.isKeyPressed(SDL_SCANCODE_ESCAPE)) {
+        running = false;
+    }
     if (window.isKeyPressed(SDL_SCANCODE_A)) {
         fmt::print("Pressed A - {} {}\n", window.getMousePosition().x, window.getMousePosition().y);
     }
@@ -34,6 +37,47 @@ bool Application::initialize() {
     return true;
 }
 
+bool Application::initializeVulkan() {
+    config.configExtent = {.width = width, .height = height};
+    Pipeline::getDefaultConfigs(pipelineConfig);
+
+    if (!createVulkanInstance()) {
+        showError("Couldn't create a vulkan instance");
+        return false;
+    }
+
+    window.createSurface(vulkanInstance);
+
+    device.create(window.getSurface());
+    device.findPhysicalDevice(vulkanInstance, config.imageFormat);
+    device.findGraphicsQueue();
+    device.createDevice();
+
+    if (!initializeVMA()) {
+        showError("Unable to create Vulkan Memory Allocator");
+        return false;
+    }
+
+    swapchain.create(device.handle(), device.getPhysicalDevice(), vmaAllocator);
+    swapchain.createSwapchain(window.getSurface(), config);
+
+    shader.createShaders(device.handle());
+
+    pipeline.createPipeline(device.handle(), pipelineConfig, shader, 1, &config.imageFormat, config.depthFormat);
+
+    if (!createSyncResources()) {
+        showError("Couldn't create the sync related resources");
+        return false;
+    }
+
+    if (!createCommandBuffers()) {
+        showError("Couldn't create command buffer objects");
+        return false;
+    }
+
+    return true;
+}
+
 void Application::shutdown() {
     // wait in case resources are in use
     vkDeviceWaitIdle(device.handle());
@@ -49,12 +93,7 @@ void Application::shutdown() {
     }
 
     // pipeline cleanup
-    if (pipelineLayout) {
-        vkDestroyPipelineLayout(device.handle(), pipelineLayout, nullptr);
-    }
-    if (pipeline) {
-        vkDestroyPipeline(device.handle(), pipeline, nullptr);
-    }
+    pipeline.destroyPipeline();
 
     // cleanup shaders
     shader.destroyShaders();
@@ -90,49 +129,6 @@ void Application::run() {
 
         render();
     }
-}
-
-bool Application::initializeVulkan() {
-    config.configExtent = {.width = width, .height = height};
-
-    if (!createVulkanInstance()) {
-        showError("Couldn't create a vulkan instance");
-        return false;
-    }
-
-    window.createSurface(vulkanInstance);
-
-    device.create(window.getSurface());
-    device.findPhysicalDevice(vulkanInstance, config.imageFormat);
-    device.findGraphicsQueue();
-    device.createDevice();
-
-    if (!initializeVMA()) {
-        showError("Unable to create Vulkan Memory Allocator");
-        return false;
-    }
-
-    swapchain.create(device.handle(), device.getPhysicalDevice(), vmaAllocator);
-    swapchain.createSwapchain(window.getSurface(), config);
-
-    shader.createShaders(device.handle());
-
-    if (pipeline = createGraphicsPipeline(); !pipeline) {
-        showError("Unable to initialize the graphics pipeline");
-        return false;
-    }
-
-    if (!createSyncResources()) {
-        showError("Couldn't create the sync related resources");
-        return false;
-    }
-
-    if (!createCommandBuffers()) {
-        showError("Couldn't create command buffer objects");
-        return false;
-    }
-
-    return true;
 }
 
 bool Application::createVulkanInstance() {
@@ -196,149 +192,6 @@ bool Application::initializeVMA() {
     return true;
 }
 
-VkPipeline Application::createGraphicsPipeline() {
-    // need to define a pipeline layout
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-        .setLayoutCount = 0,
-        .pushConstantRangeCount = 0
-    };
-    if (vkCreatePipelineLayout(device.handle(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
-        showError("Unable to create the pipeline layout");
-        return nullptr;
-    }
-
-    // configure the shader stages struct
-    const char *entryPoint = "main";
-    std::vector<VkPipelineShaderStageCreateInfo> shaderStages
-    {
-        {
-            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-            .stage = VK_SHADER_STAGE_VERTEX_BIT,
-            .module = shader.getVertexShader(),
-            .pName = entryPoint
-        },
-        {
-            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-            .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-            .module = shader.getFragmentShader(),
-            .pName = entryPoint
-        }
-    };
-
-    // vertex pulling, don't define vertex input details
-    VkPipelineVertexInputStateCreateInfo vertInputInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
-    };
-
-    // input assembly, we'll be drawing triangle lists
-    VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
-        .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
-    };
-
-    // depth/stencil configuration
-    VkPipelineDepthStencilStateCreateInfo depthStencilInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
-        .depthTestEnable = VK_TRUE,
-        .depthWriteEnable = VK_TRUE,
-        .depthCompareOp = VK_COMPARE_OP_LESS,
-        .stencilTestEnable = VK_FALSE
-    };
-
-    // dynamic rendering allows to set this up...dynamically
-    // we still need this struct though
-    VkPipelineViewportStateCreateInfo viewportInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-        .viewportCount = 1,
-        .pViewports = nullptr,
-        .scissorCount = 1,
-        .pScissors = nullptr
-    };
-
-    // rasterizer settings
-    VkPipelineRasterizationStateCreateInfo rasterInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
-        .polygonMode = VK_POLYGON_MODE_FILL,
-        .cullMode = VK_CULL_MODE_BACK_BIT,
-        .frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE,
-        .lineWidth = 1.0f,
-    };
-
-    // No multisampling
-    VkPipelineMultisampleStateCreateInfo multiSampleInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-        .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT
-    };
-
-    // Alpha-blending (disabled for now), still need
-    // attachment info and write mask
-    VkPipelineColorBlendAttachmentState attachState
-    {
-        .blendEnable = VK_FALSE,
-        .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-                          VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
-    };
-    VkPipelineColorBlendStateCreateInfo blendInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
-        .attachmentCount = 1,
-        .pAttachments = &attachState
-    };
-
-    // enable dynamic state
-    std::vector<VkDynamicState> dynamicState
-    {
-        VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR
-    };
-    VkPipelineDynamicStateCreateInfo dynamicStateInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-        .dynamicStateCount = static_cast<uint32_t>(dynamicState.size()),
-        .pDynamicStates = dynamicState.data()
-    };
-
-    // structure required for dynamic rendering
-    VkPipelineRenderingCreateInfo renderInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
-        .colorAttachmentCount = 1,
-        .pColorAttachmentFormats = &config.imageFormat,
-        .depthAttachmentFormat = config.depthFormat
-    };
-
-    // Create the graphics pipeline
-    VkGraphicsPipelineCreateInfo pipelineInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
-        .pNext = &renderInfo,
-        .stageCount = static_cast<uint32_t>(shaderStages.size()),
-        .pStages = shaderStages.data(),
-        .pVertexInputState = &vertInputInfo,
-        .pInputAssemblyState = &inputAssemblyInfo,
-        .pViewportState = &viewportInfo,
-        .pRasterizationState = &rasterInfo,
-        .pMultisampleState = &multiSampleInfo,
-        .pDepthStencilState = &depthStencilInfo,
-        .pColorBlendState = &blendInfo,
-        .pDynamicState = &dynamicStateInfo,
-        .layout = pipelineLayout,
-        .renderPass = VK_NULL_HANDLE,
-    };
-    if (vkCreateGraphicsPipelines(device.handle(), nullptr, 1, &pipelineInfo, nullptr, &pipeline) != VK_SUCCESS) {
-        showError("Error creating the pipeline");
-        return nullptr;
-    }
-    return pipeline;
-}
-
 bool Application::createSyncResources() {
     VkSemaphoreTypeCreateInfo semaphoreTypeInfo
     {
@@ -371,8 +224,7 @@ bool Application::createSyncResources() {
 bool Application::createCommandBuffers() {
     for (FrameResources &res : frameResources) {
         // we'll give each frame its own pool, faster cmd buffer resets this way
-        VkCommandPoolCreateInfo poolInfo
-        {
+        VkCommandPoolCreateInfo poolInfo {
             .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
             .queueFamilyIndex = device.getGraphicsQueueIndex()
         };
@@ -382,8 +234,7 @@ bool Application::createCommandBuffers() {
         }
 
         // create the command buffer for this frame
-        VkCommandBufferAllocateInfo cmdAllocInfo
-        {
+        VkCommandBufferAllocateInfo cmdAllocInfo {
             .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
             .commandPool = res.commandPool,
             .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
@@ -530,32 +381,29 @@ void Application::render() {
     // begin dynamic rendering
     vkCmdBeginRendering(res.commandBuffer, &renderingInfo);
     {
-        // set the viewpot and scissor state
-        VkViewport viewport
-        {
+        // set the viewport and scissor state
+        VkViewport viewport {
             .x = 0, .y = 0,
             .width = static_cast<float>(swapchain.getSwapchainExtent().width),
             .height = static_cast<float>(swapchain.getSwapchainExtent().height)
         };
         vkCmdSetViewport(res.commandBuffer, 0, 1, &viewport);
 
-        VkRect2D scissor
-        {
+        VkRect2D scissor {
             .offset{.x = 0, .y = 0},
             .extent = swapchain.getSwapchainExtent()
         };
         vkCmdSetScissor(res.commandBuffer, 0, 1, &scissor);
 
         // draw our triangle
-        vkCmdBindPipeline(res.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+        vkCmdBindPipeline(res.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipeline());
         vkCmdDraw(res.commandBuffer, 3, 1, 0, 0);
     }
     // end dynamic rendering
     vkCmdEndRendering(res.commandBuffer);
 
     // transition the image from color attachment to presentation so we can show it
-    VkImageMemoryBarrier2 presentLayoutBarrier
-    {
+    VkImageMemoryBarrier2 presentLayoutBarrier {
         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
         .srcStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
         .srcAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
@@ -565,8 +413,7 @@ void Application::render() {
         .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         .newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
         .image = swapchain.getSwapchainImage(imageIndex),
-        .subresourceRange
-        {
+        .subresourceRange {
             .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
             .baseMipLevel = 0,
             .levelCount = 1,
@@ -574,8 +421,7 @@ void Application::render() {
             .layerCount = 1,
         }
     };
-    VkDependencyInfo presentDepInfo
-    {
+    VkDependencyInfo presentDepInfo {
         .sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
         .imageMemoryBarrierCount = 1,
         .pImageMemoryBarriers = &presentLayoutBarrier
@@ -585,15 +431,13 @@ void Application::render() {
     vkEndCommandBuffer(res.commandBuffer);
 
     // ensure swapchain image is actually available to start color outp ut
-    VkSemaphoreSubmitInfo imageAcquireWaitInfo
-    {
+    VkSemaphoreSubmitInfo imageAcquireWaitInfo {
         .sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO,
         .semaphore = imageAcquireSemaphore,
         .stageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT // wait before drawing to image
     };
     // signal that the image can be presented
-    std::vector<VkSemaphoreSubmitInfo> semaphoreSignals
-    {
+    std::vector<VkSemaphoreSubmitInfo> semaphoreSignals {
         {
             // render work completion signal
             .sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO,
@@ -608,13 +452,11 @@ void Application::render() {
             .stageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT
         }
     };
-    VkCommandBufferSubmitInfo cmdSubmitInfo
-    {
+    VkCommandBufferSubmitInfo cmdSubmitInfo {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO,
         .commandBuffer = res.commandBuffer,
     };
-    VkSubmitInfo2 submitInfo
-    {
+    VkSubmitInfo2 submitInfo {
         .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO_2,
         .waitSemaphoreInfoCount = 1,
         .pWaitSemaphoreInfos = &imageAcquireWaitInfo, // ensure the image is ready

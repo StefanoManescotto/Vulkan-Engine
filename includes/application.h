@@ -12,6 +12,7 @@
 #include "device.h"
 #include "shader.h"
 #include "window.h"
+#include "pipeline.h"
 
 struct SDL_Window;
 struct VmaAllocator_T;
@@ -46,14 +47,7 @@ private:
     // vulkan core
     VkInstance vulkanInstance = nullptr;
     Device device;
-    // VkPhysicalDevice physicalDevice = nullptr;
-    // VkDevice device = nullptr;
-    // VkSurfaceKHR surface = nullptr;
     VmaAllocator vmaAllocator = nullptr;
-
-    // queue related
-    // uint32_t gfxQueueFamIdx = UINT32_MAX;
-    // VkQueue gfxQueue = nullptr;
 
     // swapchain related
     Swapchain swapchain;
@@ -61,8 +55,10 @@ private:
     bool requireSwapchainRecreate = false;
 
     // graphics pipeline related
-    VkPipelineLayout pipelineLayout = nullptr;
-    VkPipeline pipeline = nullptr;
+    Pipeline pipeline;
+    PipelineConfig pipelineConfig;
+    // VkPipelineLayout pipelineLayout = nullptr;
+    // VkPipeline pipeline = nullptr;
 
     // shader resources
     Shader shader;

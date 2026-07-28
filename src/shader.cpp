@@ -66,12 +66,12 @@ void Shader::createShaders(VkDevice device) {
 }
 
 void Shader::destroyShaders() {
-    if (m_vertShader) {
+    if (m_vertShader != VK_NULL_HANDLE) {
         vkDestroyShaderModule(m_device, m_vertShader, nullptr);
-        m_vertShader = nullptr;
+        m_vertShader = VK_NULL_HANDLE;
     }
-    if (m_fragShader) {
+    if (m_fragShader != VK_NULL_HANDLE) {
         vkDestroyShaderModule(m_device, m_fragShader, nullptr);
-        m_fragShader = nullptr;
+        m_fragShader = VK_NULL_HANDLE;
     }
 }
