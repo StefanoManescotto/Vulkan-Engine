@@ -55,6 +55,7 @@ bool Window::pollEvents() {
         switch (event.type) {
             case SDL_EVENT_QUIT:
                 return false;
+            case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
             case SDL_EVENT_WINDOW_RESIZED:
                 m_width = event.window.data1;
                 m_height = event.window.data2;

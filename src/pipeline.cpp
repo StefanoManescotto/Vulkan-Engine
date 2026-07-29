@@ -2,7 +2,7 @@
 // Created by stefano on 28/07/26.
 //
 
-#include "../includes/pipeline.h"
+#include "pipeline.h"
 
 #include <stdexcept>
 #include <vector>
@@ -15,7 +15,9 @@ void Pipeline::createPipeline(const VkDevice device, const PipelineConfig& confi
     createPipeline(device, config, shader, 0, nullptr, VK_FORMAT_UNDEFINED);
 }
 
-void Pipeline::createPipeline(const VkDevice device, const PipelineConfig& config, const Shader& shader, uint32_t nColorAttachment, VkFormat *colorFormat, VkFormat depthFormat) {
+void Pipeline::createPipeline(const VkDevice device, const PipelineConfig& config, const Shader& shader,
+    uint32_t nColorAttachment, VkFormat *colorFormat, VkFormat depthFormat) {
+
     m_device = device;
 
     // need to define a pipeline layout

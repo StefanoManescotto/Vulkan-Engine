@@ -23,6 +23,12 @@ add_executable(Vulkan_Engine src/main.cpp
         includes/window.h
         src/pipeline.cpp
         includes/pipeline.h
+        src/renderer.cpp
+        includes/renderer.h
+        src/renderSystem.cpp
+        includes/renderSystem.h
+        src/mainRenderSystem.cpp
+        includes/mainRenderSystem.h
 )
 
 target_include_directories(Vulkan_Engine PRIVATE includes)

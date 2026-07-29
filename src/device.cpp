@@ -33,7 +33,7 @@ uint32_t Device::getGraphicsQueueIndex() const {
     return m_queueFamilyIndex;
 }
 
-VkPhysicalDevice Device::findPhysicalDevice(VkInstance instance, VkFormat format) {
+VkPhysicalDevice Device::findPhysicalDevice(VkInstance instance) {
     // enumerate all physical devices
     uint32_t physDeviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &physDeviceCount, nullptr);
@@ -54,23 +54,6 @@ VkPhysicalDevice Device::findPhysicalDevice(VkInstance instance, VkFormat format
 
     if (!m_physicalDevice) {
         throw std::runtime_error("Unable to find an appropriate physical device");
-    }
-
-    // ensure the desired swapchain format is supported
-    uint32_t formatCount = 0;
-    vkGetPhysicalDeviceSurfaceFormatsKHR(m_physicalDevice, m_surface, &formatCount, nullptr);
-    std::vector<VkSurfaceFormatKHR> surfaceFormats(formatCount);
-    vkGetPhysicalDeviceSurfaceFormatsKHR(m_physicalDevice, m_surface, &formatCount, surfaceFormats.data());
-
-    bool formatSupported = false;
-    for (const VkSurfaceFormatKHR &surfFormat: surfaceFormats) {
-        if (surfFormat.format == format) {
-            formatSupported = true;
-            break;
-        }
-    }
-    if (!formatSupported) {
-        throw std::runtime_error("Requested swapchain format is not supported by the surface");
     }
 
     return m_physicalDevice;
@@ -177,4 +160,34 @@ void Device::destroyDevice() {
         vkDestroyDevice(m_device, nullptr);
         m_device = nullptr;
     }
+}
+
+
+// TODO: make it so it can check on multiple possible formats and uses the first one supported
+
+/// Ensure the swapchain format is supported
+bool Device::supportSwapchainFormat(VkFormat format) const{
+    uint32_t formatCount = 0;
+    vkGetPhysicalDeviceSurfaceFormatsKHR(m_physicalDevice, m_surface, &formatCount, nullptr);
+    std::vector<VkSurfaceFormatKHR> surfaceFormats(formatCount);
+    vkGetPhysicalDeviceSurfaceFormatsKHR(m_physicalDevice, m_surface, &formatCount, surfaceFormats.data());
+
+    bool formatSupported = false;
+    for (const VkSurfaceFormatKHR &surfFormat: surfaceFormats) {
+        if (surfFormat.format == format) {
+            formatSupported = true;
+            break;
+        }
+    }
+    if (!formatSupported) {
+        return false;
+    }
+    return true;
+}
+
+bool Device::supportFormat(VkFormat format, VkFormatFeatureFlags requiredFeatures) const {
+    VkFormatProperties formatProperties;
+    vkGetPhysicalDeviceFormatProperties(m_physicalDevice, format, &formatProperties);
+
+    return (formatProperties.optimalTilingFeatures & requiredFeatures) == requiredFeatures;
 }

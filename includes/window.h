@@ -44,16 +44,16 @@ public:
      */
     bool pollEvents();
 
-    SDL_Window* handle() const { return m_window; };
+    [[nodiscard]] SDL_Window* handle() const { return m_window; };
 
-    int getWidth() const { return m_width; }
+    [[nodiscard]] uint32_t getWidth() const { return m_width; }
 
-    int getHeight() const { return m_height; }
+    [[nodiscard]] uint32_t getHeight() const { return m_height; }
 
-    VkSurfaceKHR getSurface() const { return m_surface; }
+    [[nodiscard]] VkSurfaceKHR getSurface() const { return m_surface; }
 
     /// Return the mouse position in the window on the current frame
-    vec2 getMousePosition() const { return m_mousePosition; };
+    [[nodiscard]] vec2 getMousePosition() const { return m_mousePosition; };
 
     /// Return the difference of the mouse position between frames.
     vec2 getMouseDelta() { return m_mousePosition - m_oldMousePosition; };

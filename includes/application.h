@@ -14,18 +14,20 @@
 #include "window.h"
 #include "pipeline.h"
 
+#include <renderer.h>
+
 struct SDL_Window;
 struct VmaAllocator_T;
 typedef VmaAllocator_T* VmaAllocator;
 struct VmaAllocation_T;
 typedef VmaAllocation_T* VmaAllocation;
 
-struct FrameResources {
-    VkCommandPool commandPool = nullptr;
-    VkCommandBuffer commandBuffer = nullptr;
-
-    VkSemaphore imageAcquiredSemaphore = nullptr;
-};
+// struct FrameResources {
+//     VkCommandPool commandPool = nullptr;
+//     VkCommandBuffer commandBuffer = nullptr;
+//
+//     VkSemaphore imageAcquiredSemaphore = nullptr;
+// };
 
 class Application {
 public:
@@ -41,31 +43,32 @@ private:
     uint32_t width = 1280;
     uint32_t height = 720;
     bool running = false;
-    uint64_t frameIndex = 0;
-    uint64_t nextSignalValue = MaxFramesInFlight + 1;
+    // uint64_t frameIndex = 0;
+    // uint64_t nextSignalValue = MaxFramesInFlight + 1;
 
     // vulkan core
     VkInstance vulkanInstance = nullptr;
     Device device;
     VmaAllocator vmaAllocator = nullptr;
+    Renderer renderer;
 
     // swapchain related
-    Swapchain swapchain;
-    SwapchainConfig config;
-    bool requireSwapchainRecreate = false;
+    // Swapchain swapchain;
+    // SwapchainConfig config;
+    // bool requireSwapchainRecreate = false;
 
     // graphics pipeline related
-    Pipeline pipeline;
-    PipelineConfig pipelineConfig;
+    // Pipeline pipeline;
+    // PipelineConfig pipelineConfig;
     // VkPipelineLayout pipelineLayout = nullptr;
     // VkPipeline pipeline = nullptr;
 
     // shader resources
-    Shader shader;
+    // Shader shader;
 
     // frame and synchronization resources
-    VkSemaphore timelineSemaphore = nullptr;
-    std::array<FrameResources, MaxFramesInFlight> frameResources;
+    // VkSemaphore timelineSemaphore = nullptr;
+    // std::array<FrameResources, MaxFramesInFlight> frameResources;
 
     void showError(const std::string &errorMessasge) const;
 
@@ -78,9 +81,9 @@ private:
 
     bool initializeVMA();
 
-    VkPipeline createGraphicsPipeline();
-    bool createSyncResources();
-    bool createCommandBuffers();
+    // VkPipeline createGraphicsPipeline();
+    // bool createSyncResources();
+    // bool createCommandBuffers();
 
     void render();
 

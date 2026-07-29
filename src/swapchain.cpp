@@ -83,8 +83,7 @@ VkSwapchainKHR Swapchain::createSwapchain(VkSurfaceKHR surface, const SwapchainC
             .image = m_swapchainImages[i],
             .viewType = VK_IMAGE_VIEW_TYPE_2D,
             .format = config.imageFormat,
-            .subresourceRange
-            {
+            .subresourceRange {
                 .aspectMask = config.aspectMask,
                 .levelCount = config.levelCount,
                 .layerCount = config.layerCount
@@ -127,7 +126,7 @@ void Swapchain::createDepthImage(SwapchainConfig config) {
     if (vmaCreateImage(m_allocator, &depthCreateInfo, &allocInfo, &m_depthImage, &m_depthAllocation, nullptr) !=
         VK_SUCCESS) {
         throw std::runtime_error("Error allocating depth image");
-        }
+    }
 
     VkImageViewCreateInfo depthImgViewInfo {
         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,

@@ -14,10 +14,13 @@ public:
     Device& operator=(const Device&) = delete;
 
     void create(VkSurfaceKHR surface);
-    VkPhysicalDevice findPhysicalDevice(VkInstance instance, VkFormat format);
+    VkPhysicalDevice findPhysicalDevice(VkInstance instance);
     uint32_t findGraphicsQueue();
     VkDevice createDevice();
     void destroyDevice();
+
+    bool supportSwapchainFormat(VkFormat format) const;
+    bool supportFormat(VkFormat format, VkFormatFeatureFlags requiredFeatures) const;
 
     [[nodiscard]] VkDevice handle() const;
     [[nodiscard]] VkPhysicalDevice getPhysicalDevice() const;
