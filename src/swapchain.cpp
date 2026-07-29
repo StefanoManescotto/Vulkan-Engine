@@ -100,44 +100,9 @@ VkSwapchainKHR Swapchain::createSwapchain(VkSurfaceKHR surface, const SwapchainC
         }
     }
 
-    createDepthImage(config);
+    // createDepthImage(config);
 
     return m_swapchain;
-}
-
-void Swapchain::createDepthImage(SwapchainConfig config) {
-    VkImageCreateInfo depthCreateInfo {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-        .imageType = VK_IMAGE_TYPE_2D,
-        .format = config.depthFormat,
-        .extent{.width = m_swapchainExtent.width, .height = m_swapchainExtent.height, .depth = 1},
-        .mipLevels = 1,
-        .arrayLayers = 1,
-        .samples = VK_SAMPLE_COUNT_1_BIT,
-        .tiling = VK_IMAGE_TILING_OPTIMAL,
-        .usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
-    };
-
-    VmaAllocationCreateInfo allocInfo {
-        .flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
-        .usage = VMA_MEMORY_USAGE_AUTO
-    };
-    if (vmaCreateImage(m_allocator, &depthCreateInfo, &allocInfo, &m_depthImage, &m_depthAllocation, nullptr) !=
-        VK_SUCCESS) {
-        throw std::runtime_error("Error allocating depth image");
-    }
-
-    VkImageViewCreateInfo depthImgViewInfo {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-        .image = m_depthImage,
-        .viewType = VK_IMAGE_VIEW_TYPE_2D,
-        .format = config.depthFormat,
-        .subresourceRange{.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT, .levelCount = 1, .layerCount = 1}
-    };
-    if (vkCreateImageView(m_device, &depthImgViewInfo, nullptr, &m_depthImageView) != VK_SUCCESS) {
-        throw std::runtime_error("Error creating depth image view");
-    }
 }
 
 VkSwapchainKHR Swapchain::recreateSwapchain(VkSurfaceKHR surface, const SwapchainConfig& config) {
@@ -164,11 +129,11 @@ void Swapchain::destroySwapchain() {
         m_swapchain = nullptr;
     }
 
-    if (m_depthImageView) {
-        vkDestroyImageView(m_device, m_depthImageView, nullptr);
-        vmaDestroyImage(m_allocator, m_depthImage, m_depthAllocation);
-        m_depthImageView = nullptr;
-    }
+    // if (m_depthImageView) {
+    //     vkDestroyImageView(m_device, m_depthImageView, nullptr);
+    //     vmaDestroyImage(m_allocator, m_depthImage, m_depthAllocation);
+    //     m_depthImageView = nullptr;
+    // }
 }
 
 VkExtent2D Swapchain::getSwapchainExtent() const {
@@ -183,13 +148,13 @@ VkImageView Swapchain::getSwapchainImageView(size_t imageIndex) const {
     return m_swapchainImageViews[imageIndex];
 }
 
-VkImage Swapchain::getDepthImage() const {
-    return m_depthImage;
-}
-
-VkImageView Swapchain::getDepthImageView() const {
-    return m_depthImageView;
-}
+// VkImage Swapchain::getDepthImage() const {
+//     return m_depthImage;
+// }
+//
+// VkImageView Swapchain::getDepthImageView() const {
+//     return m_depthImageView;
+// }
 
 VkSemaphore Swapchain::getRenderSemaphore(size_t imageIndex) const {
     return m_renderFinishedSemaphores[imageIndex];

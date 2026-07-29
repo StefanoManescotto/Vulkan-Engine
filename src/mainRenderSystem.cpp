@@ -11,9 +11,9 @@ void MainRenderSystem::init(VkDevice device, PipelineContext& pipelineCtx) {
     createPipeline(device, pipelineCtx);
 }
 
-void MainRenderSystem::render(RenderContext& ctx) {
-    std::vector<VkImageMemoryBarrier2> layoutBarriers
-    {
+void MainRenderSystem::render(MainRenderContext& ctx) {
+
+    std::vector<VkImageMemoryBarrier2> layoutBarriers {
         {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
             .srcStageMask = VK_PIPELINE_STAGE_NONE,
@@ -22,7 +22,7 @@ void MainRenderSystem::render(RenderContext& ctx) {
             .dstAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
             .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
             .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-            .image = ctx.colorImg,
+            .image = ctx.colorImage.getImage(),
             .subresourceRange {
                 .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
                 .baseMipLevel = 0,
@@ -40,7 +40,7 @@ void MainRenderSystem::render(RenderContext& ctx) {
             .dstAccessMask = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
             .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
             .newLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
-            .image = ctx.depthImg,
+            .image = ctx.depthImage.getImage(),
             .subresourceRange {
                 .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                 .baseMipLevel = 0,
@@ -60,7 +60,7 @@ void MainRenderSystem::render(RenderContext& ctx) {
 
     VkRenderingAttachmentInfo colorAttachInfo {
         .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-        .imageView = ctx.color,
+        .imageView = ctx.colorImage.getImageView(),
         .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR, // clear the image
         .storeOp = VK_ATTACHMENT_STORE_OP_STORE, // keep data for presentation
@@ -68,7 +68,7 @@ void MainRenderSystem::render(RenderContext& ctx) {
     };
     VkRenderingAttachmentInfo depthAttachInfo {
         .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-        .imageView = ctx.depth,
+        .imageView = ctx.depthImage.getImageView(),
         .imageLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR, // clear the depth data
         .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE, // don't care after rendering
@@ -111,8 +111,22 @@ void MainRenderSystem::render(RenderContext& ctx) {
     vkCmdEndRendering(ctx.cmd);
 }
 
-// TODO: This may not work. pipelineCtx might need to be a class attribute
 void MainRenderSystem::createPipeline(VkDevice device, PipelineContext& pipelineCtx) {
+    pipelineConfig.shaderStages = {
+        {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+            .stage = VK_SHADER_STAGE_VERTEX_BIT,
+            .module = shader.getVertexShader(),
+            .pName = "main"
+        },
+        {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+            .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
+            .module = shader.getFragmentShader(),
+            .pName = "main"
+        }
+    };
+    // TODO: the color and depth format may be the same of the one in the Image class: look into it.
     pipeline.createPipeline(device, pipelineConfig, shader, 1, &pipelineCtx.colorFormat, pipelineCtx.depthFormat);
 }
 

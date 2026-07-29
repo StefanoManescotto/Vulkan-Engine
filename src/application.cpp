@@ -1,5 +1,4 @@
 #include "application.h"
-// #include "utils.h"
 
 #include <SDL3/SDL.h>
 #define VOLK_IMPLEMENTATION
@@ -8,11 +7,6 @@
 #include <thirdparty/vk_mem_alloc.h>
 
 #include <fmt/printf.h>
-#include <fstream>
-
-void Application::showError(const std::string &errorMessage) const {
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", errorMessage.c_str(), window.handle());
-}
 
 void Application::manageInputs() {
     if (window.isKeyPressed(SDL_SCANCODE_ESCAPE)) {
@@ -28,20 +22,14 @@ void Application::manageInputs() {
     window.updateInputState();
 }
 
-bool Application::initialize() {
+void Application::initialize() {
     window.createWindow();
 
-    if (!initializeVulkan()) {
-        return false;
-    }
-    return true;
+    initializeVulkan();
 }
 
-bool Application::initializeVulkan() {
-    if (!createVulkanInstance()) {
-        showError("Couldn't create a vulkan instance");
-        return false;
-    }
+void Application::initializeVulkan() {
+    createVulkanInstance();
 
     window.createSurface(vulkanInstance);
 
@@ -50,14 +38,9 @@ bool Application::initializeVulkan() {
     device.findGraphicsQueue();
     device.createDevice();
 
-    if (!initializeVMA()) {
-        showError("Unable to create Vulkan Memory Allocator");
-        return false;
-    }
+    initializeVMA();
 
     renderer.init(&device, &vmaAllocator, &window);
-
-    return true;
 }
 
 void Application::shutdown() {
@@ -95,11 +78,10 @@ void Application::run() {
     }
 }
 
-bool Application::createVulkanInstance() {
+void Application::createVulkanInstance() {
     // Initialize Volk and load Vk function pointers
     if (volkInitialize() != VK_SUCCESS) {
-        showError("Error initializing Volk");
-        return false;
+        throw std::runtime_error("Error initializing Volk");
     }
 
     // Create the vulkan application instance
@@ -127,14 +109,13 @@ bool Application::createVulkanInstance() {
     };
 
     if (vkCreateInstance(&instCreateInfo, nullptr, &vulkanInstance) != VK_SUCCESS) {
-        return false;
+        throw std::runtime_error("Couldn't create a vulkan instance");
     }
 
     volkLoadInstance(vulkanInstance);
-    return true;
 }
 
-bool Application::initializeVMA() {
+void Application::initializeVMA() {
     VmaVulkanFunctions vmaFuncInfo{};
     VmaAllocatorCreateInfo vmaAllocInfo {
         .flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT,
@@ -149,9 +130,8 @@ bool Application::initializeVMA() {
     vmaImportVulkanFunctionsFromVolk(&vmaAllocInfo, &vmaFuncInfo);
 
     if (vmaCreateAllocator(&vmaAllocInfo, &vmaAllocator) != VK_SUCCESS) {
-        return false;
+        throw std::runtime_error("Unable to create Vulkan Memory Allocator");
     }
-    return true;
 }
 
 void Application::render() {

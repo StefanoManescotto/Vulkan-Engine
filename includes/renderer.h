@@ -19,6 +19,9 @@ struct FrameResources {
     VkSemaphore imageAcquiredSemaphore = nullptr;
     uint32_t imageIndex = std::numeric_limits<uint32_t>::max();
     uint64_t signalValue = 0;
+
+    Image colorImage;
+    Image depthImage;
 };
 
 struct Window;
@@ -29,8 +32,6 @@ public:
 
     void init(const Device* device, const VmaAllocator* allocator, const Window* window);
 
-    bool beginFrame(const Window* window);
-    void endFrame();
     void renderFrame(const Window* window);
 
     void destroyRenderer();
@@ -38,9 +39,10 @@ private:
     constexpr static uint32_t MaxFramesInFlight { 2 };
     uint64_t nextSignalValue = MaxFramesInFlight + 1;
     uint64_t frameIndex = 0;
-    RenderContext ctx;
+    MainRenderContext ctx;
 
     const Device* m_device;
+    const VmaAllocator* m_allocator;
 
     MainRenderSystem m_mainRenderSystem;
     std::array<FrameResources, MaxFramesInFlight> m_frameResources;
@@ -53,4 +55,14 @@ private:
 
     void createCommandBuffer();
     void createSyncResources();
+
+    /**
+     * @brief Executes operations needed for rendering
+     * @param window Needed for the surface.
+     * @return True if rendering can proceed, False if the swapchain needs to be recreated.
+     */
+    bool beginFrame(const Window* window);
+    void endFrame();
+
+    void initImages();
 };

@@ -4,8 +4,6 @@
 
 #include "device.h"
 
-#include <iostream>
-#include <ostream>
 #include <stdexcept>
 #include <vector>
 
@@ -81,7 +79,7 @@ uint32_t Device::findGraphicsQueue() {
 
 VkDevice Device::createDevice() {
     float queuePriority = 1.0f;
-    std::vector<uint32_t> queueFamiles{m_queueFamilyIndex};
+    std::vector<uint32_t> queueFamilies{m_queueFamilyIndex};
 
     VkDeviceQueueCreateInfo gfxQueueInfo {
         .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,

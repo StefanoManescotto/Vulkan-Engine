@@ -11,23 +11,29 @@
 
 void Renderer::init(const Device* device, const VmaAllocator* allocator, const Window* window) {
     m_device = device;
-    PipelineContext pCtx {
-        .colorFormat = config.imageFormat,
-        .depthFormat = config.depthFormat
-    };
-
-    if (!m_device->supportSwapchainFormat(config.imageFormat)) {
-        throw std::runtime_error("Requested swapchain format is not supported by the surface");
-    }
-    if (!m_device->supportFormat(config.depthFormat, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)) {
-        throw std::runtime_error("Requested depth format is not supported by the device");
-    }
+    m_allocator = allocator;
 
     swapchain.create(m_device->handle(), m_device->getPhysicalDevice(), *allocator);
     swapchain.createSwapchain(window->getSurface(), config);
-    m_mainRenderSystem.init(m_device->handle(), pCtx);
+
+    initImages();
+
+    FrameResources res = m_frameResources[0];
+    if (!m_device->supportSwapchainFormat(config.imageFormat)) {
+        throw std::runtime_error("Requested swapchain format is not supported by the surface");
+    }
+    if (!m_device->supportFormat(res.depthImage.getConfig().format, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)) {
+        throw std::runtime_error("Requested depth format is not supported by the device");
+    }
 
     createSyncResources();
+
+    PipelineContext pCtx {
+        .colorFormat = res.colorImage.getConfig().format,
+        .depthFormat = res.depthImage.getConfig().format
+    };
+    m_mainRenderSystem.init(m_device->handle(), pCtx);
+
     createCommandBuffer();
 }
 
@@ -77,6 +83,7 @@ void Renderer::endFrame() {
         .semaphore = currentFrameRes.imageAcquiredSemaphore,
         .stageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT // wait before drawing to image
     };
+
     // signal that the image can be presented
     std::vector<VkSemaphoreSubmitInfo> semaphoreSignals {
         {
@@ -122,6 +129,16 @@ void Renderer::endFrame() {
     vkQueuePresentKHR(m_device->getGraphicsQueue(), &presentInfo);
 }
 
+void Renderer::initImages() {
+    ImageConfig imgConfig;
+    imgConfig.extent = swapchain.getSwapchainExtent();
+
+    for (FrameResources& res : m_frameResources) {
+        res.colorImage.allocateImage(m_device->handle(), m_allocator, ImageConfig::ColorAttachment(swapchain.getSwapchainExtent(), VK_FORMAT_B8G8R8A8_SRGB));
+        res.depthImage.allocateImage(m_device->handle(), m_allocator, ImageConfig::DepthAttachment(swapchain.getSwapchainExtent(), VK_FORMAT_D32_SFLOAT));
+    }
+}
+
 void Renderer::renderFrame(const Window* window) {
     // Check if we need to recreate the swapchain
     if (!beginFrame(window)) {
@@ -136,22 +153,68 @@ void Renderer::renderFrame(const Window* window) {
 
     ctx.cmd = currentFrameRes.commandBuffer;
     ctx.extent = swapchain.getSwapchainExtent();
-    ctx.color = swapchain.getSwapchainImageView(currentFrameRes.imageIndex);
-    ctx.depth = swapchain.getDepthImageView();
-    ctx.colorImg = swapchain.getSwapchainImage(currentFrameRes.imageIndex);
-    ctx.depthImg = swapchain.getDepthImage();
+    ctx.colorImage = currentFrameRes.colorImage;
+    ctx.depthImage = currentFrameRes.depthImage;
 
     m_mainRenderSystem.render(ctx);
 
 
-    VkImageMemoryBarrier2 presentLayoutBarrier {
+    VkImageMemoryBarrier2 barriers[3] = {
+        {
+            .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+            .srcStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
+            .srcAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
+            .dstStageMask = VK_PIPELINE_STAGE_2_COPY_BIT,
+            .dstAccessMask = VK_ACCESS_2_TRANSFER_READ_BIT,
+            .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+            .newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            .image = ctx.colorImage.getImage(),
+            .subresourceRange {
+                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                .baseMipLevel = 0,
+                .levelCount = 1,
+                .baseArrayLayer = 0,
+                .layerCount = 1,
+            }
+        },
+    {
+            .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+            .srcStageMask = VK_PIPELINE_STAGE_2_NONE,
+            .srcAccessMask = VK_ACCESS_2_NONE,
+            .dstStageMask = VK_PIPELINE_STAGE_2_COPY_BIT,
+            .dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
+            .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+            .newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            .image = swapchain.getSwapchainImage(currentFrameRes.imageIndex),
+            .subresourceRange {
+                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                .baseMipLevel = 0,
+                .levelCount = 1,
+                .baseArrayLayer = 0,
+                .layerCount = 1,
+            }
+        },
+    };
+
+    VkDependencyInfo presentDepInfo {
+        .sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+        .imageMemoryBarrierCount = 2,
+        .pImageMemoryBarriers = barriers
+    };
+    vkCmdPipelineBarrier2(currentFrameRes.commandBuffer, &presentDepInfo);
+
+    VkExtent2D extent = swapchain.getSwapchainExtent();
+    Image::copyImageToImage(ctx.cmd, ctx.colorImage.getImage(), swapchain.getSwapchainImage(currentFrameRes.imageIndex),
+                            extent, extent);
+
+    VkImageMemoryBarrier2 presentBarrier = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
-        .srcStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
-        .srcAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
+        .srcStageMask = VK_PIPELINE_STAGE_2_COPY_BIT,
+        .srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
         .dstStageMask = VK_PIPELINE_STAGE_2_NONE,
         // nothing is waiting, but the cache is flushed and layout is transition
         .dstAccessMask = 0,
-        .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        .oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
         .newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
         .image = swapchain.getSwapchainImage(currentFrameRes.imageIndex),
         .subresourceRange {
@@ -162,10 +225,10 @@ void Renderer::renderFrame(const Window* window) {
             .layerCount = 1,
         }
     };
-    VkDependencyInfo presentDepInfo {
+    presentDepInfo = {
         .sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
         .imageMemoryBarrierCount = 1,
-        .pImageMemoryBarriers = &presentLayoutBarrier
+        .pImageMemoryBarriers = &presentBarrier
     };
     vkCmdPipelineBarrier2(currentFrameRes.commandBuffer, &presentDepInfo);
 
@@ -233,6 +296,8 @@ void Renderer::destroyRenderer() {
     for (auto &res : m_frameResources) {
         vkDestroySemaphore(m_device->handle(), res.imageAcquiredSemaphore, nullptr);
         vkDestroyCommandPool(m_device->handle(), res.commandPool, nullptr); // destroys buffers implicitly
+        res.colorImage.destroyImage();
+        res.depthImage.destroyImage();
     }
 
     m_mainRenderSystem.destroyRenderSystem();

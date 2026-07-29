@@ -12,16 +12,13 @@ struct SwapchainConfig {
     VkFormat imageFormat = VK_FORMAT_B8G8R8A8_SRGB;
     VkColorSpaceKHR imageColorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
     uint32_t imageArrayLayers = 1;
-    VkImageUsageFlags imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    VkImageUsageFlags imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
     VkSurfaceTransformFlagBitsKHR preTrasform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
     VkCompositeAlphaFlagBitsKHR compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
     VkImageAspectFlags aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
     uint32_t layerCount = 1;
     uint32_t levelCount = 1;
-
-    // Depth image configs
-    VkFormat depthFormat = VK_FORMAT_D32_SFLOAT;
 };
 
 struct VmaAllocator_T;
@@ -47,8 +44,6 @@ public:
     [[nodiscard]] VkExtent2D getSwapchainExtent() const;
     [[nodiscard]] VkImage getSwapchainImage(size_t imageIndex) const;
     [[nodiscard]] VkImageView getSwapchainImageView(size_t imageIndex) const;
-    [[nodiscard]] VkImage getDepthImage() const;
-    [[nodiscard]] VkImageView getDepthImageView() const;
     [[nodiscard]] VkSemaphore getRenderSemaphore(size_t imageIndex) const;
     const VkSemaphore* getPRenderSemaphore(size_t imageIndex) const;
 private:
@@ -63,11 +58,5 @@ private:
     std::vector<VkImageView> m_swapchainImageViews;
     VkExtent2D m_swapchainExtent;
 
-    VkImage m_depthImage;
-    VkImageView m_depthImageView;
-    VmaAllocation m_depthAllocation;
-
     std::vector<VkSemaphore> m_renderFinishedSemaphores;
-
-    void createDepthImage(SwapchainConfig config);
 };

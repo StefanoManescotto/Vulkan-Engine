@@ -6,9 +6,14 @@
 
 #include "renderSystem.h"
 
-class MainRenderSystem : RenderSystem {
+struct MainRenderContext : RenderContext {
+    Image colorImage;
+    Image depthImage;
+};
+
+class MainRenderSystem : RenderSystem<MainRenderContext> {
 public:
-    void render(RenderContext &ctx) override;
+    void render(MainRenderContext &ctx) override;
 
     void init(VkDevice device, PipelineContext& pipelineCtx) override;
 

@@ -8,7 +8,8 @@
 #include "shader.h"
 
 struct PipelineConfig {
-    // Viewport & Scissor setup
+    std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
+
     VkPipelineViewportStateCreateInfo viewportInfo{};
 
     // Fixed-function states

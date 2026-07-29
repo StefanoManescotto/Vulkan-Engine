@@ -30,23 +30,6 @@ void Pipeline::createPipeline(const VkDevice device, const PipelineConfig& confi
         throw std::runtime_error("Unable to create the pipeline layout");
     }
 
-    // configure the shader stages struct
-    const char *entryPoint = "main";
-    std::vector<VkPipelineShaderStageCreateInfo> shaderStages {
-        {
-            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-            .stage = VK_SHADER_STAGE_VERTEX_BIT,
-            .module = shader.getVertexShader(),
-            .pName = entryPoint
-        },
-        {
-            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-            .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-            .module = shader.getFragmentShader(),
-            .pName = entryPoint
-        }
-    };
-
     VkPipelineVertexInputStateCreateInfo vertInputInfo {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
     };
@@ -71,8 +54,8 @@ void Pipeline::createPipeline(const VkDevice device, const PipelineConfig& confi
     VkGraphicsPipelineCreateInfo pipelineInfo {
         .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
         .pNext = &renderInfo,
-        .stageCount = static_cast<uint32_t>(shaderStages.size()),
-        .pStages = shaderStages.data(),
+        .stageCount = static_cast<uint32_t>(config.shaderStages.size()),
+        .pStages = config.shaderStages.data(),
         .pVertexInputState = &vertInputInfo,
         .pInputAssemblyState = &inputAssemblyInfo,
         .pViewportState = &viewportInfo,
