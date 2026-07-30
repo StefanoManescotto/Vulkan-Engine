@@ -100,8 +100,6 @@ VkSwapchainKHR Swapchain::createSwapchain(VkSurfaceKHR surface, const SwapchainC
         }
     }
 
-    // createDepthImage(config);
-
     return m_swapchain;
 }
 
@@ -128,12 +126,6 @@ void Swapchain::destroySwapchain() {
         vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
         m_swapchain = nullptr;
     }
-
-    // if (m_depthImageView) {
-    //     vkDestroyImageView(m_device, m_depthImageView, nullptr);
-    //     vmaDestroyImage(m_allocator, m_depthImage, m_depthAllocation);
-    //     m_depthImageView = nullptr;
-    // }
 }
 
 VkExtent2D Swapchain::getSwapchainExtent() const {
@@ -147,14 +139,6 @@ VkImage Swapchain::getSwapchainImage(size_t imageIndex) const {
 VkImageView Swapchain::getSwapchainImageView(size_t imageIndex) const {
     return m_swapchainImageViews[imageIndex];
 }
-
-// VkImage Swapchain::getDepthImage() const {
-//     return m_depthImage;
-// }
-//
-// VkImageView Swapchain::getDepthImageView() const {
-//     return m_depthImageView;
-// }
 
 VkSemaphore Swapchain::getRenderSemaphore(size_t imageIndex) const {
     return m_renderFinishedSemaphores[imageIndex];

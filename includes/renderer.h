@@ -8,7 +8,7 @@
 
 #include "device.h"
 #include "mainRenderSystem.h"
-// #include "renderSystem.h"
+#include "shaderManager.h"
 #include "swapchain.h"
 #include "volk.h"
 
@@ -52,6 +52,8 @@ private:
     Swapchain swapchain;
     SwapchainConfig config;
     bool requireSwapchainRecreate = false;
+
+    ShaderManager m_shaderManager;
 
     void createCommandBuffer();
     void createSyncResources();

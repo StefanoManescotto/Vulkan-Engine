@@ -4,10 +4,9 @@
 
 #include "mainRenderSystem.h"
 
-void MainRenderSystem::init(VkDevice device, PipelineContext& pipelineCtx) {
+void MainRenderSystem::init(VkDevice device, MainPipelineContext& pipelineCtx) {
     Pipeline::getDefaultConfigs(pipelineConfig);
 
-    createShader(device);
     createPipeline(device, pipelineCtx);
 }
 
@@ -58,13 +57,20 @@ void MainRenderSystem::render(MainRenderContext& ctx) {
     };
     vkCmdPipelineBarrier2(ctx.cmd, &depInfo);
 
+    VkClearValue clearColor { .color = {
+        0.12f,  // red
+        0.12f,  // green
+        0.55f,  // blue
+        1.0f   // alpha
+    }};
+
     VkRenderingAttachmentInfo colorAttachInfo {
         .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
         .imageView = ctx.colorImage.getImageView(),
         .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR, // clear the image
         .storeOp = VK_ATTACHMENT_STORE_OP_STORE, // keep data for presentation
-        .clearValue{.color{0.01f, 0.01f, 0.01f, 1}}
+        .clearValue{clearColor}
     };
     VkRenderingAttachmentInfo depthAttachInfo {
         .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
@@ -89,7 +95,6 @@ void MainRenderSystem::render(MainRenderContext& ctx) {
     // begin dynamic rendering
     vkCmdBeginRendering(ctx.cmd, &renderingInfo);
     {
-        // set the viewport and scissor state
         VkViewport viewport {
             .x = 0, .y = 0,
             .width = static_cast<float>(ctx.extent.width),
@@ -103,7 +108,6 @@ void MainRenderSystem::render(MainRenderContext& ctx) {
         };
         vkCmdSetScissor(ctx.cmd, 0, 1, &scissor);
 
-        // draw our triangle
         vkCmdBindPipeline(ctx.cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipeline());
         vkCmdDraw(ctx.cmd, 3, 1, 0, 0);
     }
@@ -111,30 +115,25 @@ void MainRenderSystem::render(MainRenderContext& ctx) {
     vkCmdEndRendering(ctx.cmd);
 }
 
-void MainRenderSystem::createPipeline(VkDevice device, PipelineContext& pipelineCtx) {
+void MainRenderSystem::createPipeline(VkDevice device, MainPipelineContext& pipelineCtx) {
     pipelineConfig.shaderStages = {
         {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
             .stage = VK_SHADER_STAGE_VERTEX_BIT,
-            .module = shader.getVertexShader(),
+            .module = pipelineCtx.vertexShader,
             .pName = "main"
         },
         {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
             .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-            .module = shader.getFragmentShader(),
+            .module = pipelineCtx.fragmentShader,
             .pName = "main"
         }
     };
     // TODO: the color and depth format may be the same of the one in the Image class: look into it.
-    pipeline.createPipeline(device, pipelineConfig, shader, 1, &pipelineCtx.colorFormat, pipelineCtx.depthFormat);
-}
-
-void MainRenderSystem::createShader(VkDevice device) {
-    shader.createShaders(device);
+    pipeline.createPipeline(device, pipelineConfig, 1, &pipelineCtx.colorFormat, pipelineCtx.depthFormat);
 }
 
 void MainRenderSystem::destroyRenderSystem() {
     pipeline.destroyPipeline();
-    shader.destroyShaders();
 }

@@ -17,8 +17,6 @@ add_executable(Vulkan_Engine src/main.cpp
         includes/swapchain.h
         src/device.cpp
         includes/device.h
-        src/shader.cpp
-        includes/shader.h
         src/window.cpp
         includes/window.h
         src/pipeline.cpp
@@ -30,6 +28,8 @@ add_executable(Vulkan_Engine src/main.cpp
         includes/mainRenderSystem.h
         src/Image.cpp
         includes/image.h
+        src/shaderManager.cpp
+        includes/shaderManager.h
 )
 
 target_include_directories(Vulkan_Engine PRIVATE includes)

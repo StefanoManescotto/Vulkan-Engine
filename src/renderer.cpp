@@ -27,14 +27,29 @@ void Renderer::init(const Device* device, const VmaAllocator* allocator, const W
     }
 
     createSyncResources();
+    m_shaderManager.init(m_device->handle());
 
-    PipelineContext pCtx {
-        .colorFormat = res.colorImage.getConfig().format,
-        .depthFormat = res.depthImage.getConfig().format
+    m_shaderManager.addShader("shader.vert", shaderc_vertex_shader, "vertexShader");
+    m_shaderManager.addShader("shader.frag", shaderc_fragment_shader, "fragmentShader");
+    MainPipelineContext pCtx {
+    res.colorImage.getConfig().format,
+    res.depthImage.getConfig().format,
+    m_shaderManager.getShaderModule("vertexShader"),
+    m_shaderManager.getShaderModule("fragmentShader")
     };
     m_mainRenderSystem.init(m_device->handle(), pCtx);
 
     createCommandBuffer();
+}
+
+void Renderer::initImages() {
+    ImageConfig imgConfig;
+    imgConfig.extent = swapchain.getSwapchainExtent();
+
+    for (FrameResources& res : m_frameResources) {
+        res.colorImage.allocateImage(m_device->handle(), m_allocator, ImageConfig::ColorAttachment(swapchain.getSwapchainExtent(), VK_FORMAT_B8G8R8A8_SRGB));
+        res.depthImage.allocateImage(m_device->handle(), m_allocator, ImageConfig::DepthAttachment(swapchain.getSwapchainExtent(), VK_FORMAT_D32_SFLOAT));
+    }
 }
 
 bool Renderer::beginFrame(const Window* window) {
@@ -127,16 +142,6 @@ void Renderer::endFrame() {
     };
 
     vkQueuePresentKHR(m_device->getGraphicsQueue(), &presentInfo);
-}
-
-void Renderer::initImages() {
-    ImageConfig imgConfig;
-    imgConfig.extent = swapchain.getSwapchainExtent();
-
-    for (FrameResources& res : m_frameResources) {
-        res.colorImage.allocateImage(m_device->handle(), m_allocator, ImageConfig::ColorAttachment(swapchain.getSwapchainExtent(), VK_FORMAT_B8G8R8A8_SRGB));
-        res.depthImage.allocateImage(m_device->handle(), m_allocator, ImageConfig::DepthAttachment(swapchain.getSwapchainExtent(), VK_FORMAT_D32_SFLOAT));
-    }
 }
 
 void Renderer::renderFrame(const Window* window) {
@@ -301,6 +306,8 @@ void Renderer::destroyRenderer() {
     }
 
     m_mainRenderSystem.destroyRenderSystem();
+
+    m_shaderManager.destroyShaders();
 
     swapchain.destroySwapchain();
 

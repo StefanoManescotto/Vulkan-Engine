@@ -9,17 +9,27 @@
 struct MainRenderContext : RenderContext {
     Image colorImage;
     Image depthImage;
+
+    VkShaderModule vertexShader;
+    VkShaderModule fragmentShader;
 };
 
-class MainRenderSystem : RenderSystem<MainRenderContext> {
+struct MainPipelineContext : PipelineContext {
+    VkShaderModule vertexShader;
+    VkShaderModule fragmentShader;
+
+    MainPipelineContext(VkFormat color, VkFormat depth, VkShaderModule vert, VkShaderModule frag) : PipelineContext{color, depth},
+          vertexShader(std::move(vert)),
+          fragmentShader(std::move(frag)) {}
+};
+
+class MainRenderSystem : RenderSystem<MainRenderContext, MainPipelineContext> {
 public:
     void render(MainRenderContext &ctx) override;
 
-    void init(VkDevice device, PipelineContext& pipelineCtx) override;
+    void init(VkDevice device, MainPipelineContext& pipelineCtx) override;
 
-    void createPipeline(VkDevice device, PipelineContext& pipelineCtx) override;
-
-    void createShader(VkDevice device) override;
+    void createPipeline(VkDevice device, MainPipelineContext& pipelineCtx) override;
 
     void destroyRenderSystem() override;
 };

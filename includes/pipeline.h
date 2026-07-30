@@ -3,9 +3,8 @@
 //
 #pragma once
 
+#include <vector>
 #include <volk.h>
-
-#include "shader.h"
 
 struct PipelineConfig {
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
@@ -35,8 +34,8 @@ public:
     Pipeline() = default;
     ~Pipeline();
 
-    void createPipeline(VkDevice device, const PipelineConfig& config, const Shader& shader);
-    void createPipeline(VkDevice device, const PipelineConfig& config, const Shader& shader, uint32_t nColorAttachment, VkFormat* colorFormat, VkFormat depthFormat);
+    void createPipeline(VkDevice device, const PipelineConfig& config);
+    void createPipeline(VkDevice device, const PipelineConfig& config, uint32_t nColorAttachment, VkFormat* colorFormat, VkFormat depthFormat);
 
     [[nodiscard]] VkPipeline getPipeline() const { return m_pipeline; };
     static void getDefaultConfigs(PipelineConfig& config);
@@ -47,6 +46,4 @@ private:
     VkPipelineLayout m_pipelineLayout = nullptr;
 
     VkDevice m_device = nullptr;
-
-    // void createShaders();
 };

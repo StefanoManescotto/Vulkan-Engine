@@ -11,11 +11,11 @@ Pipeline::~Pipeline() {
     destroyPipeline();
 }
 
-void Pipeline::createPipeline(const VkDevice device, const PipelineConfig& config, const Shader& shader) {
-    createPipeline(device, config, shader, 0, nullptr, VK_FORMAT_UNDEFINED);
+void Pipeline::createPipeline(const VkDevice device, const PipelineConfig& config) {
+    createPipeline(device, config, 0, nullptr, VK_FORMAT_UNDEFINED);
 }
 
-void Pipeline::createPipeline(const VkDevice device, const PipelineConfig& config, const Shader& shader,
+void Pipeline::createPipeline(const VkDevice device, const PipelineConfig& config,
     uint32_t nColorAttachment, VkFormat *colorFormat, VkFormat depthFormat) {
 
     m_device = device;

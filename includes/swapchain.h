@@ -45,7 +45,7 @@ public:
     [[nodiscard]] VkImage getSwapchainImage(size_t imageIndex) const;
     [[nodiscard]] VkImageView getSwapchainImageView(size_t imageIndex) const;
     [[nodiscard]] VkSemaphore getRenderSemaphore(size_t imageIndex) const;
-    const VkSemaphore* getPRenderSemaphore(size_t imageIndex) const;
+    [[nodiscard]] const VkSemaphore* getPRenderSemaphore(size_t imageIndex) const;
 private:
     constexpr static VkFormat swapchainFormat{VK_FORMAT_B8G8R8A8_SRGB};
 
