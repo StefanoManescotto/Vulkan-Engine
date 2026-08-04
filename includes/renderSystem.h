@@ -6,11 +6,13 @@
 
 #include "pipeline.h"
 // #include "shader.h"
+#include "gameObject.h"
 #include "image.h"
 
 struct RenderContext {
     VkCommandBuffer cmd = nullptr;
     VkExtent2D extent = VkExtent2D(800, 600);
+    GameObject obj;
 };
 
 struct PipelineContext {

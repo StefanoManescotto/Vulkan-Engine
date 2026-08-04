@@ -8,7 +8,12 @@
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
 #include <volk.h>
+#include <glm/vec2.hpp>
+#include <SDL3/SDL_hints.h>
+#include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_vulkan.h>
+
+bool firstMouse = true;
 
 Window::Window(uint32_t width, uint32_t height) {
     m_width = width;
@@ -18,6 +23,10 @@ Window::Window(uint32_t width, uint32_t height) {
 Window::~Window() {
     destroySurface();
     destroyWindow();
+}
+
+glm::vec2 Window::getMouseDelta() {
+    return m_mouseDelta;
 }
 
 bool Window::isKeyDown(SDL_Scancode key) {
@@ -39,6 +48,7 @@ void Window::createWindow() {
         throw std::runtime_error("Error creating window");
     }
 
+    SDL_SetWindowRelativeMouseMode(m_window, true);
     m_oldKeyboardState.resize(SDL_SCANCODE_COUNT, false);
 }
 
@@ -50,6 +60,8 @@ void Window::createSurface(VkInstance vkInstance) {
 }
 
 bool Window::pollEvents() {
+    m_mouseDelta = glm::vec2(0.0f);
+
     SDL_Event event{0};
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
@@ -61,6 +73,9 @@ bool Window::pollEvents() {
                 m_height = event.window.data2;
                 break;
             case SDL_EVENT_MOUSE_MOTION:
+                m_mouseDelta.x += event.motion.xrel;
+                m_mouseDelta.y += event.motion.yrel;
+
                 m_mousePosition.x = event.motion.x;
                 m_mousePosition.y = event.motion.y;
                 break;
@@ -94,6 +109,5 @@ void Window::updateInputState() {
     for (int i = 0; i < SDL_SCANCODE_COUNT; i++) {
         m_oldKeyboardState[i] = m_keyboardState[i];
     }
-
-    m_oldMousePosition = m_mousePosition;
+    // m_mouseDelta = glm::vec2(0.0f, 0.0f);
 }

@@ -7,25 +7,41 @@
 #include <thirdparty/vk_mem_alloc.h>
 
 #include <fmt/printf.h>
+// #include "camera.h"
 
 void Application::manageInputs() {
     if (window.isKeyPressed(SDL_SCANCODE_ESCAPE)) {
         running = false;
     }
-    if (window.isKeyPressed(SDL_SCANCODE_A)) {
-        fmt::print("Pressed A - {} {}\n", window.getMousePosition().x, window.getMousePosition().y);
+    if (window.isKeyDown(SDL_SCANCODE_W)) {
+        m_scene.camera.moveCamera(m_scene.camera.FORWARD, m_deltaTime);
     }
-    if (window.isKeyPressed(SDL_SCANCODE_S)) {
-        fmt::print("Pressed S - {}\n", window.getMouseDelta());
+    if (window.isKeyDown(SDL_SCANCODE_A)) {
+        m_scene.camera.moveCamera(m_scene.camera.LEFT, m_deltaTime);
     }
+    if (window.isKeyDown(SDL_SCANCODE_S)) {
+        m_scene.camera.moveCamera(m_scene.camera.BACKWARD, m_deltaTime);
+    }
+    if (window.isKeyDown(SDL_SCANCODE_D)) {
+        m_scene.camera.moveCamera(m_scene.camera.RIGHT, m_deltaTime);
+    }
+    m_scene.camera.rotateCamera(window.getMouseDelta().x, window.getMouseDelta().y);
+}
 
-    window.updateInputState();
+void Application::updateDeltaTime() {
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    m_deltaTime = std::chrono::duration<float>(
+        currentTime - m_lastFrameTime
+    ).count();
+    m_deltaTime = std::min(m_deltaTime, 0.1f);
+    m_lastFrameTime = currentTime;
 }
 
 void Application::initialize() {
     window.createWindow();
 
     initializeVulkan();
+    m_lastFrameTime = std::chrono::high_resolution_clock::now();
 }
 
 void Application::initializeVulkan() {
@@ -40,6 +56,9 @@ void Application::initializeVulkan() {
 
     initializeVMA();
 
+    // createBuffers();
+    m_scene.init(device.handle(), vmaAllocator);
+
     renderer.init(&device, &vmaAllocator, &window);
 }
 
@@ -48,6 +67,8 @@ void Application::shutdown() {
     vkDeviceWaitIdle(device.handle());
 
     renderer.destroyRenderer();
+
+    m_scene.destroyScene();
 
     if (vmaAllocator) {
         vmaDestroyAllocator(vmaAllocator);
@@ -72,8 +93,11 @@ void Application::run() {
             running = false;
             break;
         }
-        manageInputs();
 
+        updateDeltaTime();
+        manageInputs();
+        m_scene.camera.updateMatrices(window.getWidth(), window.getHeight());
+        window.updateInputState();
         render();
     }
 }
@@ -85,8 +109,7 @@ void Application::createVulkanInstance() {
     }
 
     // Create the vulkan application instance
-    VkApplicationInfo appInfo
-    {
+    VkApplicationInfo appInfo {
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
         .pApplicationName = "My First Triangle",
         .apiVersion = VulkanVersion,
@@ -135,5 +158,5 @@ void Application::initializeVMA() {
 }
 
 void Application::render() {
-    renderer.renderFrame(&window);
+    renderer.renderFrame(&window, m_scene);
 }

@@ -11,21 +11,19 @@ Pipeline::~Pipeline() {
     destroyPipeline();
 }
 
-void Pipeline::createPipeline(const VkDevice device, const PipelineConfig& config) {
-    createPipeline(device, config, 0, nullptr, VK_FORMAT_UNDEFINED);
-}
+// void Pipeline::createPipeline(const VkDevice device, const PipelineConfig& config) {
+//     createPipeline(device, config, 0, nullptr, VK_FORMAT_UNDEFINED);
+// }
 
-void Pipeline::createPipeline(const VkDevice device, const PipelineConfig& config,
-    uint32_t nColorAttachment, VkFormat *colorFormat, VkFormat depthFormat) {
+void Pipeline::createPipeline(const VkDevice device, const PipelineConfig& config) {
 
     m_device = device;
 
+    // VkPushConstantRange pushConstantRange = config.pushConstantRange;
+
     // need to define a pipeline layout
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-        .setLayoutCount = 0,
-        .pushConstantRangeCount = 0
-    };
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo = config.pipelineLayoutInfo;
+
     if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS) {
         throw std::runtime_error("Unable to create the pipeline layout");
     }
@@ -43,12 +41,7 @@ void Pipeline::createPipeline(const VkDevice device, const PipelineConfig& confi
     VkPipelineDynamicStateCreateInfo dynamicStateInfo = config.dynamicStateInfo; // Enable dynamic state
 
     // structure required for dynamic rendering
-    VkPipelineRenderingCreateInfo renderInfo {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
-        .colorAttachmentCount = nColorAttachment,
-        .pColorAttachmentFormats = colorFormat,
-        .depthAttachmentFormat = depthFormat
-    };
+    VkPipelineRenderingCreateInfo renderInfo = config.renderingInfo;
 
     // Create the graphics pipeline
     VkGraphicsPipelineCreateInfo pipelineInfo {
@@ -118,6 +111,12 @@ void Pipeline::getDefaultConfigs(PipelineConfig& configInfo) {
     configInfo.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS;
     configInfo.depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
     configInfo.depthStencilInfo.stencilTestEnable = VK_FALSE;
+
+    // --- Render Info ---
+    configInfo.renderingInfo.pNext = nullptr;
+    configInfo.renderingInfo.colorAttachmentCount = 0;
+    configInfo.renderingInfo.pColorAttachmentFormats = nullptr;
+    configInfo.renderingInfo.depthAttachmentFormat = VK_FORMAT_UNDEFINED;
 
     // --- Dynamic States ---
     configInfo.dynamicStateEnables = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };

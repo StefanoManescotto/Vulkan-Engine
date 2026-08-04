@@ -5,8 +5,11 @@
 #pragma once
 
 #include "renderSystem.h"
+#include "camera.h"
 
 struct MainRenderContext : RenderContext {
+    Camera camera;
+
     Image colorImage;
     Image depthImage;
 

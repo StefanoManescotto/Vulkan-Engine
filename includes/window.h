@@ -4,30 +4,9 @@
 #pragma once
 
 #include <vector>
-#include <fmt/base.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_vulkan.h>
-
-struct vec2 {
-    float x = 0.0f;
-    float y = 0.0f;
-
-    vec2 operator-(const vec2& other) { return {x - other.x, y - other.y}; };
-    vec2 operator+(const vec2& other) { return {x - other.x, y - other.y}; };
-
-};
-
-// used for printing the vec2 struct
-template <>
-struct fmt::formatter<vec2> {
-    constexpr auto parse(format_parse_context& ctx) {
-        return ctx.begin();
-    }
-
-    auto format(const vec2& v, format_context& ctx) const {
-        return format_to(ctx.out(), "vec2({:.1f}, {:.1f})", v.x, v.y);
-    }
-};
+#include <glm/glm.hpp>
 
 class Window {
 public:
@@ -53,10 +32,10 @@ public:
     [[nodiscard]] VkSurfaceKHR getSurface() const { return m_surface; }
 
     /// Return the mouse position in the window on the current frame
-    [[nodiscard]] vec2 getMousePosition() const { return m_mousePosition; };
+    [[nodiscard]] glm::vec2 getMousePosition() const { return m_mousePosition; };
 
     /// Return the difference of the mouse position between frames.
-    vec2 getMouseDelta() { return m_mousePosition - m_oldMousePosition; };
+    glm::vec2 getMouseDelta();
 
     /// Returns true continuously as long as the key is held down.
     bool isKeyDown(SDL_Scancode key);
@@ -90,8 +69,8 @@ private:
     const bool* m_keyboardState = SDL_GetKeyboardState(nullptr);
     std::vector<bool> m_oldKeyboardState;
 
-    vec2 m_mousePosition;
-    vec2 m_oldMousePosition;
+    glm::vec2 m_mousePosition {0.0f};
+    glm::vec2 m_mouseDelta {0.0f};
 
     VkInstance vkInstance;
 

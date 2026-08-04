@@ -4,8 +4,41 @@
 
 #include "mainRenderSystem.h"
 
+#include <iostream>
+#include <glm/fwd.hpp>
+
+struct MeshPushConstants {
+    uint64_t vertexBufferAddress; // Direct BDA address to vertices
+    uint64_t _padding;
+    // uint32_t textureIndex;
+    glm::vec4 color;
+    glm::mat4 modelMatrix;
+};
+
 void MainRenderSystem::init(VkDevice device, MainPipelineContext& pipelineCtx) {
     Pipeline::getDefaultConfigs(pipelineConfig);
+    pipelineConfig.renderingInfo = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
+        .pNext = nullptr,
+        .colorAttachmentCount = 1,
+        .pColorAttachmentFormats = &pipelineCtx.colorFormat,
+        .depthAttachmentFormat = pipelineCtx.depthFormat,
+        .stencilAttachmentFormat = VK_FORMAT_UNDEFINED
+    };
+
+    pipelineConfig.pushConstantRange = {
+        .stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, // Stages accessing the PC
+        .offset = 0,
+        .size = sizeof(MeshPushConstants)
+    };
+
+    // need to define a pipeline layout
+    pipelineConfig.pipelineLayoutInfo = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+        .setLayoutCount = 0,
+        .pushConstantRangeCount = 1,
+        .pPushConstantRanges = &pipelineConfig.pushConstantRange
+    };
 
     createPipeline(device, pipelineCtx);
 }
@@ -64,6 +97,12 @@ void MainRenderSystem::render(MainRenderContext& ctx) {
         1.0f   // alpha
     }};
 
+    // std::cout << sizeof(Vertex) << '\n';
+
+    // std::cout << offsetof(Vertex, pos) << '\n';
+    // std::cout << offsetof(Vertex, normal) << '\n';
+    // std::cout << offsetof(Vertex, uv) << '\n';
+
     VkRenderingAttachmentInfo colorAttachInfo {
         .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
         .imageView = ctx.colorImage.getImageView(),
@@ -95,10 +134,13 @@ void MainRenderSystem::render(MainRenderContext& ctx) {
     // begin dynamic rendering
     vkCmdBeginRendering(ctx.cmd, &renderingInfo);
     {
-        VkViewport viewport {
-            .x = 0, .y = 0,
+        VkViewport viewport{
+            .x = 0.0f,
+            .y = static_cast<float>(ctx.extent.height), // Start at bottom
             .width = static_cast<float>(ctx.extent.width),
-            .height = static_cast<float>(ctx.extent.height)
+            .height = -static_cast<float>(ctx.extent.height), // Negative height flips Y
+            .minDepth = 0.0f,
+            .maxDepth = 1.0f
         };
         vkCmdSetViewport(ctx.cmd, 0, 1, &viewport);
 
@@ -109,7 +151,35 @@ void MainRenderSystem::render(MainRenderContext& ctx) {
         vkCmdSetScissor(ctx.cmd, 0, 1, &scissor);
 
         vkCmdBindPipeline(ctx.cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getPipeline());
-        vkCmdDraw(ctx.cmd, 3, 1, 0, 0);
+
+
+
+
+        MeshPushConstants pc{
+            .vertexBufferAddress = ctx.obj.meshes.at(0).cubeBufferAddress,
+            .color               = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f),
+            .modelMatrix = ctx.obj.meshes.at(0).calculateModelMatrix(ctx.camera)
+        };
+
+        // Push BDA address to GPU
+        vkCmdPushConstants(
+            ctx.cmd,
+            pipeline.getPipelineLayout(),
+            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+            0,
+            sizeof(pc),
+            &pc
+        );
+
+        // VkDeviceSize vertexOffset = 0;
+        // Bind index portion using the offset (vBufSize)
+        // vkCmdBindVertexBuffers(ctx.cmd, 0, 1, &ctx.obj.meshes.at(0).vertexBuffer, &vertexOffset);
+        vkCmdBindIndexBuffer(ctx.cmd, ctx.obj.meshes.at(0).vertexBuffer,  ctx.obj.meshes.at(0).buffSize, VK_INDEX_TYPE_UINT16);
+
+        // Draw indexed
+        vkCmdDrawIndexed(ctx.cmd, 36, 1, 0, 0, 0);
+
+        // vkCmdDraw(ctx.cmd, 3, 1, 0, 0);
     }
     // end dynamic rendering
     vkCmdEndRendering(ctx.cmd);
@@ -131,7 +201,7 @@ void MainRenderSystem::createPipeline(VkDevice device, MainPipelineContext& pipe
         }
     };
     // TODO: the color and depth format may be the same of the one in the Image class: look into it.
-    pipeline.createPipeline(device, pipelineConfig, 1, &pipelineCtx.colorFormat, pipelineCtx.depthFormat);
+    pipeline.createPipeline(device, pipelineConfig);
 }
 
 void MainRenderSystem::destroyRenderSystem() {

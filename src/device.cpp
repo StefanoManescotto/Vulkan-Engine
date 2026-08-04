@@ -122,7 +122,9 @@ VkDevice Device::createDevice() {
     VkPhysicalDeviceVulkan12Features features12 {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES,
         .pNext = &features13,
-        .timelineSemaphore = VK_TRUE
+        .scalarBlockLayout = VK_TRUE,
+        .timelineSemaphore = VK_TRUE,
+        .bufferDeviceAddress = VK_TRUE
     };
     VkPhysicalDeviceFeatures2 features{
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,

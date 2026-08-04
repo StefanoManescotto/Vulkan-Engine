@@ -7,6 +7,8 @@
 #include <stdexcept>
 
 #include "device.h"
+#include "gameObject.h"
+#include "scene.h"
 #include "window.h"
 
 void Renderer::init(const Device* device, const VmaAllocator* allocator, const Window* window) {
@@ -34,8 +36,8 @@ void Renderer::init(const Device* device, const VmaAllocator* allocator, const W
     MainPipelineContext pCtx {
     res.colorImage.getConfig().format,
     res.depthImage.getConfig().format,
-    m_shaderManager.getShaderModule("vertexShader"),
-    m_shaderManager.getShaderModule("fragmentShader")
+        m_shaderManager.getShaderModule("vertexShader"),
+        m_shaderManager.getShaderModule("fragmentShader")
     };
     m_mainRenderSystem.init(m_device->handle(), pCtx);
 
@@ -144,12 +146,13 @@ void Renderer::endFrame() {
     vkQueuePresentKHR(m_device->getGraphicsQueue(), &presentInfo);
 }
 
-void Renderer::renderFrame(const Window* window) {
+void Renderer::renderFrame(const Window* window, Scene scene) {
     // Check if we need to recreate the swapchain
     if (!beginFrame(window)) {
         return;
     }
-
+    ctx.obj = scene.cube;
+    ctx.camera = scene.camera;
     VkCommandBufferBeginInfo cmdBeginInfo {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
         .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT

@@ -12,6 +12,8 @@
 #include "swapchain.h"
 #include "volk.h"
 
+class GameObject;
+
 struct FrameResources {
     VkCommandPool commandPool = nullptr;
     VkCommandBuffer commandBuffer = nullptr;
@@ -25,6 +27,7 @@ struct FrameResources {
 };
 
 struct Window;
+struct Scene;
 
 class Renderer {
 public:
@@ -32,7 +35,7 @@ public:
 
     void init(const Device* device, const VmaAllocator* allocator, const Window* window);
 
-    void renderFrame(const Window* window);
+    void renderFrame(const Window* window, Scene scene);
 
     void destroyRenderer();
 private:

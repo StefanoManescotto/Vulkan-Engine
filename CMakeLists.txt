@@ -10,26 +10,37 @@ find_package(SDL3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(fmt REQUIRED)
 
+add_compile_definitions(VK_NO_PROTOTYPES)
+
 add_executable(Vulkan_Engine src/main.cpp
         src/application.cpp
         includes/application.h
-        src/swapchain.cpp
+        src/render/swapchain.cpp
         includes/swapchain.h
         src/device.cpp
         includes/device.h
         src/window.cpp
         includes/window.h
-        src/pipeline.cpp
+        src/render/pipeline.cpp
         includes/pipeline.h
-        src/renderer.cpp
+        src/render/renderer.cpp
         includes/renderer.h
         includes/renderSystem.h
-        src/mainRenderSystem.cpp
+        src/render/mainRenderSystem.cpp
         includes/mainRenderSystem.h
         src/Image.cpp
         includes/image.h
-        src/shaderManager.cpp
+        src/render/shaderManager.cpp
         includes/shaderManager.h
+        src/scene/scene.cpp
+        includes/scene.h
+        src/scene/gameObject.cpp
+        includes/gameObject.h
+        src/scene/mesh.cpp
+        includes/mesh.h
+        src/scene/camera.cpp
+        includes/camera.h
+        includes/transform.h
 )
 
 target_include_directories(Vulkan_Engine PRIVATE includes)

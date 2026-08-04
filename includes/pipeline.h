@@ -18,10 +18,15 @@ struct PipelineConfig {
     VkPipelineColorBlendAttachmentState colorBlendAttachment{};
     VkPipelineColorBlendStateCreateInfo colorBlendInfo{};
     VkPipelineDepthStencilStateCreateInfo depthStencilInfo{};
+    VkPipelineRenderingCreateInfo renderingInfo{};
 
     // Dynamic states (viewport/scissor usually set dynamically)
     std::vector<VkDynamicState> dynamicStateEnables;
     VkPipelineDynamicStateCreateInfo dynamicStateInfo{};
+
+    VkPushConstantRange pushConstantRange{};
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+
 
     // Pipeline layout & RenderPass references
     VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
@@ -34,11 +39,12 @@ public:
     Pipeline() = default;
     ~Pipeline();
 
+    // void createPipeline(VkDevice device, const PipelineConfig& config);
     void createPipeline(VkDevice device, const PipelineConfig& config);
-    void createPipeline(VkDevice device, const PipelineConfig& config, uint32_t nColorAttachment, VkFormat* colorFormat, VkFormat depthFormat);
 
     [[nodiscard]] VkPipeline getPipeline() const { return m_pipeline; };
     static void getDefaultConfigs(PipelineConfig& config);
+    [[nodiscard]] VkPipelineLayout getPipelineLayout() const { return m_pipelineLayout; };
 
     void destroyPipeline();
 private:
