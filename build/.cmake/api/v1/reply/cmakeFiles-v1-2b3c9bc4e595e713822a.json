@@ -1,0 +1,436 @@
+{
+	"globsDependent" : 
+	[
+		{
+			"expression" : "/home/stefano/Programming/VulkanEngine/src/*.cpp",
+			"paths" : 
+			[
+				"/home/stefano/Programming/VulkanEngine/src/application.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/main.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/render/mainRenderSystem.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/render/renderer.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/render/shaderManager.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/scene/camera.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/scene/materialSystem.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/scene/meshSystem.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/scene/nodeWorld.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/scene/oldScene.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/scene/sceneLoader.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/scene/textureSystem.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/scene/transformSystem.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/vk/GPUImageSystem.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/vk/commandContext.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/vk/device.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/vk/gpuBuffer.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/vk/pipeline.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/vk/swapchain.cpp",
+				"/home/stefano/Programming/VulkanEngine/src/window.cpp"
+			],
+			"recurse" : true
+		},
+		{
+			"expression" : "/home/stefano/Programming/VulkanEngine/src/*.h",
+			"paths" : 
+			[
+				"/home/stefano/Programming/VulkanEngine/src/application.h",
+				"/home/stefano/Programming/VulkanEngine/src/render/GPUMesh.h",
+				"/home/stefano/Programming/VulkanEngine/src/render/mainRenderSystem.h",
+				"/home/stefano/Programming/VulkanEngine/src/render/renderSystem.h",
+				"/home/stefano/Programming/VulkanEngine/src/render/renderable.h",
+				"/home/stefano/Programming/VulkanEngine/src/render/renderer.h",
+				"/home/stefano/Programming/VulkanEngine/src/render/shaderManager.h",
+				"/home/stefano/Programming/VulkanEngine/src/scene/MeshContainer.h",
+				"/home/stefano/Programming/VulkanEngine/src/scene/camera.h",
+				"/home/stefano/Programming/VulkanEngine/src/scene/gameObject.h",
+				"/home/stefano/Programming/VulkanEngine/src/scene/image.h",
+				"/home/stefano/Programming/VulkanEngine/src/scene/material.h",
+				"/home/stefano/Programming/VulkanEngine/src/scene/materialSystem.h",
+				"/home/stefano/Programming/VulkanEngine/src/scene/meshSystem.h",
+				"/home/stefano/Programming/VulkanEngine/src/scene/nodeWorld.h",
+				"/home/stefano/Programming/VulkanEngine/src/scene/oldScene.h",
+				"/home/stefano/Programming/VulkanEngine/src/scene/scene.h",
+				"/home/stefano/Programming/VulkanEngine/src/scene/sceneLoader.h",
+				"/home/stefano/Programming/VulkanEngine/src/scene/textureStorage.h",
+				"/home/stefano/Programming/VulkanEngine/src/scene/textureSystem.h",
+				"/home/stefano/Programming/VulkanEngine/src/scene/transform.h",
+				"/home/stefano/Programming/VulkanEngine/src/scene/transformSystem.h",
+				"/home/stefano/Programming/VulkanEngine/src/utils.h",
+				"/home/stefano/Programming/VulkanEngine/src/vk/GPUImage.h",
+				"/home/stefano/Programming/VulkanEngine/src/vk/GPUImageSystem.h",
+				"/home/stefano/Programming/VulkanEngine/src/vk/VulkanContext.h",
+				"/home/stefano/Programming/VulkanEngine/src/vk/commandContext.h",
+				"/home/stefano/Programming/VulkanEngine/src/vk/device.h",
+				"/home/stefano/Programming/VulkanEngine/src/vk/gpuBuffer.h",
+				"/home/stefano/Programming/VulkanEngine/src/vk/pipeline.h",
+				"/home/stefano/Programming/VulkanEngine/src/vk/swapchain.h",
+				"/home/stefano/Programming/VulkanEngine/src/window.h"
+			],
+			"recurse" : true
+		}
+	],
+	"inputs" : 
+	[
+		{
+			"path" : "CMakeLists.txt"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "build/CMakeFiles/4.4.4/CMakeSystem.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/CMakeSystemSpecificInitialize.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Platform/Linux-Initialize.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "build/CMakeFiles/4.4.4/CMakeCCompiler.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "build/CMakeFiles/4.4.4/CMakeCXXCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/CMakeSystemSpecificInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/CMakeGenericSystem.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/CMakeInitializeConfigs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Platform/Linux.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Platform/UnixPaths.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/CMakeCInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/CMakeLanguageInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Compiler/Clang-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Compiler/Clang.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Compiler/CMakeCommonCompilerMacros.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Compiler/GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Compiler/CMakeCommonCompilerMacros.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Platform/Linux-Clang-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Platform/Linux-GNU-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Platform/Linux-GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/CMakeCommonLanguageInclude.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Internal/CMakeCLinkerInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Internal/CMakeCommonLinkerInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Linker/GNU-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Linker/GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Platform/Linker/Linux-GNU-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Platform/Linker/Linux-GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Platform/Linker/GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/CMakeCXXInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/CMakeLanguageInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Compiler/Clang-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Compiler/Clang.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Platform/Linux-Clang-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Platform/Linux-GNU-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Platform/Linux-GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/CMakeCommonLanguageInclude.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Internal/CMakeCXXLinkerInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Internal/CMakeCommonLinkerInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Linker/GNU-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Linker/GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Platform/Linker/Linux-GNU-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Platform/Linker/Linux-GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/FindVulkan.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/FindPackageHandleStandardArgs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/FindPackageMessage.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/FindThreads.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/CheckLibraryExists.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Internal/CheckCommon.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/CheckIncludeFile.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Internal/CheckCommon.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/CheckCSourceCompiles.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Internal/CheckSourceCompiles.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/Internal/CheckCommon.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/FindPackageHandleStandardArgs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/FindPackageMessage.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/opt/cuda/lib/cmake/SDL3/SDL3ConfigVersion.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/opt/cuda/lib/cmake/SDL3/SDL3Config.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/FeatureSummary.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/opt/cuda/lib/cmake/SDL3/SDL3headersTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/opt/cuda/lib/cmake/SDL3/SDL3sharedTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/opt/cuda/lib/cmake/SDL3/SDL3sharedTargets-none.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/FindPkgConfig.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/FindPackageHandleStandardArgs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/usr/share/cmake/Modules/FindPackageMessage.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/opt/cuda/lib/cmake/SDL3/SDL3testTargets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/opt/cuda/lib/cmake/SDL3/SDL3testTargets-none.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/opt/cuda/lib/cmake/glm/glmConfigVersion.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/opt/cuda/lib/cmake/glm/glmConfig.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/opt/cuda/lib/cmake/glm/glmConfig-release.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/opt/cuda/lib/cmake/fmt/fmt-config-version.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/opt/cuda/lib/cmake/fmt/fmt-config.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/opt/cuda/lib/cmake/fmt/fmt-targets.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/opt/cuda/lib/cmake/fmt/fmt-targets-none.cmake"
+		}
+	],
+	"kind" : "cmakeFiles",
+	"paths" : 
+	{
+		"build" : "/home/stefano/Programming/VulkanEngine/build",
+		"source" : "/home/stefano/Programming/VulkanEngine"
+	},
+	"version" : 
+	{
+		"major" : 1,
+		"minor" : 1
+	}
+}

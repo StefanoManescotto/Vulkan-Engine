@@ -1,0 +1,43 @@
+ninja_dyndep_version = 1.0
+build CMakeFiles/VulkanEngine.dir/src/application.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/main.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/render/mainRenderSystem.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/render/shaderManager.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/scene/camera.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/scene/materialSystem.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/scene/meshSystem.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/scene/nodeWorld.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/scene/oldScene.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/scene/sceneLoader.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/scene/textureSystem.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/scene/transformSystem.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/vk/GPUImageSystem.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/vk/commandContext.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/vk/device.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/vk/gpuBuffer.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/vk/pipeline.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/vk/swapchain.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/window.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/includes/tinygltf.cpp.o: dyndep
+

@@ -1,0 +1,3 @@
+/home/stefano/Programming/VulkanEngine/build/CMakeFiles/VulkanEngine.dir
+/home/stefano/Programming/VulkanEngine/build/CMakeFiles/edit_cache.dir
+/home/stefano/Programming/VulkanEngine/build/CMakeFiles/rebuild_cache.dir
