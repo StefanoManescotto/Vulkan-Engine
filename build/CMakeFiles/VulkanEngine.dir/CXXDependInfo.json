@@ -72,11 +72,6 @@
 			"language" : "CXX",
 			"source" : "/home/stefano/Programming/VulkanEngine/src/scene/nodeWorld.cpp"
 		},
-		"CMakeFiles/VulkanEngine.dir/src/scene/oldScene.cpp.o" : 
-		{
-			"language" : "CXX",
-			"source" : "/home/stefano/Programming/VulkanEngine/src/scene/oldScene.cpp"
-		},
 		"CMakeFiles/VulkanEngine.dir/src/scene/sceneLoader.cpp.o" : 
 		{
 			"language" : "CXX",
@@ -86,6 +81,11 @@
 		{
 			"language" : "CXX",
 			"source" : "/home/stefano/Programming/VulkanEngine/src/scene/textureSystem.cpp"
+		},
+		"CMakeFiles/VulkanEngine.dir/src/scene/transform.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/stefano/Programming/VulkanEngine/src/scene/transform.cpp"
 		},
 		"CMakeFiles/VulkanEngine.dir/src/scene/transformSystem.cpp.o" : 
 		{

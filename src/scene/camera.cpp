@@ -5,48 +5,48 @@
 #include "scene/camera.h"
 
 #include <glm/ext/matrix_clip_space.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 Camera::Camera() {
-    transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
+    // transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
+    transform.translate(glm::vec3(0.0f, 0.0f, 3.0f));
 }
 
 void Camera::moveCamera(const CameraMovement movementType, float deltaTime) {
     const float frameCameraSpeed = cameraSpeed * deltaTime;
     if (movementType == FORWARD)
-        transform.position += frameCameraSpeed * front;
+        transform.translate(frameCameraSpeed * front);
     if (movementType == BACKWARD)
-        transform.position -= frameCameraSpeed * front;
+        transform.translate(-frameCameraSpeed * front);
     if (movementType == LEFT)
-        transform.position -= glm::normalize(glm::cross(front, up)) * frameCameraSpeed;
+        transform.translate(-glm::normalize(glm::cross(front, up)) * frameCameraSpeed);
     if (movementType == RIGHT)
-        transform.position += glm::normalize(glm::cross(front, up)) * frameCameraSpeed;
+        transform.translate(glm::normalize(glm::cross(front, up)) * frameCameraSpeed);
 }
 
 void Camera::rotateCamera(float deltaX, float deltaY) {
     deltaX *= sensitivity;
-    deltaY *= -sensitivity;
+    deltaY *= sensitivity;
 
-    transform.rotation.x += deltaY;
-    transform.rotation.y += deltaX;
+    eulerAngles.x -= deltaY;
+    eulerAngles.y -= deltaX;
 
-    if (transform.rotation.x  > 89.0f) {
-        transform.rotation.x = 89.0f;
-    }
-    if (transform.rotation.x < -89.0f) {
-        transform.rotation.x = -89.0f;
-    }
+    /*
+        Clamp the rotation around the x axis between -89 and 89.
+        Wrap the rotation around the y axis between -180 and 180.
+        GLM module function maps between [0, -2pi] so we first need to add pi and than we subtract it again at the end
+    */
+    constexpr float limitX = glm::radians(89.0f);
+    eulerAngles.x = glm::clamp(eulerAngles.x, -limitX, limitX);
+    eulerAngles.y = glm::mod(eulerAngles.y + glm::pi<float>(), glm::two_pi<float>()) - glm::pi<float>();
 
-    float yawRad   = glm::radians(transform.rotation.y - 90.0f);
-    float pitchRad = glm::radians(transform.rotation.x);
+    transform.rotateEuler(eulerAngles);
 
-    front.x = cos(yawRad) * cos(pitchRad);
-    front.y = sin(pitchRad);
-    front.z = sin(yawRad) * cos(pitchRad);
-    front   = glm::normalize(front);
+    front = transform.getRotation() * glm::vec3(0.0f, 0.0f, -1.0f);
 }
 
 void Camera::updateMatrices(float aspectW, float aspectH) {
     aspectRatio = aspectW / aspectH;
-    view = glm::lookAt(transform.position, transform.position + front, up);
+    view = glm::lookAt(transform.getPosition(), transform.getPosition() + front, up);
     projection = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
 }

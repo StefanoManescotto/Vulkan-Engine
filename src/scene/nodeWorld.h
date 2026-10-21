@@ -68,7 +68,7 @@ public:
 		m_nodes.reserve(m_maxNodes); // TODO: Use a paged pool perhaps
 	}
 
-	size_t maxNodes() const { return m_maxNodes; }
+	size_t getMaxNodes() const { return m_maxNodes; }
 
 	std::pair<Node &, uint32_t> createNode() {
 		// fmt::print("Size: {}\nMaxNodes: {}\n", m_nodes.size(), m_maxNodes);

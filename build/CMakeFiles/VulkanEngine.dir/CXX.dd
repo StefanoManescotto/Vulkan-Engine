@@ -17,11 +17,11 @@ build CMakeFiles/VulkanEngine.dir/src/scene/meshSystem.cpp.o: dyndep
 
 build CMakeFiles/VulkanEngine.dir/src/scene/nodeWorld.cpp.o: dyndep
 
-build CMakeFiles/VulkanEngine.dir/src/scene/oldScene.cpp.o: dyndep
-
 build CMakeFiles/VulkanEngine.dir/src/scene/sceneLoader.cpp.o: dyndep
 
 build CMakeFiles/VulkanEngine.dir/src/scene/textureSystem.cpp.o: dyndep
+
+build CMakeFiles/VulkanEngine.dir/src/scene/transform.cpp.o: dyndep
 
 build CMakeFiles/VulkanEngine.dir/src/scene/transformSystem.cpp.o: dyndep
 

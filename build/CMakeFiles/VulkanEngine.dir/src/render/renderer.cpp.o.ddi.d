@@ -320,11 +320,9 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /home/stefano/Programming/VulkanEngine/src/render/mainRenderSystem.h \
   /home/stefano/Programming/VulkanEngine/src/render/renderSystem.h \
   /home/stefano/Programming/VulkanEngine/src/vk/pipeline.h \
-  /home/stefano/Programming/VulkanEngine/src/render/renderable.h \
-  /home/stefano/Programming/VulkanEngine/src/render/GPUMesh.h \
-  /home/stefano/Programming/VulkanEngine/src/scene/transform.h \
   /home/stefano/Programming/VulkanEngine/src/scene/scene.h \
   /home/stefano/Programming/VulkanEngine/src/scene/camera.h \
+  /home/stefano/Programming/VulkanEngine/src/scene/transform.h \
   /home/stefano/Programming/VulkanEngine/src/scene/material.h \
   /home/stefano/Programming/VulkanEngine/src/scene/MeshContainer.h \
   /usr/include/c++/16/string /usr/include/c++/16/bits/stringfwd.h \

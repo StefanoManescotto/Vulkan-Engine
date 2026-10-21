@@ -1,6 +1,0 @@
-{
-    "editor.tabFocusMode": true,
-    "clangd.arguments": [
-        "--compile-commands-dir=${workspaceFolder}/build"
-    ]
-}

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "transform.h"
+#include "scene/transform.h"
 
 class Camera {
 public:
@@ -35,5 +35,7 @@ public:
 
 private:
     float cameraSpeed = 2.5f;
-    float sensitivity = .1f;
+    float sensitivity = .01f;
+
+    glm ::vec3 eulerAngles = glm::vec3(0.0f, 0.0f, 0.0f);
 };

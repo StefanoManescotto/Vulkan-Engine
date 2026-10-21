@@ -5,13 +5,12 @@
 #pragma once
 
 #include "vk/pipeline.h"
-#include "render/renderable.h"
 
 struct RenderContext {
     // TextureManager texManager;
     VkCommandBuffer cmd = nullptr;
     VkExtent2D extent = VkExtent2D(800, 600);
-    RenderWorld objs;
+    // RenderWorld objs;
 };
 
 struct PipelineContext {

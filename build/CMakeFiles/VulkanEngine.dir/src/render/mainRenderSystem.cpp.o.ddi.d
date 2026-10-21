@@ -89,18 +89,15 @@ CMakeFiles/VulkanEngine.dir/src/render/mainRenderSystem.cpp.o.ddi: \
   /usr/include/vk_video/vulkan_video_codec_av1std_encode.h \
   /usr/include/vk_video/vulkan_video_codec_vp9std.h \
   /usr/include/vk_video/vulkan_video_codec_vp9std_decode.h \
-  /home/stefano/Programming/VulkanEngine/src/render/renderable.h \
-  /home/stefano/Programming/VulkanEngine/src/render/GPUMesh.h \
-  /usr/include/c++/16/cstdint \
-  /home/stefano/Programming/VulkanEngine/includes/vk_mem_alloc.h \
-  /usr/include/vulkan/vulkan.h \
+  /home/stefano/Programming/VulkanEngine/src/scene/scene.h \
+  /home/stefano/Programming/VulkanEngine/src/scene/camera.h \
   /home/stefano/Programming/VulkanEngine/src/scene/transform.h \
   /usr/include/glm/ext/matrix_transform.hpp \
   /usr/include/glm/gtc/constants.hpp \
   /usr/include/glm/ext/scalar_constants.hpp \
   /usr/include/glm/detail/setup.hpp /usr/include/c++/16/cassert \
   /usr/include/assert.h /usr/include/glm/simd/platform.h \
-  /usr/include/glm/ext/scalar_constants.inl \
+  /usr/include/c++/16/cstdint /usr/include/glm/ext/scalar_constants.inl \
   /usr/include/glm/gtc/constants.inl /usr/include/glm/geometric.hpp \
   /usr/include/glm/detail/type_vec3.hpp \
   /usr/include/glm/detail/qualifier.hpp \
@@ -262,33 +259,6 @@ CMakeFiles/VulkanEngine.dir/src/render/mainRenderSystem.cpp.o.ddi: \
   /usr/include/glm/ext/matrix_float4x4_precision.hpp \
   /usr/include/glm/detail/func_matrix.inl \
   /usr/include/glm/ext/matrix_transform.inl /usr/include/glm/fwd.hpp \
-  /home/stefano/Programming/VulkanEngine/src/scene/scene.h \
-  /home/stefano/Programming/VulkanEngine/src/scene/camera.h \
-  /home/stefano/Programming/VulkanEngine/src/scene/nodeWorld.h \
-  /usr/include/fmt/base.h /usr/lib/clang/23/include/limits.h \
-  /usr/include/limits.h /usr/include/bits/posix1_lim.h \
-  /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
-  /usr/include/bits/pthread_stack_min-dynamic.h \
-  /usr/include/bits/posix2_lim.h /usr/include/bits/xopen_lim.h \
-  /usr/include/bits/uio_lim.h /usr/include/stdio.h \
-  /usr/lib/clang/23/include/stdarg.h \
-  /usr/lib/clang/23/include/__stdarg___gnuc_va_list.h \
-  /usr/include/bits/types/__fpos_t.h \
-  /usr/include/bits/types/__mbstate_t.h \
-  /usr/include/bits/types/__fpos64_t.h /usr/include/bits/types/__FILE.h \
-  /usr/include/bits/types/FILE.h /usr/include/bits/types/struct_FILE.h \
-  /usr/include/bits/types/cookie_io_functions_t.h \
-  /usr/include/bits/stdio_lim.h /usr/include/string.h \
-  /usr/include/strings.h /usr/include/glm/glm.hpp \
-  /usr/include/c++/16/climits /usr/include/c++/16/cfloat \
-  /usr/lib/clang/23/include/float.h \
-  /usr/lib/clang/23/include/__float_header_macro.h \
-  /usr/lib/clang/23/include/__float_float.h \
-  /usr/lib/clang/23/include/__float_infinity_nan.h \
-  /usr/include/glm/packing.hpp /usr/include/glm/detail/func_packing.inl \
-  /usr/include/glm/detail/type_half.hpp \
-  /usr/include/glm/detail/type_half.inl /usr/include/glm/integer.hpp \
-  /usr/include/glm/detail/func_integer.inl \
   /usr/include/glm/gtc/quaternion.hpp \
   /usr/include/glm/gtc/matrix_transform.hpp \
   /usr/include/glm/ext/matrix_projection.hpp \
@@ -317,11 +287,38 @@ CMakeFiles/VulkanEngine.dir/src/render/mainRenderSystem.cpp.o.ddi: \
   /usr/include/glm/ext/quaternion_transform.inl \
   /usr/include/glm/gtc/quaternion.inl /usr/include/glm/gtc/epsilon.hpp \
   /usr/include/glm/gtc/epsilon.inl \
+  /home/stefano/Programming/VulkanEngine/src/scene/nodeWorld.h \
+  /usr/include/fmt/base.h /usr/lib/clang/23/include/limits.h \
+  /usr/include/limits.h /usr/include/bits/posix1_lim.h \
+  /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
+  /usr/include/bits/pthread_stack_min-dynamic.h \
+  /usr/include/bits/posix2_lim.h /usr/include/bits/xopen_lim.h \
+  /usr/include/bits/uio_lim.h /usr/include/stdio.h \
+  /usr/lib/clang/23/include/stdarg.h \
+  /usr/lib/clang/23/include/__stdarg___gnuc_va_list.h \
+  /usr/include/bits/types/__fpos_t.h \
+  /usr/include/bits/types/__mbstate_t.h \
+  /usr/include/bits/types/__fpos64_t.h /usr/include/bits/types/__FILE.h \
+  /usr/include/bits/types/FILE.h /usr/include/bits/types/struct_FILE.h \
+  /usr/include/bits/types/cookie_io_functions_t.h \
+  /usr/include/bits/stdio_lim.h /usr/include/string.h \
+  /usr/include/strings.h /usr/include/glm/glm.hpp \
+  /usr/include/c++/16/climits /usr/include/c++/16/cfloat \
+  /usr/lib/clang/23/include/float.h \
+  /usr/lib/clang/23/include/__float_header_macro.h \
+  /usr/lib/clang/23/include/__float_float.h \
+  /usr/lib/clang/23/include/__float_infinity_nan.h \
+  /usr/include/glm/packing.hpp /usr/include/glm/detail/func_packing.inl \
+  /usr/include/glm/detail/type_half.hpp \
+  /usr/include/glm/detail/type_half.inl /usr/include/glm/integer.hpp \
+  /usr/include/glm/detail/func_integer.inl \
   /usr/include/glm/gtx/matrix_decompose.hpp \
   /usr/include/glm/gtx/matrix_decompose.inl \
   /usr/include/glm/gtx/transform.hpp /usr/include/glm/gtx/transform.inl \
   /home/stefano/Programming/VulkanEngine/src/scene/textureStorage.h \
   /home/stefano/Programming/VulkanEngine/src/vk/GPUImage.h \
+  /home/stefano/Programming/VulkanEngine/includes/vk_mem_alloc.h \
+  /usr/include/vulkan/vulkan.h \
   /home/stefano/Programming/VulkanEngine/src/scene/material.h \
   /home/stefano/Programming/VulkanEngine/src/scene/MeshContainer.h \
   /usr/include/c++/16/string /usr/include/c++/16/bits/stringfwd.h \

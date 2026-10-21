@@ -74,8 +74,8 @@ set(TEST_TINY
 )
 
 file(GLOB_RECURSE ALL_SOURCES 
-    CONFIGURE_DEPENDS 
-    src/*.cpp 
+        CONFIGURE_DEPENDS 
+        src/*.cpp 
 	src/*.h
 )
 add_executable(VulkanEngine ${ALL_SOURCES} ${TEST_TINY})
