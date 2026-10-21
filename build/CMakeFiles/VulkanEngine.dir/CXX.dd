@@ -23,8 +23,6 @@ build CMakeFiles/VulkanEngine.dir/src/scene/textureSystem.cpp.o: dyndep
 
 build CMakeFiles/VulkanEngine.dir/src/scene/transform.cpp.o: dyndep
 
-build CMakeFiles/VulkanEngine.dir/src/scene/transformSystem.cpp.o: dyndep
-
 build CMakeFiles/VulkanEngine.dir/src/vk/GPUImageSystem.cpp.o: dyndep
 
 build CMakeFiles/VulkanEngine.dir/src/vk/commandContext.cpp.o: dyndep

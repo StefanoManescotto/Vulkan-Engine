@@ -1,7 +1,10 @@
 #include "transform.h"
+
 #include <glm/common.hpp>
 #include <glm/ext/quaternion_transform.hpp>
 #include <glm/trigonometric.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/matrix_decompose.hpp>
 
 void Transform::translate(const glm::vec3& delta) {
     m_position += delta;
@@ -20,6 +23,14 @@ void Transform::rotateEuler(glm::vec3 eulerRotation) {
     m_dirty = true;
 }
 
+void Transform::setTransform(glm::mat4 transformMat) {
+    glm::vec3 skew;
+    glm::vec4 perspective;
+    glm::decompose(transformMat, m_scale, m_rotation, m_position, skew, perspective);
+    m_transformMat = transformMat;
+    m_dirty = false;
+}
+
 [[nodiscard]] glm::mat4 Transform::getModelMatrix() {
     if(m_dirty) {
         glm::mat4 matTranslate = glm::translate(glm::mat4(1), m_position);
@@ -31,7 +42,6 @@ void Transform::rotateEuler(glm::vec3 eulerRotation) {
 
     return m_transformMat;
 }
-
 
 // Change name to calculateMVP (?)
 // glm::mat4 Transform::calculateModelMatrix(Transform &transform, Camera &camera) {

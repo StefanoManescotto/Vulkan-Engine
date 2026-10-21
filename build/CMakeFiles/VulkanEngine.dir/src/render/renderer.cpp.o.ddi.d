@@ -40,73 +40,94 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /usr/include/c++/16/backward/binders.h /usr/include/c++/16/bit \
   /usr/include/c++/16/bits/range_access.h \
   /home/stefano/Programming/VulkanEngine/src/scene/nodeWorld.h \
-  /usr/include/fmt/base.h /usr/lib/clang/23/include/limits.h \
-  /usr/include/limits.h /usr/include/bits/libc-header-start.h \
-  /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h \
-  /usr/include/linux/limits.h \
-  /usr/include/bits/pthread_stack_min-dynamic.h \
-  /usr/include/bits/posix2_lim.h /usr/include/bits/xopen_lim.h \
-  /usr/include/bits/uio_lim.h /usr/include/stdio.h \
+  /home/stefano/Programming/VulkanEngine/src/scene/transform.h \
+  /usr/include/glm/ext/matrix_transform.hpp \
+  /usr/include/glm/gtc/constants.hpp \
+  /usr/include/glm/ext/scalar_constants.hpp \
+  /usr/include/glm/detail/setup.hpp /usr/include/c++/16/cassert \
+  /usr/include/assert.h /usr/include/c++/16/cstddef \
   /usr/lib/clang/23/include/stddef.h \
+  /usr/lib/clang/23/include/__stddef_header_macro.h \
+  /usr/lib/clang/23/include/__stddef_ptrdiff_t.h \
   /usr/lib/clang/23/include/__stddef_size_t.h \
+  /usr/lib/clang/23/include/__stddef_wchar_t.h \
   /usr/lib/clang/23/include/__stddef_null.h \
-  /usr/lib/clang/23/include/stdarg.h \
-  /usr/lib/clang/23/include/__stdarg___gnuc_va_list.h \
-  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
-  /usr/include/bits/time64.h /usr/include/bits/types/__fpos_t.h \
-  /usr/include/bits/types/__mbstate_t.h \
-  /usr/include/bits/types/__fpos64_t.h /usr/include/bits/types/__FILE.h \
-  /usr/include/bits/types/FILE.h /usr/include/bits/types/struct_FILE.h \
-  /usr/include/bits/types/cookie_io_functions_t.h \
-  /usr/include/bits/stdio_lim.h /usr/include/bits/floatn.h \
-  /usr/include/bits/floatn-common.h /usr/include/string.h \
-  /usr/include/bits/types/locale_t.h \
-  /usr/include/bits/types/__locale_t.h /usr/include/strings.h \
-  /usr/include/c++/16/vector /usr/include/c++/16/bits/requires_hosted.h \
+  /usr/lib/clang/23/include/__stddef_nullptr_t.h \
+  /usr/lib/clang/23/include/__stddef_max_align_t.h \
+  /usr/lib/clang/23/include/__stddef_offsetof.h \
+  /usr/include/glm/simd/platform.h /usr/include/c++/16/cstdint \
+  /usr/lib/clang/23/include/stdint.h /usr/include/stdint.h \
+  /usr/include/bits/libc-header-start.h /usr/include/bits/types.h \
+  /usr/include/bits/typesizes.h /usr/include/bits/time64.h \
+  /usr/include/bits/wchar.h /usr/include/bits/stdint-intn.h \
+  /usr/include/bits/stdint-uintn.h /usr/include/bits/stdint-least.h \
+  /usr/include/glm/ext/scalar_constants.inl /usr/include/c++/16/limits \
+  /usr/include/glm/gtc/constants.inl /usr/include/glm/geometric.hpp \
+  /usr/include/glm/detail/type_vec3.hpp \
+  /usr/include/glm/detail/qualifier.hpp \
+  /usr/include/glm/detail/type_vec3.inl \
+  /usr/include/glm/detail/compute_vector_relational.hpp \
+  /usr/include/glm/detail/compute_vector_decl.hpp \
+  /usr/include/c++/16/functional /usr/include/c++/16/tuple \
+  /usr/include/c++/16/bits/uses_allocator.h \
+  /usr/include/c++/16/bits/invoke.h \
+  /usr/include/c++/16/bits/ranges_util.h \
+  /usr/include/c++/16/bits/ranges_base.h \
+  /usr/include/c++/16/bits/max_size_type.h /usr/include/c++/16/numbers \
+  /usr/include/c++/16/bits/functional_hash.h \
+  /usr/include/c++/16/bits/hash_bytes.h \
+  /usr/include/c++/16/bits/refwrap.h \
+  /usr/include/c++/16/bits/std_function.h /usr/include/c++/16/typeinfo \
+  /usr/include/c++/16/bits/functexcept.h \
+  /usr/include/c++/16/unordered_map \
+  /usr/include/c++/16/bits/requires_hosted.h \
+  /usr/include/c++/16/bits/unordered_map.h \
+  /usr/include/c++/16/bits/hashtable.h \
+  /usr/include/c++/16/bits/hashtable_policy.h \
+  /usr/include/c++/16/ext/aligned_buffer.h \
+  /usr/include/c++/16/ext/alloc_traits.h \
+  /usr/include/c++/16/bits/alloc_traits.h \
+  /usr/include/c++/16/bits/memoryfwd.h \
   /usr/include/c++/16/bits/allocator.h \
   /usr/include/c++/16/x86_64-pc-linux-gnu/bits/c++allocator.h \
   /usr/include/c++/16/bits/new_allocator.h \
   /usr/include/c++/16/bits/new_throw.h \
-  /usr/include/c++/16/bits/memoryfwd.h \
-  /usr/include/c++/16/bits/stl_uninitialized.h \
-  /usr/include/c++/16/ext/alloc_traits.h \
-  /usr/include/c++/16/bits/alloc_traits.h \
-  /usr/include/c++/16/bits/stl_vector.h \
-  /usr/include/c++/16/bits/ranges_base.h \
-  /usr/include/c++/16/bits/max_size_type.h /usr/include/c++/16/numbers \
-  /usr/include/c++/16/limits /usr/include/c++/16/bits/stl_bvector.h \
-  /usr/include/c++/16/bits/functional_hash.h \
-  /usr/include/c++/16/bits/hash_bytes.h \
+  /usr/include/c++/16/bits/enable_special_members.h \
+  /usr/include/c++/16/bits/node_handle.h \
   /usr/include/c++/16/bits/erase_if.h \
-  /usr/include/c++/16/bits/vector.tcc \
-  /usr/include/c++/16/bits/memory_resource.h /usr/include/c++/16/cstddef \
-  /usr/lib/clang/23/include/__stddef_header_macro.h \
-  /usr/lib/clang/23/include/__stddef_ptrdiff_t.h \
-  /usr/lib/clang/23/include/__stddef_wchar_t.h \
-  /usr/lib/clang/23/include/__stddef_nullptr_t.h \
-  /usr/lib/clang/23/include/__stddef_max_align_t.h \
-  /usr/lib/clang/23/include/__stddef_offsetof.h \
-  /usr/include/c++/16/bits/uses_allocator.h \
+  /usr/include/c++/16/bits/memory_resource.h \
   /usr/include/c++/16/bits/uses_allocator_args.h \
-  /usr/include/c++/16/tuple /usr/include/c++/16/bits/invoke.h \
-  /usr/include/c++/16/bits/ranges_util.h /usr/include/glm/glm.hpp \
-  /usr/include/glm/detail/_fixes.hpp /usr/include/c++/16/cmath \
+  /usr/include/c++/16/vector \
+  /usr/include/c++/16/bits/stl_uninitialized.h \
+  /usr/include/c++/16/bits/stl_vector.h \
+  /usr/include/c++/16/bits/stl_bvector.h \
+  /usr/include/c++/16/bits/vector.tcc /usr/include/c++/16/bits/binders.h \
+  /usr/include/glm/detail/_vectorize.hpp \
+  /usr/include/glm/detail/func_geometric.inl \
+  /usr/include/glm/exponential.hpp /usr/include/glm/detail/type_vec1.hpp \
+  /usr/include/glm/detail/type_vec1.inl \
+  /usr/include/glm/detail/type_vec2.hpp \
+  /usr/include/glm/detail/type_vec2.inl \
+  /usr/include/glm/detail/type_vec4.hpp \
+  /usr/include/glm/detail/type_vec4.inl /usr/include/c++/16/cmath \
   /usr/include/math.h /usr/include/bits/math-vector.h \
-  /usr/include/bits/libm-simd-decl-stubs.h \
-  /usr/include/bits/flt-eval-method.h /usr/include/bits/fp-logb.h \
-  /usr/include/bits/fp-fast.h /usr/include/bits/mathcalls-macros.h \
+  /usr/include/bits/libm-simd-decl-stubs.h /usr/include/bits/floatn.h \
+  /usr/include/bits/floatn-common.h /usr/include/bits/flt-eval-method.h \
+  /usr/include/bits/fp-logb.h /usr/include/bits/fp-fast.h \
+  /usr/include/bits/mathcalls-macros.h \
   /usr/include/bits/mathcalls-helper-functions.h \
   /usr/include/bits/mathcalls.h /usr/include/bits/mathcalls-narrow.h \
   /usr/include/bits/iscanonical.h /usr/include/c++/16/bits/std_abs.h \
   /usr/include/stdlib.h /usr/include/bits/waitflags.h \
-  /usr/include/bits/waitstatus.h /usr/include/sys/types.h \
+  /usr/include/bits/waitstatus.h /usr/include/bits/types/locale_t.h \
+  /usr/include/bits/types/__locale_t.h /usr/include/sys/types.h \
   /usr/include/bits/types/clock_t.h /usr/include/bits/types/clockid_t.h \
   /usr/include/bits/types/time_t.h /usr/include/bits/types/timer_t.h \
-  /usr/include/bits/stdint-intn.h /usr/lib/clang/23/include/endian.h \
-  /usr/include/endian.h /usr/include/bits/endian.h \
-  /usr/include/bits/endianness.h /usr/include/bits/byteswap.h \
-  /usr/include/bits/uintn-identity.h /usr/include/sys/select.h \
-  /usr/include/bits/select.h /usr/include/bits/types/sigset_t.h \
+  /usr/lib/clang/23/include/endian.h /usr/include/endian.h \
+  /usr/include/bits/endian.h /usr/include/bits/endianness.h \
+  /usr/include/bits/byteswap.h /usr/include/bits/uintn-identity.h \
+  /usr/include/sys/select.h /usr/include/bits/select.h \
+  /usr/include/bits/types/sigset_t.h \
   /usr/include/bits/types/__sigset_t.h \
   /usr/include/bits/types/struct_timeval.h \
   /usr/include/bits/types/struct_timespec.h \
@@ -128,21 +149,16 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /usr/include/c++/16/tr1/poly_hermite.tcc \
   /usr/include/c++/16/tr1/poly_laguerre.tcc \
   /usr/include/c++/16/tr1/riemann_zeta.tcc \
-  /usr/include/glm/detail/setup.hpp /usr/include/c++/16/cassert \
-  /usr/include/assert.h /usr/include/glm/simd/platform.h \
-  /usr/include/c++/16/cstdint /usr/lib/clang/23/include/stdint.h \
-  /usr/include/stdint.h /usr/include/bits/wchar.h \
-  /usr/include/bits/stdint-uintn.h /usr/include/bits/stdint-least.h \
-  /usr/include/c++/16/climits /usr/include/c++/16/cfloat \
-  /usr/lib/clang/23/include/float.h \
-  /usr/lib/clang/23/include/__float_header_macro.h \
-  /usr/lib/clang/23/include/__float_float.h \
-  /usr/lib/clang/23/include/__float_infinity_nan.h \
-  /usr/include/glm/fwd.hpp /usr/include/glm/detail/qualifier.hpp \
-  /usr/include/glm/vec2.hpp /usr/include/glm/ext/vector_bool2.hpp \
-  /usr/include/glm/detail/type_vec2.hpp \
-  /usr/include/glm/detail/type_vec2.inl \
-  /usr/include/glm/detail/compute_vector_relational.hpp \
+  /usr/include/glm/detail/func_exponential.inl \
+  /usr/include/glm/vector_relational.hpp \
+  /usr/include/glm/detail/func_vector_relational.inl \
+  /usr/include/glm/common.hpp /usr/include/glm/detail/_fixes.hpp \
+  /usr/include/glm/detail/func_common.inl \
+  /usr/include/glm/detail/compute_common.hpp \
+  /usr/include/glm/trigonometric.hpp \
+  /usr/include/glm/detail/func_trigonometric.inl \
+  /usr/include/glm/matrix.hpp /usr/include/glm/vec2.hpp \
+  /usr/include/glm/ext/vector_bool2.hpp \
   /usr/include/glm/ext/vector_bool2_precision.hpp \
   /usr/include/glm/ext/vector_float2.hpp \
   /usr/include/glm/ext/vector_float2_precision.hpp \
@@ -155,21 +171,6 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /usr/include/glm/ext/vector_uint2_sized.hpp \
   /usr/include/glm/ext/scalar_uint_sized.hpp /usr/include/glm/vec3.hpp \
   /usr/include/glm/ext/vector_bool3.hpp \
-  /usr/include/glm/detail/type_vec3.hpp \
-  /usr/include/glm/detail/type_vec3.inl \
-  /usr/include/glm/detail/compute_vector_decl.hpp \
-  /usr/include/c++/16/functional /usr/include/c++/16/bits/refwrap.h \
-  /usr/include/c++/16/bits/std_function.h /usr/include/c++/16/typeinfo \
-  /usr/include/c++/16/bits/functexcept.h \
-  /usr/include/c++/16/unordered_map \
-  /usr/include/c++/16/bits/unordered_map.h \
-  /usr/include/c++/16/bits/hashtable.h \
-  /usr/include/c++/16/bits/hashtable_policy.h \
-  /usr/include/c++/16/ext/aligned_buffer.h \
-  /usr/include/c++/16/bits/enable_special_members.h \
-  /usr/include/c++/16/bits/node_handle.h \
-  /usr/include/c++/16/bits/binders.h \
-  /usr/include/glm/detail/_vectorize.hpp \
   /usr/include/glm/ext/vector_bool3_precision.hpp \
   /usr/include/glm/ext/vector_float3.hpp \
   /usr/include/glm/ext/vector_float3_precision.hpp \
@@ -180,8 +181,6 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /usr/include/glm/ext/vector_uint3.hpp \
   /usr/include/glm/ext/vector_uint3_sized.hpp /usr/include/glm/vec4.hpp \
   /usr/include/glm/ext/vector_bool4.hpp \
-  /usr/include/glm/detail/type_vec4.hpp \
-  /usr/include/glm/detail/type_vec4.inl \
   /usr/include/glm/ext/vector_bool4_precision.hpp \
   /usr/include/glm/ext/vector_float4.hpp \
   /usr/include/glm/ext/vector_float4_precision.hpp \
@@ -193,7 +192,10 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /usr/include/glm/ext/vector_uint4_sized.hpp \
   /usr/include/glm/mat2x2.hpp /usr/include/glm/ext/matrix_double2x2.hpp \
   /usr/include/glm/detail/type_mat2x2.hpp \
-  /usr/include/glm/detail/type_mat2x2.inl /usr/include/glm/matrix.hpp \
+  /usr/include/glm/detail/type_mat2x2.inl \
+  /usr/include/glm/ext/matrix_double2x2_precision.hpp \
+  /usr/include/glm/ext/matrix_float2x2.hpp \
+  /usr/include/glm/ext/matrix_float2x2_precision.hpp \
   /usr/include/glm/mat2x3.hpp /usr/include/glm/ext/matrix_double2x3.hpp \
   /usr/include/glm/detail/type_mat2x3.hpp \
   /usr/include/glm/detail/type_mat2x3.inl \
@@ -214,13 +216,7 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /usr/include/glm/ext/matrix_float3x2_precision.hpp \
   /usr/include/glm/mat3x3.hpp /usr/include/glm/ext/matrix_double3x3.hpp \
   /usr/include/glm/detail/type_mat3x3.hpp \
-  /usr/include/glm/detail/type_mat3x3.inl /usr/include/glm/common.hpp \
-  /usr/include/glm/detail/func_common.inl \
-  /usr/include/glm/vector_relational.hpp \
-  /usr/include/glm/detail/func_vector_relational.inl \
-  /usr/include/glm/detail/compute_common.hpp \
-  /usr/include/glm/detail/type_vec1.hpp \
-  /usr/include/glm/detail/type_vec1.inl \
+  /usr/include/glm/detail/type_mat3x3.inl \
   /usr/include/glm/ext/matrix_double3x3_precision.hpp \
   /usr/include/glm/ext/matrix_float3x3.hpp \
   /usr/include/glm/ext/matrix_float3x3_precision.hpp \
@@ -244,34 +240,18 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /usr/include/glm/ext/matrix_float4x3_precision.hpp \
   /usr/include/glm/mat4x4.hpp /usr/include/glm/ext/matrix_double4x4.hpp \
   /usr/include/glm/detail/type_mat4x4.hpp \
-  /usr/include/glm/detail/type_mat4x4.inl /usr/include/glm/geometric.hpp \
-  /usr/include/glm/detail/func_geometric.inl \
-  /usr/include/glm/exponential.hpp \
-  /usr/include/glm/detail/func_exponential.inl \
+  /usr/include/glm/detail/type_mat4x4.inl \
   /usr/include/glm/ext/matrix_double4x4_precision.hpp \
   /usr/include/glm/ext/matrix_float4x4.hpp \
   /usr/include/glm/ext/matrix_float4x4_precision.hpp \
   /usr/include/glm/detail/func_matrix.inl \
-  /usr/include/glm/ext/matrix_double2x2_precision.hpp \
-  /usr/include/glm/ext/matrix_float2x2.hpp \
-  /usr/include/glm/ext/matrix_float2x2_precision.hpp \
-  /usr/include/glm/trigonometric.hpp \
-  /usr/include/glm/detail/func_trigonometric.inl \
-  /usr/include/glm/packing.hpp /usr/include/glm/detail/func_packing.inl \
-  /usr/include/glm/detail/type_half.hpp \
-  /usr/include/glm/detail/type_half.inl /usr/include/glm/integer.hpp \
-  /usr/include/glm/detail/func_integer.inl \
-  /usr/include/glm/gtc/quaternion.hpp /usr/include/glm/gtc/constants.hpp \
-  /usr/include/glm/ext/scalar_constants.hpp \
-  /usr/include/glm/ext/scalar_constants.inl \
-  /usr/include/glm/gtc/constants.inl \
+  /usr/include/glm/ext/matrix_transform.inl /usr/include/glm/fwd.hpp \
+  /usr/include/glm/gtc/quaternion.hpp \
   /usr/include/glm/gtc/matrix_transform.hpp \
   /usr/include/glm/ext/matrix_projection.hpp \
   /usr/include/glm/ext/matrix_projection.inl \
   /usr/include/glm/ext/matrix_clip_space.hpp \
   /usr/include/glm/ext/matrix_clip_space.inl \
-  /usr/include/glm/ext/matrix_transform.hpp \
-  /usr/include/glm/ext/matrix_transform.inl \
   /usr/include/glm/gtc/matrix_transform.inl \
   /usr/include/glm/ext/vector_relational.hpp \
   /usr/include/glm/ext/vector_relational.inl \
@@ -293,10 +273,31 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /usr/include/glm/ext/quaternion_transform.hpp \
   /usr/include/glm/ext/quaternion_transform.inl \
   /usr/include/glm/gtc/quaternion.inl /usr/include/glm/gtc/epsilon.hpp \
-  /usr/include/glm/gtc/epsilon.inl \
-  /usr/include/glm/gtx/matrix_decompose.hpp \
-  /usr/include/glm/gtx/matrix_decompose.inl \
-  /usr/include/glm/gtx/transform.hpp /usr/include/glm/gtx/transform.inl \
+  /usr/include/glm/gtc/epsilon.inl /usr/include/fmt/base.h \
+  /usr/lib/clang/23/include/limits.h /usr/include/limits.h \
+  /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h \
+  /usr/include/linux/limits.h \
+  /usr/include/bits/pthread_stack_min-dynamic.h \
+  /usr/include/bits/posix2_lim.h /usr/include/bits/xopen_lim.h \
+  /usr/include/bits/uio_lim.h /usr/include/stdio.h \
+  /usr/lib/clang/23/include/stdarg.h \
+  /usr/lib/clang/23/include/__stdarg___gnuc_va_list.h \
+  /usr/include/bits/types/__fpos_t.h \
+  /usr/include/bits/types/__mbstate_t.h \
+  /usr/include/bits/types/__fpos64_t.h /usr/include/bits/types/__FILE.h \
+  /usr/include/bits/types/FILE.h /usr/include/bits/types/struct_FILE.h \
+  /usr/include/bits/types/cookie_io_functions_t.h \
+  /usr/include/bits/stdio_lim.h /usr/include/string.h \
+  /usr/include/strings.h /usr/include/glm/glm.hpp \
+  /usr/include/c++/16/climits /usr/include/c++/16/cfloat \
+  /usr/lib/clang/23/include/float.h \
+  /usr/lib/clang/23/include/__float_header_macro.h \
+  /usr/lib/clang/23/include/__float_float.h \
+  /usr/lib/clang/23/include/__float_infinity_nan.h \
+  /usr/include/glm/packing.hpp /usr/include/glm/detail/func_packing.inl \
+  /usr/include/glm/detail/type_half.hpp \
+  /usr/include/glm/detail/type_half.inl /usr/include/glm/integer.hpp \
+  /usr/include/glm/detail/func_integer.inl \
   /home/stefano/Programming/VulkanEngine/src/scene/textureStorage.h \
   /usr/include/vulkan/vulkan_core.h /usr/include/vulkan/vk_platform.h \
   /usr/include/vk_video/vulkan_video_codec_h264std.h \
@@ -322,7 +323,6 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /home/stefano/Programming/VulkanEngine/src/vk/pipeline.h \
   /home/stefano/Programming/VulkanEngine/src/scene/scene.h \
   /home/stefano/Programming/VulkanEngine/src/scene/camera.h \
-  /home/stefano/Programming/VulkanEngine/src/scene/transform.h \
   /home/stefano/Programming/VulkanEngine/src/scene/material.h \
   /home/stefano/Programming/VulkanEngine/src/scene/MeshContainer.h \
   /usr/include/c++/16/string /usr/include/c++/16/bits/stringfwd.h \

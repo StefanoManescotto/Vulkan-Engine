@@ -87,11 +87,6 @@
 			"language" : "CXX",
 			"source" : "/home/stefano/Programming/VulkanEngine/src/scene/transform.cpp"
 		},
-		"CMakeFiles/VulkanEngine.dir/src/scene/transformSystem.cpp.o" : 
-		{
-			"language" : "CXX",
-			"source" : "/home/stefano/Programming/VulkanEngine/src/scene/transformSystem.cpp"
-		},
 		"CMakeFiles/VulkanEngine.dir/src/vk/GPUImageSystem.cpp.o" : 
 		{
 			"language" : "CXX",

@@ -407,18 +407,19 @@ CMakeFiles/VulkanEngine.dir/src/vk/swapchain.cpp.o.ddi: \
   /usr/include/glm/detail/func_integer.inl \
   /home/stefano/Programming/VulkanEngine/src/render/renderer.h \
   /home/stefano/Programming/VulkanEngine/src/scene/nodeWorld.h \
-  /usr/include/fmt/base.h /usr/include/glm/gtc/quaternion.hpp \
+  /home/stefano/Programming/VulkanEngine/src/scene/transform.h \
+  /usr/include/glm/ext/matrix_transform.hpp \
   /usr/include/glm/gtc/constants.hpp \
   /usr/include/glm/ext/scalar_constants.hpp \
   /usr/include/glm/ext/scalar_constants.inl \
   /usr/include/glm/gtc/constants.inl \
+  /usr/include/glm/ext/matrix_transform.inl \
+  /usr/include/glm/gtc/quaternion.hpp \
   /usr/include/glm/gtc/matrix_transform.hpp \
   /usr/include/glm/ext/matrix_projection.hpp \
   /usr/include/glm/ext/matrix_projection.inl \
   /usr/include/glm/ext/matrix_clip_space.hpp \
   /usr/include/glm/ext/matrix_clip_space.inl \
-  /usr/include/glm/ext/matrix_transform.hpp \
-  /usr/include/glm/ext/matrix_transform.inl \
   /usr/include/glm/gtc/matrix_transform.inl \
   /usr/include/glm/ext/vector_relational.hpp \
   /usr/include/glm/ext/vector_relational.inl \
@@ -440,10 +441,7 @@ CMakeFiles/VulkanEngine.dir/src/vk/swapchain.cpp.o.ddi: \
   /usr/include/glm/ext/quaternion_transform.hpp \
   /usr/include/glm/ext/quaternion_transform.inl \
   /usr/include/glm/gtc/quaternion.inl /usr/include/glm/gtc/epsilon.hpp \
-  /usr/include/glm/gtc/epsilon.inl \
-  /usr/include/glm/gtx/matrix_decompose.hpp \
-  /usr/include/glm/gtx/matrix_decompose.inl \
-  /usr/include/glm/gtx/transform.hpp /usr/include/glm/gtx/transform.inl \
+  /usr/include/glm/gtc/epsilon.inl /usr/include/fmt/base.h \
   /home/stefano/Programming/VulkanEngine/src/scene/textureStorage.h \
   /home/stefano/Programming/VulkanEngine/src/vk/GPUImage.h \
   /home/stefano/Programming/VulkanEngine/src/vk/commandContext.h \
@@ -452,7 +450,6 @@ CMakeFiles/VulkanEngine.dir/src/vk/swapchain.cpp.o.ddi: \
   /home/stefano/Programming/VulkanEngine/src/vk/pipeline.h \
   /home/stefano/Programming/VulkanEngine/src/scene/scene.h \
   /home/stefano/Programming/VulkanEngine/src/scene/camera.h \
-  /home/stefano/Programming/VulkanEngine/src/scene/transform.h \
   /home/stefano/Programming/VulkanEngine/src/scene/material.h \
   /home/stefano/Programming/VulkanEngine/src/scene/MeshContainer.h \
   /home/stefano/Programming/VulkanEngine/src/vk/gpuBuffer.h \

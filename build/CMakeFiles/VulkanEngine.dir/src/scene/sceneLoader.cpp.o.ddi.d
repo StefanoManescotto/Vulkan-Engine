@@ -382,9 +382,6 @@ CMakeFiles/VulkanEngine.dir/src/scene/sceneLoader.cpp.o.ddi: \
   /usr/include/glm/detail/type_half.hpp \
   /usr/include/glm/detail/type_half.inl /usr/include/glm/integer.hpp \
   /usr/include/glm/detail/func_integer.inl \
-  /usr/include/glm/gtx/matrix_decompose.hpp \
-  /usr/include/glm/gtx/matrix_decompose.inl \
-  /usr/include/glm/gtx/transform.hpp /usr/include/glm/gtx/transform.inl \
   /home/stefano/Programming/VulkanEngine/src/scene/textureStorage.h \
   /usr/include/vulkan/vulkan_core.h /usr/include/vulkan/vk_platform.h \
   /usr/include/vk_video/vulkan_video_codec_h264std.h \

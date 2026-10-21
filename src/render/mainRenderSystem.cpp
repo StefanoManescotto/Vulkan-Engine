@@ -104,7 +104,7 @@ void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorag
     while(!m_nodeRenderStack.empty()) {
         auto [node, parentTransform] = m_nodeRenderStack.back();
         m_nodeRenderStack.pop_back();
-        glm::mat4 matWorld = parentTransform * node->getTransform();
+        glm::mat4 matWorld = parentTransform * node->getTransform().getModelMatrix();
 
         if(node->meshId){
             Mesh &mesh = scene.meshContainer.meshes[node->meshId - 1];

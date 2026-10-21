@@ -312,9 +312,6 @@ CMakeFiles/VulkanEngine.dir/src/render/mainRenderSystem.cpp.o.ddi: \
   /usr/include/glm/detail/type_half.hpp \
   /usr/include/glm/detail/type_half.inl /usr/include/glm/integer.hpp \
   /usr/include/glm/detail/func_integer.inl \
-  /usr/include/glm/gtx/matrix_decompose.hpp \
-  /usr/include/glm/gtx/matrix_decompose.inl \
-  /usr/include/glm/gtx/transform.hpp /usr/include/glm/gtx/transform.inl \
   /home/stefano/Programming/VulkanEngine/src/scene/textureStorage.h \
   /home/stefano/Programming/VulkanEngine/src/vk/GPUImage.h \
   /home/stefano/Programming/VulkanEngine/includes/vk_mem_alloc.h \

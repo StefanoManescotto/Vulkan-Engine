@@ -113,16 +113,16 @@ namespace SceneLoader {
             for (int i = 0; i < 16; ++i) {
                 transformPtr[i] = static_cast<float>(tg3Node.matrix[i]);
             }
-            node.setTransform(transform);
+            node.getTransform().setTransform(transform);
         }
         else {
             glm::vec3 translation(tg3Node.translation[0], tg3Node.translation[1], tg3Node.translation[2]);
             glm::quat rotation(tg3Node.rotation[3], tg3Node.rotation[0], tg3Node.rotation[1], tg3Node.rotation[2]);
             glm::vec3 scale(tg3Node.scale[0], tg3Node.scale[1], tg3Node.scale[2]);
 
-            node.setTranslation(translation);
-            node.setRotation(rotation);
-            node.setScale(scale);
+            node.getTransform().setPosition(translation);
+            node.getTransform().setRotation(rotation);
+            node.getTransform().setScale(scale);
         }
 
         if (tg3Node.mesh != -1) {
@@ -221,8 +221,8 @@ namespace SceneLoader {
         loadGltf(ctx, cmdContext, texStorage, path, scene);
         
         Node &root = scene.nodeWorld.getNode(scene.nodeWorld.rootNodeId);
-        root.setScale(glm::vec3(0.01, 0.01, 0.01));
-        root.setTranslation(glm::vec3(0, 1, 0));
+        root.getTransform().setScale(glm::vec3(0.01, 0.01, 0.01));
+        root.getTransform().setPosition(glm::vec3(0, -15, 0));
 
         
         // --- Load into buffers ---

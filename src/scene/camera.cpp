@@ -8,7 +8,6 @@
 #include <glm/gtc/quaternion.hpp>
 
 Camera::Camera() {
-    // transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
     transform.translate(glm::vec3(0.0f, 0.0f, 3.0f));
 }
 

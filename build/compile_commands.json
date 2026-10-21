@@ -73,12 +73,6 @@
 },
 {
   "directory": "/home/stefano/Programming/VulkanEngine/build",
-  "command": "/usr/bin/clang++ -DFMT_SHARED -DRESOURCES_DIR=\\\"/home/stefano/Programming/VulkanEngine/resources/\\\" -DSCENES_DIR=\\\"/home/stefano/Programming/VulkanEngine/scenes/\\\" -DSHADER_DIR=\\\"/home/stefano/Programming/VulkanEngine/shaders/\\\" -DVK_NO_PROTOTYPES -I/home/stefano/Programming/VulkanEngine/src -isystem /home/stefano/Programming/VulkanEngine/includes -g -std=gnu++20 @CMakeFiles/VulkanEngine.dir/src/scene/transformSystem.cpp.o.modmap -o CMakeFiles/VulkanEngine.dir/src/scene/transformSystem.cpp.o -c /home/stefano/Programming/VulkanEngine/src/scene/transformSystem.cpp",
-  "file": "/home/stefano/Programming/VulkanEngine/src/scene/transformSystem.cpp",
-  "output": "/home/stefano/Programming/VulkanEngine/build/CMakeFiles/VulkanEngine.dir/src/scene/transformSystem.cpp.o"
-},
-{
-  "directory": "/home/stefano/Programming/VulkanEngine/build",
   "command": "/usr/bin/clang++ -DFMT_SHARED -DRESOURCES_DIR=\\\"/home/stefano/Programming/VulkanEngine/resources/\\\" -DSCENES_DIR=\\\"/home/stefano/Programming/VulkanEngine/scenes/\\\" -DSHADER_DIR=\\\"/home/stefano/Programming/VulkanEngine/shaders/\\\" -DVK_NO_PROTOTYPES -I/home/stefano/Programming/VulkanEngine/src -isystem /home/stefano/Programming/VulkanEngine/includes -g -std=gnu++20 @CMakeFiles/VulkanEngine.dir/src/vk/GPUImageSystem.cpp.o.modmap -o CMakeFiles/VulkanEngine.dir/src/vk/GPUImageSystem.cpp.o -c /home/stefano/Programming/VulkanEngine/src/vk/GPUImageSystem.cpp",
   "file": "/home/stefano/Programming/VulkanEngine/src/vk/GPUImageSystem.cpp",
   "output": "/home/stefano/Programming/VulkanEngine/build/CMakeFiles/VulkanEngine.dir/src/vk/GPUImageSystem.cpp.o"
