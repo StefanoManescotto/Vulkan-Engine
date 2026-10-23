@@ -89,6 +89,7 @@ CMakeFiles/VulkanEngine.dir/src/render/mainRenderSystem.cpp.o.ddi: \
   /usr/include/vk_video/vulkan_video_codec_av1std_encode.h \
   /usr/include/vk_video/vulkan_video_codec_vp9std.h \
   /usr/include/vk_video/vulkan_video_codec_vp9std_decode.h \
+  /home/stefano/Programming/VulkanEngine/src/vk/pipelineManager.h \
   /home/stefano/Programming/VulkanEngine/src/scene/scene.h \
   /home/stefano/Programming/VulkanEngine/src/scene/camera.h \
   /home/stefano/Programming/VulkanEngine/src/scene/transform.h \
@@ -344,6 +345,10 @@ CMakeFiles/VulkanEngine.dir/src/render/mainRenderSystem.cpp.o.ddi: \
   /home/stefano/Programming/VulkanEngine/src/vk/gpuBuffer.h \
   /home/stefano/Programming/VulkanEngine/src/vk/VulkanContext.h \
   /home/stefano/Programming/VulkanEngine/src/render/renderer.h \
+  /usr/include/c++/16/optional /usr/include/c++/16/exception \
+  /usr/include/c++/16/bits/exception_ptr.h \
+  /usr/include/c++/16/bits/cxxabi_init_exception.h \
+  /usr/include/c++/16/bits/nested_exception.h \
   /home/stefano/Programming/VulkanEngine/src/vk/commandContext.h \
   /home/stefano/Programming/VulkanEngine/src/vk/device.h \
   /home/stefano/Programming/VulkanEngine/src/render/shaderManager.h \

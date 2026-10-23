@@ -21,6 +21,7 @@ set(OLD_GLOB
   "/home/stefano/Programming/VulkanEngine/src/vk/device.cpp"
   "/home/stefano/Programming/VulkanEngine/src/vk/gpuBuffer.cpp"
   "/home/stefano/Programming/VulkanEngine/src/vk/pipeline.cpp"
+  "/home/stefano/Programming/VulkanEngine/src/vk/pipelineManager.cpp"
   "/home/stefano/Programming/VulkanEngine/src/vk/swapchain.cpp"
   "/home/stefano/Programming/VulkanEngine/src/window.cpp"
   )
@@ -75,6 +76,7 @@ set(OLD_GLOB
   "/home/stefano/Programming/VulkanEngine/src/vk/device.h"
   "/home/stefano/Programming/VulkanEngine/src/vk/gpuBuffer.h"
   "/home/stefano/Programming/VulkanEngine/src/vk/pipeline.h"
+  "/home/stefano/Programming/VulkanEngine/src/vk/pipelineManager.h"
   "/home/stefano/Programming/VulkanEngine/src/vk/swapchain.h"
   "/home/stefano/Programming/VulkanEngine/src/window.h"
   )

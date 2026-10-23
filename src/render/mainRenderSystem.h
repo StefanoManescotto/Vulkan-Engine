@@ -6,10 +6,12 @@
 
 #include "render/renderSystem.h"
 // #include "render/renderer.h"
+// #include "render/renderer.h"
 #include "scene/scene.h"
 #include "scene/textureStorage.h"
 #include "vk/GPUImage.h"
 #include "vk/gpuBuffer.h"
+#include "vk/pipelineManager.h"
 
 struct RenderItem {
 	glm::mat4 wvp;
@@ -52,12 +54,13 @@ struct MainPipelineContext : PipelineContext {
 class MainRenderSystem : RenderSystem<MainRenderContext, MainPipelineContext> {
 public:
     void render(MainRenderContext &ctx) override;
-    void render2(MainRenderContext &ctx, TextureStorage &texStorage);
+    void render2(MainRenderContext &ctx, TextureStorage &texStorage, PipelineManager& pManager);
 
     void init(VkDevice device, MainPipelineContext& pipelineCtx) override;
-    void init2(VkDevice device, MainPipelineContext& pipelineCtx, TextureStorage texStorage);
+    void init2(VkDevice device, MainPipelineContext& pipelineCtx, TextureStorage& texStorage, PipelineManager& pManager);
 
     void createPipeline(VkDevice device, MainPipelineContext& pipelineCtx) override;
+    void createPipeline(VkDevice device, MainPipelineContext& pipelineCtx, PipelineManager& pManager);
 
     void destroyRenderSystem() override;
 };

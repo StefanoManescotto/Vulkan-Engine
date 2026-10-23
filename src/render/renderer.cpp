@@ -24,6 +24,8 @@ RendererResources Renderer::init(const Device* device, const VmaAllocator* alloc
     m_device = device;
     m_allocator = allocator;
 
+    m_pipelineManager.init(device->handle());
+
     swapchain.create(m_device->handle(), m_device->getPhysicalDevice(), *allocator);
     swapchain.createSwapchain(window->getSurface(), config);
 
@@ -59,8 +61,9 @@ RendererResources Renderer::init(const Device* device, const VmaAllocator* alloc
     // m_textureManager.init(m_device->handle(), m_allocator);
     // m_textureManager.addSampler();
     // m_textureManager.loadTexture(cmdContext, "container", std::string(RESOURCES_DIR) + "container.png");
+
     TextureSystem::createDescriptorSets(device->handle(), m_texStorage);
-    m_mainRenderSystem.init2(m_device->handle(), pCtx, m_texStorage);
+    m_mainRenderSystem.init2(m_device->handle(), pCtx, m_texStorage, m_pipelineManager);
 
     return { .texStorage = &m_texStorage, .cmdCtx = &cmdContext };
 }
@@ -220,7 +223,7 @@ void Renderer::renderFrame(const Window* window, Scene &scene, GPUBufferVec &buf
     ctx.indirectDrawPtr = currentFrameRes.indirectDrawPtr;
     ctx.renderItemPtr = currentFrameRes.renderItemPtr;
 
-    m_mainRenderSystem.render2(ctx, m_texStorage);
+    m_mainRenderSystem.render2(ctx, m_texStorage, m_pipelineManager);
 
 
     VkImageMemoryBarrier2 barriers[3] = {
@@ -378,6 +381,7 @@ void Renderer::destroyRenderer() {
 
     m_mainRenderSystem.destroyRenderSystem();
 
+    m_pipelineManager.destroyPipelines();
     m_shaderManager.destroyShaders();
 
     swapchain.destroySwapchain();

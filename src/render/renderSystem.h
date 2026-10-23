@@ -6,6 +6,8 @@
 
 #include "vk/pipeline.h"
 
+#include "vk/pipelineManager.h"
+
 struct RenderContext {
     // TextureManager texManager;
     VkCommandBuffer cmd = nullptr;

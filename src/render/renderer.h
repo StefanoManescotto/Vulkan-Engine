@@ -5,6 +5,7 @@
 #pragma once
 
 #include <array>
+#include <optional>
 
 #include "scene/nodeWorld.h"
 #include "scene/textureStorage.h"
@@ -47,9 +48,10 @@ public:
     Renderer() = default;
 
     RendererResources init(const Device* device, const VmaAllocator* allocator, const Window* window, size_t maxNodes);
+    const PipelineManager& getPipelineManager() const { return m_pipelineManager; }
 
     void renderFrame(const Window* window, Scene &scene, GPUBufferVec &buffers);
-
+    
     void destroyRenderer();
 private:
     constexpr static uint32_t MaxFramesInFlight { 2 };
@@ -73,7 +75,7 @@ private:
     bool requireSwapchainRecreate = false;
 
     ShaderManager m_shaderManager;
-    // TextureManager m_textureManager;
+    PipelineManager m_pipelineManager;
     
     bool createIndirectDrawBuffers(size_t maxNodes);
     void createCommandBuffer();

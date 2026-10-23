@@ -112,6 +112,11 @@
 			"language" : "CXX",
 			"source" : "/home/stefano/Programming/VulkanEngine/src/vk/pipeline.cpp"
 		},
+		"CMakeFiles/VulkanEngine.dir/src/vk/pipelineManager.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/stefano/Programming/VulkanEngine/src/vk/pipelineManager.cpp"
+		},
 		"CMakeFiles/VulkanEngine.dir/src/vk/swapchain.cpp.o" : 
 		{
 			"language" : "CXX",

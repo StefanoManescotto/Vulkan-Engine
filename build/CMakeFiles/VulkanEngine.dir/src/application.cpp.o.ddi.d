@@ -446,6 +446,7 @@ CMakeFiles/VulkanEngine.dir/src/application.cpp.o.ddi: \
   /home/stefano/Programming/VulkanEngine/src/render/mainRenderSystem.h \
   /home/stefano/Programming/VulkanEngine/src/render/renderSystem.h \
   /home/stefano/Programming/VulkanEngine/src/vk/pipeline.h \
+  /home/stefano/Programming/VulkanEngine/src/vk/pipelineManager.h \
   /home/stefano/Programming/VulkanEngine/src/scene/scene.h \
   /home/stefano/Programming/VulkanEngine/src/scene/camera.h \
   /home/stefano/Programming/VulkanEngine/src/scene/material.h \

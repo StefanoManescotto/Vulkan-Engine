@@ -33,6 +33,8 @@ build CMakeFiles/VulkanEngine.dir/src/vk/gpuBuffer.cpp.o: dyndep
 
 build CMakeFiles/VulkanEngine.dir/src/vk/pipeline.cpp.o: dyndep
 
+build CMakeFiles/VulkanEngine.dir/src/vk/pipelineManager.cpp.o: dyndep
+
 build CMakeFiles/VulkanEngine.dir/src/vk/swapchain.cpp.o: dyndep
 
 build CMakeFiles/VulkanEngine.dir/src/window.cpp.o: dyndep

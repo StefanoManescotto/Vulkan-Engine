@@ -21,6 +21,8 @@ typedef VmaAllocation_T* VmaAllocation;
 
 class Application {
 public:
+    Application() = default;
+
     void initialize();
     void shutdown();
     void run();
