@@ -51,6 +51,7 @@ file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "/home/stefano/Programming/Vul
 set(OLD_GLOB
   "/home/stefano/Programming/VulkanEngine/src/application.h"
   "/home/stefano/Programming/VulkanEngine/src/render/GPUMesh.h"
+  "/home/stefano/Programming/VulkanEngine/src/render/frameLayout.h"
   "/home/stefano/Programming/VulkanEngine/src/render/mainRenderSystem.h"
   "/home/stefano/Programming/VulkanEngine/src/render/renderSystem.h"
   "/home/stefano/Programming/VulkanEngine/src/render/renderer.h"

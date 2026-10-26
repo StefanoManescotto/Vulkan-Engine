@@ -6,7 +6,13 @@
 
 #include <glm/vec4.hpp>
 
-struct Material {
+struct GPUMaterial {
     glm::vec4 baseColor = glm::vec4(1, 1, 1, 1);
     uint32_t textureIndex = 0;
+    // uint32_t pipelineIndex = 0;
+};
+
+struct Material {
+    uint32_t gpuMatIndex = 0;
+    uint32_t pipelineIndex;
 };

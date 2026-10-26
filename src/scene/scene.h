@@ -9,6 +9,7 @@
 struct Scene {
     std::vector<Texture> textures;
     std::vector<Material> materials;
+    std::vector<GPUMaterial> gpuMaterials;
     MeshContainer meshContainer;
     NodeWorld nodeWorld;
     

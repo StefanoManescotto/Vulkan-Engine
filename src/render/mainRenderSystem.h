@@ -4,9 +4,10 @@
 
 #pragma once
 
+#include "render/frameLayout.h"
+// #include "render/renderer.h"
+// #include "render/renderer.h"
 #include "render/renderSystem.h"
-// #include "render/renderer.h"
-// #include "render/renderer.h"
 #include "scene/scene.h"
 #include "scene/textureStorage.h"
 #include "vk/GPUImage.h"
@@ -19,13 +20,19 @@ struct RenderItem {
 	uint32_t materialIndex = 0;
 };
 
-struct FrameConstants {
-	uint64_t vertexBufferAddress = 0;
-	uint64_t materialBufferAddress = 0;
-	uint64_t renderItemsAddress = 0;
+struct DrawItem {
+    uint32_t pipelineId;
+    uint32_t materialIndex;
+    uint32_t indexCount, firstIndex;
+    int32_t vertexOffset;
+    glm::mat4 wvp;
+    glm::mat4 worldMatrix;
 };
 
-struct MainRenderContext : RenderContext {
+struct MainRenderContext {
+    VkCommandBuffer cmd = nullptr;
+    VkExtent2D extent = VkExtent2D(800, 600);
+
     Scene* scene;
 
     GPUImage colorImage;
@@ -63,4 +70,7 @@ public:
     void createPipeline(VkDevice device, MainPipelineContext& pipelineCtx, PipelineManager& pManager);
 
     void destroyRenderSystem() override;
+
+private:
+    // std::vector<DrawItem> drawItems;
 };

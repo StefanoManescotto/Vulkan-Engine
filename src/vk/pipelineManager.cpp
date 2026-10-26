@@ -1,18 +1,55 @@
 #include "pipelineManager.h"
+#include "render/frameLayout.h"
 #include "vk/pipeline.h"
+#include <fmt/base.h>
 #include <stdexcept>
 
-int PipelineManager::createPipeline(const PipelineConfig& config) {
+uint32_t PipelineManager::getOrCreatePipeline(const PipelineKey& key, FrameLayout& frameLayout) {
+    auto it = m_lookup.find(key);
+    if (it != m_lookup.end()) {
+        return it->second;
+    }
+
+    PipelineConfig pipelineConfig;
+    getDefaultConfigs(pipelineConfig);
+
+    pipelineConfig.shaderStages = {
+        {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+            .stage = VK_SHADER_STAGE_VERTEX_BIT,
+            .module = key.vertShader,
+            .pName = "main"
+        },
+        {
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+            .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
+            .module = key.fragShader,
+            .pName = "main"
+        }
+    };
+
+    pipelineConfig.renderingInfo = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
+        .colorAttachmentCount = 1,
+        .pColorAttachmentFormats = &key.colorAttachmentFormat,
+        .depthAttachmentFormat = key.depthAttachmentFormat,
+        .stencilAttachmentFormat = VK_FORMAT_UNDEFINED
+    };
+    
+    return createPipeline(pipelineConfig, key, frameLayout);
+}
+
+uint32_t PipelineManager::createPipeline(const PipelineConfig& config, const PipelineKey& key, FrameLayout& frameLayout) {
     Pipeline newPipeline;
 
     // VkPushConstantRange pushConstantRange = config.pushConstantRange;
 
     // need to define a pipeline layout
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo = config.pipelineLayoutInfo;
+    // VkPipelineLayoutCreateInfo pipelineLayoutInfo = config.pipelineLayoutInfo;
 
-    if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &newPipeline.pipelineLayout) != VK_SUCCESS) {
-        throw std::runtime_error("Unable to create the pipeline layout");
-    }
+    // if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &newPipeline.pipelineLayout) != VK_SUCCESS) {
+    //     throw std::runtime_error("Unable to create the pipeline layout");
+    // }
 
     VkPipelineVertexInputStateCreateInfo vertInputInfo {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
@@ -43,14 +80,19 @@ int PipelineManager::createPipeline(const PipelineConfig& config) {
         .pDepthStencilState = &depthStencilInfo,
         .pColorBlendState = &blendInfo,
         .pDynamicState = &dynamicStateInfo,
-        .layout = newPipeline.pipelineLayout,
+        .layout = frameLayout.defaultPipelineLayout,
         .renderPass = VK_NULL_HANDLE,
     };
     if (vkCreateGraphicsPipelines(m_device, nullptr, 1, &pipelineInfo, nullptr, &newPipeline.handle) != VK_SUCCESS) {
         throw std::runtime_error("Error creating the pipeline");
     }
 
+    newPipeline.pipelineLayout = frameLayout.defaultPipelineLayout;
+    
+    uint32_t index = static_cast<uint32_t>(m_pipelines.size());
     m_pipelines.push_back(newPipeline);
+    m_lookup[key] = index;
+
     return m_pipelines.size() - 1;
 }
 
@@ -67,63 +109,3 @@ void PipelineManager::destroyPipelines() {
     }
     m_pipelines.clear();
 }
-
-// void constexpr PipelineManager::getDefaultConfigs(PipelineConfig& configInfo) {
-//     // --- Input Assembly ---
-//     configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-//     configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-//     configInfo.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
-
-//     // --- Viewport State (Configured as Dynamic State) ---
-//     configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-//     configInfo.viewportInfo.viewportCount = 1;
-//     configInfo.viewportInfo.pViewports = nullptr; // Handled dynamically at render time
-//     configInfo.viewportInfo.scissorCount = 1;
-//     configInfo.viewportInfo.pScissors = nullptr;  // Handled dynamically at render time
-
-//     // --- Rasterizer ---
-//     configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-//     configInfo.rasterizationInfo.depthClampEnable = VK_FALSE;
-//     configInfo.rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
-//     configInfo.rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
-//     configInfo.rasterizationInfo.lineWidth = 1.0f;
-//     configInfo.rasterizationInfo.cullMode = VK_CULL_MODE_BACK_BIT;
-//     configInfo.rasterizationInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-//     configInfo.rasterizationInfo.depthBiasEnable = VK_FALSE;
-
-//     // --- Multisampling ---
-//     configInfo.multisampleInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-//     configInfo.multisampleInfo.sampleShadingEnable = VK_FALSE;
-//     configInfo.multisampleInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-
-//     // --- Color Blending ---
-//     configInfo.colorBlendAttachment.colorWriteMask =
-//         VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-//         VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-//     configInfo.colorBlendAttachment.blendEnable = VK_FALSE;
-
-//     configInfo.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-//     configInfo.colorBlendInfo.logicOpEnable = VK_FALSE;
-//     configInfo.colorBlendInfo.attachmentCount = 1;
-//     configInfo.colorBlendInfo.pAttachments = &configInfo.colorBlendAttachment;
-
-//     // --- Depth/Stencil ---
-//     configInfo.depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-//     configInfo.depthStencilInfo.depthTestEnable = VK_TRUE;
-//     configInfo.depthStencilInfo.depthWriteEnable = VK_TRUE;
-//     configInfo.depthStencilInfo.depthCompareOp = VK_COMPARE_OP_LESS;
-//     configInfo.depthStencilInfo.depthBoundsTestEnable = VK_FALSE;
-//     configInfo.depthStencilInfo.stencilTestEnable = VK_FALSE;
-
-//     // --- Render Info ---
-//     configInfo.renderingInfo.pNext = nullptr;
-//     configInfo.renderingInfo.colorAttachmentCount = 0;
-//     configInfo.renderingInfo.pColorAttachmentFormats = nullptr;
-//     configInfo.renderingInfo.depthAttachmentFormat = VK_FORMAT_UNDEFINED;
-
-//     // --- Dynamic States ---
-//     configInfo.dynamicStateEnables = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
-//     configInfo.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-//     configInfo.dynamicStateInfo.pDynamicStates = configInfo.dynamicStateEnables.data(); // Safe internal vector
-//     configInfo.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
-// }

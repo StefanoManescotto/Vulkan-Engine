@@ -4,7 +4,9 @@
 
 #include "render/mainRenderSystem.h"
 #include "render/renderer.h"
+#include "vk/swapchain.h"
 
+#include <algorithm>
 #include <glm/fwd.hpp>
 #include <vulkan/vulkan_core.h>
 
@@ -25,39 +27,42 @@ struct FrameConstant {
 void MainRenderSystem::init(VkDevice device, MainPipelineContext& pipelineCtx) {}
 
 void MainRenderSystem::init2(VkDevice device, MainPipelineContext& pipelineCtx, TextureStorage& texStorage, PipelineManager& pManager) {
-    PipelineManager::getDefaultConfigs(pipelineConfig);
-    pipelineConfig.renderingInfo = {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
-        .pNext = nullptr,
-        .colorAttachmentCount = 1,
-        .pColorAttachmentFormats = &pipelineCtx.colorFormat,
-        .depthAttachmentFormat = pipelineCtx.depthFormat,
-        .stencilAttachmentFormat = VK_FORMAT_UNDEFINED
-    };
+    // PipelineManager::getDefaultConfigs(pipelineConfig);
+    // pipelineConfig.renderingInfo = {
+    //     .sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
+    //     .pNext = nullptr,
+    //     .colorAttachmentCount = 1,
+    //     .pColorAttachmentFormats = &pipelineCtx.colorFormat,
+    //     .depthAttachmentFormat = pipelineCtx.depthFormat,
+    //     .stencilAttachmentFormat = VK_FORMAT_UNDEFINED
+    // };
 
-    pipelineConfig.pushConstantRange = {
-        .stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, // Stages accessing the PC
-        .offset = 0,
-        .size = sizeof(FrameConstant)
-    };
 
-    std::array<VkDescriptorSetLayout, 1> dsLayouts{ texStorage.globalDSLayout };
+    // // TODO: add frameLayout.pushconstant = ....
+    // pipelineConfig.pushConstantRange = {
+    //     .stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, // Stages accessing the PC
+    //     .offset = 0,
+    //     .size = sizeof(FrameConstant)
+    // };
 
-    // need to define a pipeline layout
-    pipelineConfig.pipelineLayoutInfo = {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-        .setLayoutCount = dsLayouts.size(),
-        .pSetLayouts = dsLayouts.data(),
-        .pushConstantRangeCount = 1,
-        .pPushConstantRanges = &pipelineConfig.pushConstantRange
-    };
+    // std::array<VkDescriptorSetLayout, 1> dsLayouts{ texStorage.globalDSLayout };
 
-    createPipeline(device, pipelineCtx, pManager);
+    // // need to define a pipeline layout
+    // pipelineConfig.pipelineLayoutInfo = {
+    //     .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+    //     .setLayoutCount = dsLayouts.size(),
+    //     .pSetLayouts = dsLayouts.data(),
+    //     .pushConstantRangeCount = 1,
+    //     .pPushConstantRanges = &pipelineConfig.pushConstantRange
+    // };
+
+    // createPipeline(device, pipelineCtx, pManager);
 }
 
 void MainRenderSystem::render(MainRenderContext &ctx){}
 
 void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorage,  PipelineManager& pManager) {
+    std::vector<DrawItem> drawItems;
     Scene scene = *ctx.scene;
 // Push root nodes to render stack
     std::vector<std::pair<Node *, glm::mat4>> m_nodeRenderStack;
@@ -67,8 +72,8 @@ void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorag
         m_nodeRenderStack.push_back({ &node, glm::mat4(1.0) });
         nodeId = node.nextSiblingId;
     }
-
-    uint32_t drawIndex = 0;
+    
+    // uint32_t drawIndex = 0;
     while(!m_nodeRenderStack.empty()) {
         auto [node, parentTransform] = m_nodeRenderStack.back();
         m_nodeRenderStack.pop_back();
@@ -76,21 +81,16 @@ void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorag
 
         if(node->meshId){
             Mesh &mesh = scene.meshContainer.meshes[node->meshId - 1];
-            for(SubMesh &subMesh : mesh.subMeshes){
-                ctx.indirectDrawPtr[drawIndex] = VkDrawIndexedIndirectCommand {
+            for(SubMesh &subMesh : mesh.subMeshes) {
+                drawItems.push_back( DrawItem {
+                    .pipelineId = ctx.scene->materials[subMesh.materialId - 1].pipelineIndex,
+                    .materialIndex = subMesh.materialId - 1,
                     .indexCount = static_cast<uint32_t>(subMesh.indexCount),
-                    .instanceCount = 1,
                     .firstIndex = static_cast<uint32_t>(subMesh.indexStart),
                     .vertexOffset = static_cast<int32_t>(subMesh.vertexStart),
-                    .firstInstance = drawIndex
-                };
-
-                ctx.renderItemPtr[drawIndex] = RenderItem {
                     .wvp = scene.camera.projection * scene.camera.view * matWorld,
-                    .worldMatrix = matWorld,
-                    .materialIndex = subMesh.materialId - 1
-                };
-                drawIndex++;
+                    .worldMatrix = matWorld
+                });
             }
         }
 
@@ -100,6 +100,27 @@ void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorag
 			m_nodeRenderStack.push_back({ &child, matWorld });
 			childNodeId = child.nextSiblingId;
 		}
+    }
+
+    std::sort(drawItems.begin(), drawItems.end(), [](const DrawItem& a, const DrawItem& b) {
+        return a.pipelineId < b.pipelineId;
+    });
+
+    uint32_t drawIndex = 0;
+    for (const DrawItem& d : drawItems) {
+        ctx.indirectDrawPtr[drawIndex] = VkDrawIndexedIndirectCommand{
+            .indexCount    = d.indexCount,
+            .instanceCount = 1,
+            .firstIndex    = d.firstIndex,
+            .vertexOffset  = d.vertexOffset,
+            .firstInstance = drawIndex
+        };
+        ctx.renderItemPtr[drawIndex] = RenderItem{
+            .wvp           = d.wvp,
+            .worldMatrix   = d.worldMatrix,
+            .materialIndex = d.materialIndex
+        };
+        drawIndex++;
     }
 
     std::vector<VkImageMemoryBarrier2> layoutBarriers {
@@ -139,8 +160,7 @@ void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorag
             }
         }
     };
-    VkDependencyInfo depInfo
-    {
+    VkDependencyInfo depInfo {
         .sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
         .imageMemoryBarrierCount = static_cast<uint32_t>(layoutBarriers.size()),
         .pImageMemoryBarriers = layoutBarriers.data()
@@ -182,22 +202,6 @@ void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorag
         .pDepthAttachment = &depthAttachInfo
     };
 
-    vkCmdBindDescriptorSets(ctx.cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pManager.getPipeline(0).pipelineLayout, 0, 1,
-                                &texStorage.globalDescSet, 0, nullptr);
-    
-
-    FrameConstants frameConsts;
-	GPUBuffer &vertBuffer = ctx.buffers->buffers[ctx.buffers->vertexBufferId - 1];
-	GPUBuffer &materialBuffer = ctx.buffers->buffers[ctx.buffers->matBufferId - 1];
-	frameConsts.vertexBufferAddress = vertBuffer.deviceAddress;
-	frameConsts.materialBufferAddress = materialBuffer.deviceAddress;
-	frameConsts.renderItemsAddress = ctx.renderItemBuffer->deviceAddress;
-	vkCmdPushConstants(ctx.cmd, pManager.getPipeline(0).pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 
-        0, sizeof(FrameConstants), &frameConsts);
-
-	GPUBuffer &idxBuffer = ctx.buffers->buffers[ctx.buffers->indexBufferId - 1];
-	vkCmdBindIndexBuffer(ctx.cmd, idxBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
-
 
     // begin dynamic rendering
     vkCmdBeginRendering(ctx.cmd, &renderingInfo);
@@ -218,9 +222,39 @@ void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorag
         };
         vkCmdSetScissor(ctx.cmd, 0, 1, &scissor);
 
-        vkCmdBindPipeline(ctx.cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pManager.getPipeline(0).handle);
 
-        vkCmdDrawIndexedIndirect(ctx.cmd, ctx.indirectDrawBuffer->buffer, 0, drawIndex, sizeof(VkDrawIndexedIndirectCommand));
+
+        int i = 0;
+        uint32_t currentPipeline = -1;
+        while(i < drawItems.size()){
+            if(drawItems.at(i).pipelineId != currentPipeline) {
+                vkCmdBindPipeline(ctx.cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pManager.getPipeline(drawItems.at(i).pipelineId).handle);
+                currentPipeline = drawItems.at(i).pipelineId;
+            }
+
+            uint32_t drawStart = i;
+            while(i < drawItems.size() && drawItems.at(i).pipelineId == currentPipeline) i++;
+            uint32_t drawCount = i - drawStart;
+
+            vkCmdBindDescriptorSets(ctx.cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pManager.getPipeline(drawItems.at(i-1).pipelineId).pipelineLayout, 0, 1,
+                                        &texStorage.globalDescSet, 0, nullptr);
+            
+            FrameConstants frameConsts;
+            GPUBuffer &vertBuffer = ctx.buffers->buffers[ctx.buffers->vertexBufferId - 1];
+            GPUBuffer &materialBuffer = ctx.buffers->buffers[ctx.buffers->matBufferId - 1];
+            frameConsts.vertexBufferAddress = vertBuffer.deviceAddress;
+            frameConsts.materialBufferAddress = materialBuffer.deviceAddress;
+            frameConsts.renderItemsAddress = ctx.renderItemBuffer->deviceAddress;
+
+            vkCmdPushConstants(ctx.cmd, pManager.getPipeline(drawItems.at(i-1).pipelineId).pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 
+                0, sizeof(FrameConstants), &frameConsts);
+
+            GPUBuffer &idxBuffer = ctx.buffers->buffers[ctx.buffers->indexBufferId - 1];
+            vkCmdBindIndexBuffer(ctx.cmd, idxBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
+
+
+            vkCmdDrawIndexedIndirect(ctx.cmd, ctx.indirectDrawBuffer->buffer, drawStart * sizeof(VkDrawIndexedIndirectCommand), drawCount, sizeof(VkDrawIndexedIndirectCommand));
+        }
     }
     // end dynamic rendering
     vkCmdEndRendering(ctx.cmd);
@@ -243,7 +277,7 @@ void MainRenderSystem::createPipeline(VkDevice device, MainPipelineContext& pipe
         }
     };
     // TODO: the color and depth format may be the same of the one in the Image class: look into it.
-    pManager.createPipeline(pipelineConfig);
+    // pManager.createPipeline(pipelineConfig);
     // pipeline.createPipeline(device, pipelineConfig);
 }
 

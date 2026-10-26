@@ -84,11 +84,11 @@ void Application::initializeVulkan() {
 
     // createBuffers();
     // m_scene.init(m_device.handle(), m_allocator);
-    RendererResources rendererRes = renderer.init(&m_device, &m_allocator, &window, 1024);
+    renderer.init(&m_device, &m_allocator, &window, 1024);
     
     VulkanCtx vkCtx = { .device = m_device.handle(), .allocator = m_allocator };
     
-    m_scene = SceneLoader::loadScene(vkCtx, *rendererRes.cmdCtx, *rendererRes.texStorage, 
+    m_scene = SceneLoader::loadScene(vkCtx, renderer, 
         std::string(SCENES_DIR) + "mario_kart/scene.gltf", gpuBuffers);
 
     // m_textureManager.init(m_device.handle(), &m_allocator);

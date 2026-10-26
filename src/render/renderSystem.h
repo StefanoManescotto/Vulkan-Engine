@@ -8,12 +8,12 @@
 
 #include "vk/pipelineManager.h"
 
-struct RenderContext {
-    // TextureManager texManager;
-    VkCommandBuffer cmd = nullptr;
-    VkExtent2D extent = VkExtent2D(800, 600);
-    // RenderWorld objs;
-};
+// struct RenderContext {
+//     // TextureManager texManager;
+//     VkCommandBuffer cmd = nullptr;
+//     VkExtent2D extent = VkExtent2D(800, 600);
+//     // RenderWorld objs;
+// };
 
 struct PipelineContext {
     VkFormat colorFormat = VK_FORMAT_UNDEFINED;

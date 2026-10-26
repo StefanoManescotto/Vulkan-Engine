@@ -38,9 +38,9 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /usr/include/c++/16/bits/predefined_ops.h \
   /usr/include/c++/16/bits/stl_function.h \
   /usr/include/c++/16/backward/binders.h /usr/include/c++/16/bit \
-  /usr/include/c++/16/bits/range_access.h /usr/include/c++/16/optional \
-  /usr/include/c++/16/exception /usr/include/c++/16/bits/exception_ptr.h \
-  /usr/include/c++/16/bits/cxxabi_init_exception.h \
+  /usr/include/c++/16/bits/range_access.h \
+  /home/stefano/Programming/VulkanEngine/src/render/frameLayout.h \
+  /usr/include/volk.h /usr/include/vulkan/vk_platform.h \
   /usr/lib/clang/23/include/stddef.h \
   /usr/lib/clang/23/include/__stddef_header_macro.h \
   /usr/lib/clang/23/include/__stddef_ptrdiff_t.h \
@@ -50,11 +50,24 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /usr/lib/clang/23/include/__stddef_nullptr_t.h \
   /usr/lib/clang/23/include/__stddef_max_align_t.h \
   /usr/lib/clang/23/include/__stddef_offsetof.h \
-  /usr/include/c++/16/typeinfo /usr/include/c++/16/bits/hash_bytes.h \
-  /usr/include/c++/16/bits/nested_exception.h \
-  /usr/include/c++/16/bits/enable_special_members.h \
-  /usr/include/c++/16/bits/functional_hash.h \
-  /usr/include/c++/16/bits/invoke.h \
+  /usr/lib/clang/23/include/stdint.h /usr/include/stdint.h \
+  /usr/include/bits/libc-header-start.h /usr/include/bits/types.h \
+  /usr/include/bits/typesizes.h /usr/include/bits/time64.h \
+  /usr/include/bits/wchar.h /usr/include/bits/stdint-intn.h \
+  /usr/include/bits/stdint-uintn.h /usr/include/bits/stdint-least.h \
+  /usr/include/vulkan/vulkan_core.h \
+  /usr/include/vk_video/vulkan_video_codec_h264std.h \
+  /usr/include/vk_video/vulkan_video_codecs_common.h \
+  /usr/include/vk_video/vulkan_video_codec_h264std_encode.h \
+  /usr/include/vk_video/vulkan_video_codec_h265std.h \
+  /usr/include/vk_video/vulkan_video_codec_h265std_encode.h \
+  /usr/include/vk_video/vulkan_video_codec_h264std_decode.h \
+  /usr/include/vk_video/vulkan_video_codec_h265std_decode.h \
+  /usr/include/vk_video/vulkan_video_codec_av1std.h \
+  /usr/include/vk_video/vulkan_video_codec_av1std_decode.h \
+  /usr/include/vk_video/vulkan_video_codec_av1std_encode.h \
+  /usr/include/vk_video/vulkan_video_codec_vp9std.h \
+  /usr/include/vk_video/vulkan_video_codec_vp9std_decode.h \
   /home/stefano/Programming/VulkanEngine/src/scene/nodeWorld.h \
   /home/stefano/Programming/VulkanEngine/src/scene/transform.h \
   /usr/include/glm/ext/matrix_transform.hpp \
@@ -63,11 +76,6 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /usr/include/glm/detail/setup.hpp /usr/include/c++/16/cassert \
   /usr/include/assert.h /usr/include/c++/16/cstddef \
   /usr/include/glm/simd/platform.h /usr/include/c++/16/cstdint \
-  /usr/lib/clang/23/include/stdint.h /usr/include/stdint.h \
-  /usr/include/bits/libc-header-start.h /usr/include/bits/types.h \
-  /usr/include/bits/typesizes.h /usr/include/bits/time64.h \
-  /usr/include/bits/wchar.h /usr/include/bits/stdint-intn.h \
-  /usr/include/bits/stdint-uintn.h /usr/include/bits/stdint-least.h \
   /usr/include/glm/ext/scalar_constants.inl /usr/include/c++/16/limits \
   /usr/include/glm/gtc/constants.inl /usr/include/glm/geometric.hpp \
   /usr/include/glm/detail/type_vec3.hpp \
@@ -77,11 +85,14 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /usr/include/glm/detail/compute_vector_decl.hpp \
   /usr/include/c++/16/functional /usr/include/c++/16/tuple \
   /usr/include/c++/16/bits/uses_allocator.h \
+  /usr/include/c++/16/bits/invoke.h \
   /usr/include/c++/16/bits/ranges_util.h \
   /usr/include/c++/16/bits/ranges_base.h \
   /usr/include/c++/16/bits/max_size_type.h /usr/include/c++/16/numbers \
+  /usr/include/c++/16/bits/functional_hash.h \
+  /usr/include/c++/16/bits/hash_bytes.h \
   /usr/include/c++/16/bits/refwrap.h \
-  /usr/include/c++/16/bits/std_function.h \
+  /usr/include/c++/16/bits/std_function.h /usr/include/c++/16/typeinfo \
   /usr/include/c++/16/bits/functexcept.h \
   /usr/include/c++/16/unordered_map \
   /usr/include/c++/16/bits/requires_hosted.h \
@@ -96,6 +107,7 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /usr/include/c++/16/x86_64-pc-linux-gnu/bits/c++allocator.h \
   /usr/include/c++/16/bits/new_allocator.h \
   /usr/include/c++/16/bits/new_throw.h \
+  /usr/include/c++/16/bits/enable_special_members.h \
   /usr/include/c++/16/bits/node_handle.h \
   /usr/include/c++/16/bits/erase_if.h \
   /usr/include/c++/16/bits/memory_resource.h \
@@ -302,21 +314,7 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /usr/include/glm/detail/type_half.inl /usr/include/glm/integer.hpp \
   /usr/include/glm/detail/func_integer.inl \
   /home/stefano/Programming/VulkanEngine/src/scene/textureStorage.h \
-  /usr/include/vulkan/vulkan_core.h /usr/include/vulkan/vk_platform.h \
-  /usr/include/vk_video/vulkan_video_codec_h264std.h \
-  /usr/include/vk_video/vulkan_video_codecs_common.h \
-  /usr/include/vk_video/vulkan_video_codec_h264std_encode.h \
-  /usr/include/vk_video/vulkan_video_codec_h265std.h \
-  /usr/include/vk_video/vulkan_video_codec_h265std_encode.h \
-  /usr/include/vk_video/vulkan_video_codec_h264std_decode.h \
-  /usr/include/vk_video/vulkan_video_codec_h265std_decode.h \
-  /usr/include/vk_video/vulkan_video_codec_av1std.h \
-  /usr/include/vk_video/vulkan_video_codec_av1std_decode.h \
-  /usr/include/vk_video/vulkan_video_codec_av1std_encode.h \
-  /usr/include/vk_video/vulkan_video_codec_vp9std.h \
-  /usr/include/vk_video/vulkan_video_codec_vp9std_decode.h \
   /home/stefano/Programming/VulkanEngine/src/vk/GPUImage.h \
-  /usr/include/volk.h \
   /home/stefano/Programming/VulkanEngine/includes/vk_mem_alloc.h \
   /usr/include/vulkan/vulkan.h \
   /home/stefano/Programming/VulkanEngine/src/vk/commandContext.h \
@@ -325,10 +323,7 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /home/stefano/Programming/VulkanEngine/src/render/renderSystem.h \
   /home/stefano/Programming/VulkanEngine/src/vk/pipeline.h \
   /home/stefano/Programming/VulkanEngine/src/vk/pipelineManager.h \
-  /home/stefano/Programming/VulkanEngine/src/scene/scene.h \
-  /home/stefano/Programming/VulkanEngine/src/scene/camera.h \
-  /home/stefano/Programming/VulkanEngine/src/scene/material.h \
-  /home/stefano/Programming/VulkanEngine/src/scene/MeshContainer.h \
+  /home/stefano/Programming/VulkanEngine/src/render/shaderManager.h \
   /usr/include/c++/16/string /usr/include/c++/16/bits/stringfwd.h \
   /usr/include/c++/16/bits/char_traits.h \
   /usr/include/c++/16/bits/postypes.h /usr/include/c++/16/cwchar \
@@ -352,14 +347,20 @@ CMakeFiles/VulkanEngine.dir/src/render/renderer.cpp.o.ddi: \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/bits/types/error_t.h /usr/include/c++/16/bits/charconv.h \
   /usr/include/c++/16/bits/basic_string.tcc \
-  /home/stefano/Programming/VulkanEngine/src/vk/gpuBuffer.h \
-  /home/stefano/Programming/VulkanEngine/src/vk/VulkanContext.h \
-  /home/stefano/Programming/VulkanEngine/src/render/shaderManager.h \
   /usr/include/shaderc/shaderc.h /usr/lib/clang/23/include/stdbool.h \
   /usr/include/shaderc/env.h /usr/include/shaderc/status.h \
   /usr/include/shaderc/visibility.h \
+  /home/stefano/Programming/VulkanEngine/src/scene/scene.h \
+  /home/stefano/Programming/VulkanEngine/src/scene/camera.h \
+  /home/stefano/Programming/VulkanEngine/src/scene/material.h \
+  /home/stefano/Programming/VulkanEngine/src/scene/MeshContainer.h \
+  /home/stefano/Programming/VulkanEngine/src/vk/gpuBuffer.h \
+  /home/stefano/Programming/VulkanEngine/src/vk/VulkanContext.h \
   /home/stefano/Programming/VulkanEngine/src/vk/swapchain.h \
-  /usr/include/c++/16/stdexcept \
+  /usr/include/c++/16/stdexcept /usr/include/c++/16/exception \
+  /usr/include/c++/16/bits/exception_ptr.h \
+  /usr/include/c++/16/bits/cxxabi_init_exception.h \
+  /usr/include/c++/16/bits/nested_exception.h \
   /usr/include/c++/16/bits/stdexcept_except.h \
   /home/stefano/Programming/VulkanEngine/src/scene/textureSystem.h \
   /home/stefano/Programming/VulkanEngine/includes/tiny_gltf_v3.h \

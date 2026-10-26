@@ -406,6 +406,7 @@ CMakeFiles/VulkanEngine.dir/src/vk/swapchain.cpp.o.ddi: \
   /usr/include/glm/detail/type_half.inl /usr/include/glm/integer.hpp \
   /usr/include/glm/detail/func_integer.inl \
   /home/stefano/Programming/VulkanEngine/src/render/renderer.h \
+  /home/stefano/Programming/VulkanEngine/src/render/frameLayout.h \
   /home/stefano/Programming/VulkanEngine/src/scene/nodeWorld.h \
   /home/stefano/Programming/VulkanEngine/src/scene/transform.h \
   /usr/include/glm/ext/matrix_transform.hpp \
@@ -449,10 +450,10 @@ CMakeFiles/VulkanEngine.dir/src/vk/swapchain.cpp.o.ddi: \
   /home/stefano/Programming/VulkanEngine/src/render/renderSystem.h \
   /home/stefano/Programming/VulkanEngine/src/vk/pipeline.h \
   /home/stefano/Programming/VulkanEngine/src/vk/pipelineManager.h \
+  /home/stefano/Programming/VulkanEngine/src/render/shaderManager.h \
   /home/stefano/Programming/VulkanEngine/src/scene/scene.h \
   /home/stefano/Programming/VulkanEngine/src/scene/camera.h \
   /home/stefano/Programming/VulkanEngine/src/scene/material.h \
   /home/stefano/Programming/VulkanEngine/src/scene/MeshContainer.h \
   /home/stefano/Programming/VulkanEngine/src/vk/gpuBuffer.h \
-  /home/stefano/Programming/VulkanEngine/src/vk/VulkanContext.h \
-  /home/stefano/Programming/VulkanEngine/src/render/shaderManager.h
+  /home/stefano/Programming/VulkanEngine/src/vk/VulkanContext.h

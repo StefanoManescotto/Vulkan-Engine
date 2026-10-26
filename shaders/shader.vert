@@ -61,13 +61,13 @@ layout(buffer_reference, scalar) readonly buffer VertexPtr {
     Vertex vertices[];
 };
 
-struct Material {
+struct GPUMaterial {
     vec4 baseColor;
     uint colorTextureIndex;
 };
 
 layout(buffer_reference, scalar) readonly buffer MaterialPtr {
-    Material materials[];
+    GPUMaterial materials[];
 };
 
 struct RenderItem {
@@ -88,6 +88,8 @@ layout (location = 3) out flat uint outTextureIndex;
 layout (location = 4) out flat vec4 outMaterialBaseColor;
 
 void main() {
+    // static_assert(sizeof(GPUMaterial) == 32);
+
     VertexPtr vBuffer = VertexPtr(frameConsts.vertexBufferAddress);
     Vertex v = vBuffer.vertices[gl_VertexIndex];
 
@@ -95,7 +97,7 @@ void main() {
     RenderItem ri = riBuffer.renderItems[gl_InstanceIndex];
 
     MaterialPtr matBuff = MaterialPtr(frameConsts.materialBufferAddress);
-    Material material = matBuff.materials[ri.materialIndex];
+    GPUMaterial material = matBuff.materials[ri.materialIndex];
 
     gl_Position = ri.wvp * vec4(v.position, 1.0);
     outColor = v.color;

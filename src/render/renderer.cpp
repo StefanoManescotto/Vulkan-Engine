@@ -20,7 +20,7 @@
 #include "vk/GPUImageSystem.h"
 #include "utils.h"
 
-RendererResources Renderer::init(const Device* device, const VmaAllocator* allocator, const Window* window, size_t maxNodes) {
+void Renderer::init(const Device* device, const VmaAllocator* allocator, const Window* window, size_t maxNodes) {
     m_device = device;
     m_allocator = allocator;
 
@@ -63,9 +63,27 @@ RendererResources Renderer::init(const Device* device, const VmaAllocator* alloc
     // m_textureManager.loadTexture(cmdContext, "container", std::string(RESOURCES_DIR) + "container.png");
 
     TextureSystem::createDescriptorSets(device->handle(), m_texStorage);
+    m_frameLayout.globalSetLayout = m_texStorage.globalDSLayout;
+    m_frameLayout.framePushConstant = {
+        .stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, // Stages accessing the PC
+        .offset = 0,
+        .size = sizeof(FrameConstants)
+    };
+
+    std::array<VkDescriptorSetLayout, 1> dsLayouts{ m_texStorage.globalDSLayout };
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+        .setLayoutCount = dsLayouts.size(),
+        .pSetLayouts = dsLayouts.data(),
+        .pushConstantRangeCount = 1,
+        .pPushConstantRanges = &m_frameLayout.framePushConstant
+    };
+    vkCreatePipelineLayout(device->handle(), &pipelineLayoutInfo, nullptr, &m_frameLayout.defaultPipelineLayout);
+    // assert(r == VK_SUCCESS);
+    // printf("created layout: %p\n", (void*)m_frameLayout.defaultPipelineLayout);
     m_mainRenderSystem.init2(m_device->handle(), pCtx, m_texStorage, m_pipelineManager);
 
-    return { .texStorage = &m_texStorage, .cmdCtx = &cmdContext };
+    // return { .texStorage = &m_texStorage, .cmdCtx = &cmdContext };
 }
 
 void Renderer::initImages() {
@@ -222,7 +240,7 @@ void Renderer::renderFrame(const Window* window, Scene &scene, GPUBufferVec &buf
     // ctx.texManager = m_textureManager;
     ctx.indirectDrawPtr = currentFrameRes.indirectDrawPtr;
     ctx.renderItemPtr = currentFrameRes.renderItemPtr;
-
+    
     m_mainRenderSystem.render2(ctx, m_texStorage, m_pipelineManager);
 
 

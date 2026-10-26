@@ -5,8 +5,8 @@
 #pragma once
 
 #include <array>
-#include <optional>
 
+#include "render/frameLayout.h"
 #include "scene/nodeWorld.h"
 #include "scene/textureStorage.h"
 #include "vk/commandContext.h"
@@ -15,15 +15,23 @@
 #include "shaderManager.h"
 #include "vk/gpuBuffer.h"
 #include "vk/swapchain.h"
+// #include "render/frameLayout.h"
+
 #include "volk.h"
 
-class GameObject;
+// class GameObject;
 struct Window;
-struct Scene;
+// struct Scene;
 
-struct RendererResources {
-    TextureStorage* texStorage;
-    CommandContext* cmdCtx;
+// struct RendererResources {
+//     TextureStorage* texStorage;
+//     CommandContext* cmdCtx;
+// };
+
+struct FrameConstants {
+	uint64_t vertexBufferAddress = 0;
+	uint64_t materialBufferAddress = 0;
+	uint64_t renderItemsAddress = 0;
 };
 
 struct FrameResources {
@@ -47,11 +55,18 @@ class Renderer {
 public:
     Renderer() = default;
 
-    RendererResources init(const Device* device, const VmaAllocator* allocator, const Window* window, size_t maxNodes);
-    const PipelineManager& getPipelineManager() const { return m_pipelineManager; }
+    void init(const Device* device, const VmaAllocator* allocator, const Window* window, size_t maxNodes);
+    // const PipelineManager& getPipelineManager() const { return m_pipelineManager; }
 
     void renderFrame(const Window* window, Scene &scene, GPUBufferVec &buffers);
     
+    // TODO: make these const
+    CommandContext& getCommandContext() { return cmdContext; }
+    TextureStorage& getTextureStorage() { return m_texStorage; }
+    PipelineManager& getPipelineManager() { return m_pipelineManager; }
+    ShaderManager& getShaderManager() { return m_shaderManager; }
+    FrameLayout& getFrameLayout() { return m_frameLayout; }
+
     void destroyRenderer();
 private:
     constexpr static uint32_t MaxFramesInFlight { 2 };
@@ -69,7 +84,8 @@ private:
     VkSemaphore timelineSemaphore = nullptr;
     CommandContext cmdContext;
     TextureStorage m_texStorage;
-    
+    FrameLayout m_frameLayout;
+
     Swapchain swapchain;
     SwapchainConfig config;
     bool requireSwapchainRecreate = false;

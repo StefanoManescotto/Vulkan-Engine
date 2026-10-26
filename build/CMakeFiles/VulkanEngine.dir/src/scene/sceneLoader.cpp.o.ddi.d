@@ -188,8 +188,24 @@ CMakeFiles/VulkanEngine.dir/src/scene/sceneLoader.cpp.o.ddi: \
   /usr/include/c++/16/bits/align.h \
   /usr/include/c++/16/bits/stl_uninitialized.h \
   /usr/include/c++/16/bits/fs_dir.h /usr/include/c++/16/bits/fs_ops.h \
-  /home/stefano/Programming/VulkanEngine/src/scene/scene.h \
-  /home/stefano/Programming/VulkanEngine/src/scene/camera.h \
+  /home/stefano/Programming/VulkanEngine/src/render/renderer.h \
+  /usr/include/c++/16/array \
+  /home/stefano/Programming/VulkanEngine/src/render/frameLayout.h \
+  /usr/include/volk.h /usr/include/vulkan/vk_platform.h \
+  /usr/include/vulkan/vulkan_core.h \
+  /usr/include/vk_video/vulkan_video_codec_h264std.h \
+  /usr/include/vk_video/vulkan_video_codecs_common.h \
+  /usr/include/vk_video/vulkan_video_codec_h264std_encode.h \
+  /usr/include/vk_video/vulkan_video_codec_h265std.h \
+  /usr/include/vk_video/vulkan_video_codec_h265std_encode.h \
+  /usr/include/vk_video/vulkan_video_codec_h264std_decode.h \
+  /usr/include/vk_video/vulkan_video_codec_h265std_decode.h \
+  /usr/include/vk_video/vulkan_video_codec_av1std.h \
+  /usr/include/vk_video/vulkan_video_codec_av1std_decode.h \
+  /usr/include/vk_video/vulkan_video_codec_av1std_encode.h \
+  /usr/include/vk_video/vulkan_video_codec_vp9std.h \
+  /usr/include/vk_video/vulkan_video_codec_vp9std_decode.h \
+  /home/stefano/Programming/VulkanEngine/src/scene/nodeWorld.h \
   /home/stefano/Programming/VulkanEngine/src/scene/transform.h \
   /usr/include/glm/ext/matrix_transform.hpp \
   /usr/include/glm/gtc/constants.hpp \
@@ -212,8 +228,7 @@ CMakeFiles/VulkanEngine.dir/src/scene/sceneLoader.cpp.o.ddi: \
   /usr/include/c++/16/bits/node_handle.h /usr/include/c++/16/vector \
   /usr/include/c++/16/bits/stl_vector.h \
   /usr/include/c++/16/bits/stl_bvector.h \
-  /usr/include/c++/16/bits/vector.tcc /usr/include/c++/16/array \
-  /usr/include/c++/16/bits/binders.h \
+  /usr/include/c++/16/bits/vector.tcc /usr/include/c++/16/bits/binders.h \
   /usr/include/glm/detail/_vectorize.hpp \
   /usr/include/glm/detail/func_geometric.inl \
   /usr/include/glm/exponential.hpp /usr/include/glm/detail/type_vec1.hpp \
@@ -365,14 +380,12 @@ CMakeFiles/VulkanEngine.dir/src/scene/sceneLoader.cpp.o.ddi: \
   /usr/include/glm/ext/quaternion_transform.hpp \
   /usr/include/glm/ext/quaternion_transform.inl \
   /usr/include/glm/gtc/quaternion.inl /usr/include/glm/gtc/epsilon.hpp \
-  /usr/include/glm/gtc/epsilon.inl \
-  /home/stefano/Programming/VulkanEngine/src/scene/nodeWorld.h \
-  /usr/include/fmt/base.h /usr/lib/clang/23/include/limits.h \
-  /usr/include/limits.h /usr/include/bits/posix1_lim.h \
-  /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
-  /usr/include/bits/posix2_lim.h /usr/include/bits/xopen_lim.h \
-  /usr/include/bits/uio_lim.h /usr/include/string.h \
-  /usr/include/strings.h /usr/include/glm/glm.hpp \
+  /usr/include/glm/gtc/epsilon.inl /usr/include/fmt/base.h \
+  /usr/lib/clang/23/include/limits.h /usr/include/limits.h \
+  /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h \
+  /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h \
+  /usr/include/bits/xopen_lim.h /usr/include/bits/uio_lim.h \
+  /usr/include/string.h /usr/include/strings.h /usr/include/glm/glm.hpp \
   /usr/include/c++/16/climits /usr/include/c++/16/cfloat \
   /usr/lib/clang/23/include/float.h \
   /usr/lib/clang/23/include/__float_header_macro.h \
@@ -383,28 +396,26 @@ CMakeFiles/VulkanEngine.dir/src/scene/sceneLoader.cpp.o.ddi: \
   /usr/include/glm/detail/type_half.inl /usr/include/glm/integer.hpp \
   /usr/include/glm/detail/func_integer.inl \
   /home/stefano/Programming/VulkanEngine/src/scene/textureStorage.h \
-  /usr/include/vulkan/vulkan_core.h /usr/include/vulkan/vk_platform.h \
-  /usr/include/vk_video/vulkan_video_codec_h264std.h \
-  /usr/include/vk_video/vulkan_video_codecs_common.h \
-  /usr/include/vk_video/vulkan_video_codec_h264std_encode.h \
-  /usr/include/vk_video/vulkan_video_codec_h265std.h \
-  /usr/include/vk_video/vulkan_video_codec_h265std_encode.h \
-  /usr/include/vk_video/vulkan_video_codec_h264std_decode.h \
-  /usr/include/vk_video/vulkan_video_codec_h265std_decode.h \
-  /usr/include/vk_video/vulkan_video_codec_av1std.h \
-  /usr/include/vk_video/vulkan_video_codec_av1std_decode.h \
-  /usr/include/vk_video/vulkan_video_codec_av1std_encode.h \
-  /usr/include/vk_video/vulkan_video_codec_vp9std.h \
-  /usr/include/vk_video/vulkan_video_codec_vp9std_decode.h \
   /home/stefano/Programming/VulkanEngine/src/vk/GPUImage.h \
-  /usr/include/volk.h \
   /home/stefano/Programming/VulkanEngine/includes/vk_mem_alloc.h \
   /usr/include/vulkan/vulkan.h \
+  /home/stefano/Programming/VulkanEngine/src/vk/commandContext.h \
+  /home/stefano/Programming/VulkanEngine/src/vk/device.h \
+  /home/stefano/Programming/VulkanEngine/src/render/mainRenderSystem.h \
+  /home/stefano/Programming/VulkanEngine/src/render/renderSystem.h \
+  /home/stefano/Programming/VulkanEngine/src/vk/pipeline.h \
+  /home/stefano/Programming/VulkanEngine/src/vk/pipelineManager.h \
+  /home/stefano/Programming/VulkanEngine/src/render/shaderManager.h \
+  /usr/include/shaderc/shaderc.h /usr/lib/clang/23/include/stdbool.h \
+  /usr/include/shaderc/env.h /usr/include/shaderc/status.h \
+  /usr/include/shaderc/visibility.h \
+  /home/stefano/Programming/VulkanEngine/src/scene/scene.h \
+  /home/stefano/Programming/VulkanEngine/src/scene/camera.h \
   /home/stefano/Programming/VulkanEngine/src/scene/material.h \
   /home/stefano/Programming/VulkanEngine/src/scene/MeshContainer.h \
-  /home/stefano/Programming/VulkanEngine/src/vk/VulkanContext.h \
-  /home/stefano/Programming/VulkanEngine/src/vk/commandContext.h \
   /home/stefano/Programming/VulkanEngine/src/vk/gpuBuffer.h \
+  /home/stefano/Programming/VulkanEngine/src/vk/VulkanContext.h \
+  /home/stefano/Programming/VulkanEngine/src/vk/swapchain.h \
   /home/stefano/Programming/VulkanEngine/includes/tiny_gltf_v3.h \
   /usr/lib/clang/23/include/__stdarg_header_macro.h \
   /usr/lib/clang/23/include/__stdarg_va_list.h \

@@ -5,12 +5,13 @@
 #pragma once
 #include <filesystem>
 
+#include "render/renderer.h"
 #include "scene/scene.h"
-#include "textureStorage.h"
+// #include "textureStorage.h"
 #include "vk/VulkanContext.h"
-#include "vk/commandContext.h"
+// #include "vk/commandContext.h"
 #include "vk/gpuBuffer.h"
 
 namespace SceneLoader {
-    Scene loadScene(VulkanCtx ctx, CommandContext& cmdContext, TextureStorage &texStorage, std::filesystem::path path, GPUBufferVec &GPUBuffers);
+    Scene loadScene(VulkanCtx& ctx, Renderer& renderer, std::filesystem::path path, GPUBufferVec &GPUBuffers);
 }

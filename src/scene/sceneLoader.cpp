@@ -4,6 +4,7 @@
 
 #include "sceneLoader.h"
 
+#include "render/renderer.h"
 #include "scene/material.h"
 #include "tiny_gltf_v3.h"
 #include "stb_image.h"
@@ -148,7 +149,7 @@ namespace SceneLoader {
         return nodeId;
     }
 
-    void loadGltf(VulkanCtx ctx, CommandContext& cmdContext, TextureStorage &texStorage, const std::string &filepath, Scene &sceneObjs) {
+    void loadGltf(VulkanCtx ctx, Renderer& renderer, const std::string &filepath, Scene &sceneObjs) {
         if (!std::filesystem::exists(filepath)) {
             fmt::print("File doesn't exist : {}\n", filepath);
             return;
@@ -176,15 +177,15 @@ namespace SceneLoader {
         std::filesystem::path imageDir = std::filesystem::path(filepath).parent_path();
         std::vector<Image> images = loadImages(model, imageDir);
         // std::vector<uint32_t> imageIds = uploadImages(images); // upload images to VRAM
-        std::vector<uint32_t> imageIds = TextureSystem::loadGPUImages(ctx, cmdContext, texStorage, images);
+        std::vector<uint32_t> imageIds = TextureSystem::loadGPUImages(ctx, renderer.getCommandContext(), renderer.getTextureStorage(), images);
         for (const Image img : images) {
             stbi_image_free(img.data);
         }
 
         
-        std::vector<uint32_t> samplerIds = TextureSystem::loadSamplers(ctx.device, texStorage, model, sceneObjs.textures);
-        std::vector<uint32_t> textureIds = TextureSystem::loadTextures(texStorage.maxTextures, model, imageIds, samplerIds, sceneObjs.textures);
-        std::vector<uint32_t> materialIds = MaterialSystem::loadMaterials(model, textureIds, sceneObjs.materials);
+        std::vector<uint32_t> samplerIds = TextureSystem::loadSamplers(ctx.device, renderer.getTextureStorage(), model, sceneObjs.textures);
+        std::vector<uint32_t> textureIds = TextureSystem::loadTextures(renderer.getTextureStorage().maxTextures, model, imageIds, samplerIds, sceneObjs.textures);
+        std::vector<uint32_t> materialIds = MaterialSystem::loadMaterials(model, textureIds, sceneObjs.materials, sceneObjs.gpuMaterials, renderer);
         std::vector<uint32_t> meshIds = MeshSystem::loadMeshes(model, materialIds, sceneObjs.meshContainer);
 
         const tg3_scene *scene = &model.scenes[model.default_scene != -1 ? model.default_scene : 0];
@@ -205,10 +206,11 @@ namespace SceneLoader {
             }
         }
         tg3_model_free(&model);
+        
         fmt::print("GLTF Loading Successful\n\n");
     }
 
-    Scene loadScene(VulkanCtx ctx, CommandContext& cmdContext, TextureStorage &texStorage, std::filesystem::path path, GPUBufferVec &GPUBuffers) {
+    Scene loadScene(VulkanCtx& ctx, Renderer& renderer, std::filesystem::path path, GPUBufferVec &GPUBuffers) {
         Scene scene {};
         constexpr size_t vertexBufferBytes = 64 * 1024 * 1024; // 64MB
         constexpr size_t indexBufferBytes = 32 * 1024 * 1024; // 32MB
@@ -217,9 +219,9 @@ namespace SceneLoader {
         // VkDeviceSize indexBufferBytes = scene.meshContainer.indices.size() * sizeof(scene.meshContainer.indices[0]);
 
 
-        initData(ctx, cmdContext, scene, texStorage, vertexBufferBytes, indexBufferBytes);
-        loadGltf(ctx, cmdContext, texStorage, path, scene);
-        
+        initData(ctx, renderer.getCommandContext(), scene, renderer.getTextureStorage(), vertexBufferBytes, indexBufferBytes);
+        loadGltf(ctx, renderer, path, scene);
+
         Node &root = scene.nodeWorld.getNode(scene.nodeWorld.rootNodeId);
         root.getTransform().setScale(glm::vec3(0.01, 0.01, 0.01));
         root.getTransform().setPosition(glm::vec3(0, -15, 0));
@@ -248,26 +250,25 @@ namespace SceneLoader {
         gpuBuffer::mapCopyBufferData(ctx.allocator, indexBuffStage, 0, scene.meshContainer.indices.data(), indexBufferBytes);
         
         // copy staged data into VRAM
-        VkCommandBuffer geoCmdBuffer = cmdContext.startTransientCommandBuffer();
+        VkCommandBuffer geoCmdBuffer = renderer.getCommandContext().startTransientCommandBuffer();
         VkBufferCopy buffCopyVerts{ .srcOffset = 0, .dstOffset = 0, .size = vertexBufferBytes };
         vkCmdCopyBuffer(geoCmdBuffer, vertexBuffStage.buffer, vertexBuffer.buffer, 1, &buffCopyVerts);
         VkBufferCopy buffCopyIndices{ .srcOffset = 0, .dstOffset = 0, .size = indexBufferBytes };
         vkCmdCopyBuffer(geoCmdBuffer, indexBuffStage.buffer, indexBuffer.buffer, 1, &buffCopyIndices);
-        cmdContext.submitTransientCommandBuffer(geoCmdBuffer);
+        renderer.getCommandContext().submitTransientCommandBuffer(geoCmdBuffer);
         
         vmaDestroyBuffer(ctx.allocator, vertexBuffStage.buffer, vertexBuffStage.allocation);
         vmaDestroyBuffer(ctx.allocator, indexBuffStage.buffer, indexBuffStage.allocation);
         
-        TextureSystem::updateTextureDescriptors(ctx.device, texStorage, scene.textures, texStorage.globalDescSet);
-        
+        TextureSystem::updateTextureDescriptors(ctx.device, renderer.getTextureStorage(), scene.textures, renderer.getTextureStorage().globalDescSet);
+
         // Material buffer
-        const size_t matDataBytes = scene.materials.size() * sizeof(Material);
+        const size_t matDataBytes = scene.gpuMaterials.size() * sizeof(GPUMaterial);
         GPUBuffer matBuffer = gpuBuffer::createBuffer(ctx, matDataBytes, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, 
             VMA_MEMORY_USAGE_AUTO, true);
         GPUBuffers.buffers.push_back(matBuffer);
         GPUBuffers.matBufferId = GPUBuffers.buffers.size();
-        gpuBuffer::mapCopyBufferData(ctx.allocator, matBuffer, 0, scene.materials.data(), matDataBytes);
-
+        gpuBuffer::mapCopyBufferData(ctx.allocator, matBuffer, 0, scene.gpuMaterials.data(), matDataBytes);
 
         return scene;
     }
