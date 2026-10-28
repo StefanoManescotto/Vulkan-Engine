@@ -1,2 +1,2 @@
-includes/thirdparty/** linguist-vendored
+includes/** linguist-vendored
 resources/** linguist-documentation
