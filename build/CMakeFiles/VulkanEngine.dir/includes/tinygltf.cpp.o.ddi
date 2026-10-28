@@ -1,9 +1,0 @@
-{
-  "revision": 0,
-  "rules": [
-    {
-      "primary-output": "CMakeFiles/VulkanEngine.dir/includes/tinygltf.cpp.o"
-    }
-  ],
-  "version": 1
-}

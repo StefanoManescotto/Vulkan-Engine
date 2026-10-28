@@ -1,9 +1,0 @@
-{
-  "revision": 0,
-  "rules": [
-    {
-      "primary-output": "CMakeFiles/Vulkan_Engine.dir/src/application.cpp.o"
-    }
-  ],
-  "version": 1
-}
