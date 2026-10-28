@@ -15,6 +15,4 @@
 
 namespace MeshSystem {
     std::vector<uint32_t> loadMeshes(const tg3_model &model, const std::vector<uint32_t> &materialIds, MeshContainer &meshVerts);
-    void createBuffer(const VulkanCtx &ctx, GPUMesh &gpuMesh, const MeshContainer &mesh);
-    void destroyBuffer(const VulkanCtx &ctx, GPUMesh &gpuMesh);
 }

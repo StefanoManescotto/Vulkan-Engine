@@ -9,7 +9,6 @@
 void CommandContext::init(VkDevice device, VkQueue queue, uint32_t queueFamilyIndex) {
     m_device = device;
     m_queue = queue;
-    // m_commandPool = pool;
 
     VkCommandPoolCreateInfo poolInfo {
         .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
@@ -103,7 +102,6 @@ VkCommandBuffer CommandContext::startTransientCommandBuffer() {
 void CommandContext::submitTransientCommandBuffer(VkCommandBuffer commandBuffer) {
 	vkEndCommandBuffer(commandBuffer);
 
-	// TODO: Submit on a transfer queue
 	VkSubmitInfo submitInfo {
 		.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
 		.commandBufferCount = 1,

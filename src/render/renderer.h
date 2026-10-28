@@ -15,18 +15,10 @@
 #include "shaderManager.h"
 #include "vk/gpuBuffer.h"
 #include "vk/swapchain.h"
-// #include "render/frameLayout.h"
 
 #include "volk.h"
 
-// class GameObject;
 struct Window;
-// struct Scene;
-
-// struct RendererResources {
-//     TextureStorage* texStorage;
-//     CommandContext* cmdCtx;
-// };
 
 struct FrameConstants {
 	uint64_t vertexBufferAddress = 0;

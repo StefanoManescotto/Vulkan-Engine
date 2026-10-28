@@ -4,7 +4,6 @@
 
 #include "render/mainRenderSystem.h"
 #include "render/renderer.h"
-#include "vk/swapchain.h"
 
 #include <algorithm>
 #include <glm/fwd.hpp>
@@ -13,7 +12,6 @@
 struct MeshPushConstants {
     uint64_t vertexBufferAddress; // Direct BDA address to vertices
     uint64_t _padding;
-    // uint32_t textureIndex;
     glm::vec4 color;
     glm::mat4 modelMatrix;
 };
@@ -23,41 +21,6 @@ struct FrameConstant {
     uint64_t materialBufferAddress;
     uint64_t renderItemsAddress;
 };
-
-void MainRenderSystem::init(VkDevice device, MainPipelineContext& pipelineCtx) {}
-
-void MainRenderSystem::init2(VkDevice device, MainPipelineContext& pipelineCtx, TextureStorage& texStorage, PipelineManager& pManager) {
-    // PipelineManager::getDefaultConfigs(pipelineConfig);
-    // pipelineConfig.renderingInfo = {
-    //     .sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
-    //     .pNext = nullptr,
-    //     .colorAttachmentCount = 1,
-    //     .pColorAttachmentFormats = &pipelineCtx.colorFormat,
-    //     .depthAttachmentFormat = pipelineCtx.depthFormat,
-    //     .stencilAttachmentFormat = VK_FORMAT_UNDEFINED
-    // };
-
-
-    // // TODO: add frameLayout.pushconstant = ....
-    // pipelineConfig.pushConstantRange = {
-    //     .stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, // Stages accessing the PC
-    //     .offset = 0,
-    //     .size = sizeof(FrameConstant)
-    // };
-
-    // std::array<VkDescriptorSetLayout, 1> dsLayouts{ texStorage.globalDSLayout };
-
-    // // need to define a pipeline layout
-    // pipelineConfig.pipelineLayoutInfo = {
-    //     .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-    //     .setLayoutCount = dsLayouts.size(),
-    //     .pSetLayouts = dsLayouts.data(),
-    //     .pushConstantRangeCount = 1,
-    //     .pPushConstantRanges = &pipelineConfig.pushConstantRange
-    // };
-
-    // createPipeline(device, pipelineCtx, pManager);
-}
 
 void MainRenderSystem::render(MainRenderContext &ctx){}
 
@@ -258,27 +221,6 @@ void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorag
     }
     // end dynamic rendering
     vkCmdEndRendering(ctx.cmd);
-}
-
-void MainRenderSystem::createPipeline(VkDevice device, MainPipelineContext& pipelineCtx){}
-void MainRenderSystem::createPipeline(VkDevice device, MainPipelineContext& pipelineCtx, PipelineManager& pManager) {
-    pipelineConfig.shaderStages = {
-        {
-            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-            .stage = VK_SHADER_STAGE_VERTEX_BIT,
-            .module = pipelineCtx.vertexShader,
-            .pName = "main"
-        },
-        {
-            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-            .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-            .module = pipelineCtx.fragmentShader,
-            .pName = "main"
-        }
-    };
-    // TODO: the color and depth format may be the same of the one in the Image class: look into it.
-    // pManager.createPipeline(pipelineConfig);
-    // pipeline.createPipeline(device, pipelineConfig);
 }
 
 void MainRenderSystem::destroyRenderSystem() {

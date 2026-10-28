@@ -179,7 +179,7 @@ void Device::destroyDevice() {
 
 // TODO: make it so it can check on multiple possible formats and uses the first one supported
 
-/// Ensure the swapchain format is supported
+// Ensure the swapchain format is supported
 bool Device::supportSwapchainFormat(VkFormat format) const{
     uint32_t formatCount = 0;
     vkGetPhysicalDeviceSurfaceFormatsKHR(m_physicalDevice, m_surface, &formatCount, nullptr);

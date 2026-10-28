@@ -32,34 +32,22 @@ struct PipelineKeyHash {
     std::size_t operator()(const PipelineKey& key) const noexcept {
         std::size_t seed = 0;
 
-        // Hash combine lambda (based on boost::hash_combine)
         auto hash_combine = [&seed](std::size_t h) {
             seed ^= h + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         };
 
-        // 1. Hash shader modules (Vulkan handles can be pointers or uint64_t under the hood)
         hash_combine(std::hash<uint64_t>{}(reinterpret_cast<uint64_t>(key.vertShader)));
         hash_combine(std::hash<uint64_t>{}(reinterpret_cast<uint64_t>(key.fragShader)));
 
-        // 2. Hash Vulkan formats (enums)
         hash_combine(std::hash<int>{}(static_cast<int>(key.colorAttachmentFormat)));
         hash_combine(std::hash<int>{}(static_cast<int>(key.depthAttachmentFormat)));
 
-        // 3. Hash booleans
         hash_combine(std::hash<bool>{}(key.enableBlending));
         hash_combine(std::hash<bool>{}(key.enableDepthTest));
 
         return seed;
     }
 };
-
-// struct PipelineKeyHash {
-//     size_t operator()(const PipelineKey& key) const {
-//         size_t h1 = std::hash<uint64_t>()(reinterpret_cast<uint64_t>(key.vertShader));
-//         size_t h2 = std::hash<uint64_t>()(reinterpret_cast<uint64_t>(key.fragShader));
-//         return h1 ^ (h2 << 1);
-//     }
-// };
 
 struct PipelineConfig {
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
@@ -92,8 +80,6 @@ struct PipelineConfig {
 
 class PipelineManager {
 public:
-    // PipelineManager(VkDevice device){ m_device = device; }
-
     void init(VkDevice device){ m_device = device; }
     uint32_t createPipeline(const PipelineConfig& config,  const PipelineKey& key, FrameLayout& frameLayout);
     uint32_t getOrCreatePipeline(const PipelineKey& key, FrameLayout& frameLayout);

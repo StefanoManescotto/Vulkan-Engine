@@ -1,43 +1,3 @@
-// #version 460
-// #extension GL_EXT_buffer_reference : require
-// #extension GL_EXT_debug_printf : require
-// #extension GL_EXT_scalar_block_layout : require
-
-// layout (location = 0) out vec3 outColor;
-// layout (location = 1) out vec2 outUv;
-
-// struct Vertex {
-//     vec3 pos;
-//     vec3 normal;
-//     vec2 uv;
-// };
-
-// layout(buffer_reference, scalar) readonly buffer VertexBuffer {
-//     Vertex vertices[];
-// };
-
-// layout(push_constant, scalar) uniform FrameConstants {
-//     VertexBuffer vertexBufferAddress; // 64-bit BDA pointer
-// //    uint32_t textureIndex;
-//     vec4 color;
-//     mat4 modelMatrix;
-// } pc;
-
-// //layout(location = 0) out vec2 outUV;
-
-// void main() {
-//     Vertex v = pc.vertexBufferAddress.vertices[gl_VertexIndex];
-//     outColor = v.normal;
-//     outUv = v.uv;
-
-//     vec4 localPosition = vec4(v.pos, 1.0);
-//     vec4 worldPosition = pc.modelMatrix * localPosition;
-//     gl_Position = worldPosition;
-
-// //    debugPrintfEXT("Processing Vertex Index: %d\n", gl_VertexIndex);
-// }
-
-
 #version 460
 
 #extension GL_EXT_buffer_reference : require
@@ -88,8 +48,6 @@ layout (location = 3) out flat uint outTextureIndex;
 layout (location = 4) out flat vec4 outMaterialBaseColor;
 
 void main() {
-    // static_assert(sizeof(GPUMaterial) == 32);
-
     VertexPtr vBuffer = VertexPtr(frameConsts.vertexBufferAddress);
     Vertex v = vBuffer.vertices[gl_VertexIndex];
 

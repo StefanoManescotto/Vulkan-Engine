@@ -16,5 +16,4 @@ namespace TextureSystem {
     std::vector<uint32_t> loadTextures(size_t maxTextures, const tg3_model &model, const std::vector<uint32_t> &imageIds, const std::vector<uint32_t> &samplerIds, std::vector<Texture>& textures);
     void updateTextureDescriptors(const VkDevice &device, TextureStorage &texStorage, std::vector<Texture> &textures, VkDescriptorSet &descSet);
     bool createDescriptorSets(const VkDevice &device, TextureStorage &texStorage);
-    // void addSampler(VulkanCtx &ctx, TextureStorage &texStorage);
 }

@@ -6,12 +6,12 @@
 
 #include <cstring>
 
-// #include <string>
 #include <fmt/printf.h>
 #include <stb_image.h>
 #include <tiny_gltf_v3.h>
 #include <vulkan/vulkan_core.h>
 
+#include "vk/GPUImage.h"
 #include "vk/commandContext.h"
 #include "textureStorage.h"
 #include "vk/VulkanContext.h"
@@ -33,10 +33,6 @@ namespace TextureSystem {
         GPUImageSystem::allocateImage(ctx, imageConfig, newImage);
         texStorage.gpuImages.push_back(newImage);
         uint32_t imgId = texStorage.gpuImages.size() - 1;
-
-        // Texture* tex = &m_textures.emplace(name, Texture()).first->second;
-        // tex->m_image.allocateImage(ctx.device, ctx.allocator, imageConfig);
-
 
         GPUImageSystem::transitionLayout(texStorage.gpuImages.at(imgId), cmd, VK_PIPELINE_STAGE_2_NONE, VK_ACCESS_2_NONE,
             VK_PIPELINE_STAGE_2_COPY_BIT,VK_ACCESS_2_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
@@ -69,15 +65,14 @@ namespace TextureSystem {
     std::vector<uint32_t> loadGPUImages(VulkanCtx &ctx, CommandContext& cmdContext, TextureStorage &texStorage, std::vector<Image>& images) {
 
         std::vector<uint32_t> imgIds;
-        std::vector<VkBuffer> stagingBuffers;
+        std::vector<GPUBuffer> stagingBuffers;
         cmdContext.immediateSubmit([&](VkCommandBuffer cmd) {
             for (int i = 0; i < images.size(); i++) {
                 Image img = images[i];
                 VkDeviceSize imageSize = img.width * img.height * img.channels;
 
                 GPUBuffer gpuBuffer {};
-                // VkBuffer stagingBuffer;
-                // VmaAllocation stagingBufferMemory;
+
                 gpuBuffer = gpuBuffer::createBuffer(
                     ctx,
                     imageSize,
@@ -85,7 +80,6 @@ namespace TextureSystem {
                     VMA_MEMORY_USAGE_AUTO_PREFER_HOST,
                     true
                 );
-                stagingBuffers.push_back(gpuBuffer.buffer);
 
                 void *data = nullptr;
                 vmaMapMemory(ctx.allocator, gpuBuffer.allocation, &data);
@@ -95,11 +89,13 @@ namespace TextureSystem {
                 GPUImage gpuImage {};
                 uint32_t newId = createImage(ctx, texStorage, cmd, img, gpuImage, gpuBuffer);
                 imgIds.push_back(newId);
+
+                stagingBuffers.push_back(std::move(gpuBuffer));
             }
         });
 
-        for (VkBuffer buffer : stagingBuffers) {
-            vkDestroyBuffer(ctx.device, buffer, nullptr);
+        for (GPUBuffer buffer : stagingBuffers) {
+            vmaDestroyBuffer(ctx.allocator, buffer.buffer, buffer.allocation);
         }
 
         return imgIds;
@@ -150,7 +146,6 @@ namespace TextureSystem {
 	}
 
 	std::vector<uint32_t> loadTextures(const size_t maxTextures, const tg3_model &model, const std::vector<uint32_t> &imageIds, const std::vector<uint32_t> &samplerIds, std::vector<Texture>& textures) {
-    	// TODO: add assert
         assert(textures.size() + model.textures_count <= maxTextures && "Exceeding max texture count");
         std::vector<uint32_t> textureIds(model.textures_count);
         for (int i = 0; i < model.textures_count; i++) {
@@ -245,27 +240,4 @@ namespace TextureSystem {
 
         return true;
     }
-
-
-
-    // void addSampler(VulkanCtx &ctx, TextureStorage &texStorage) {
-    //     // TODO: change this so it can be chosen any sampler from the list
-    //     // tex->m_sampler = &m_samplers.at(0);
-    //
-    //     VkSamplerCreateInfo samplerInfo{
-    //         .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-    //         .magFilter = VK_FILTER_NEAREST,
-    //         .minFilter = VK_FILTER_NEAREST,
-    //         .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-    //         .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-    //         .addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-    //         .compareEnable = VK_FALSE,
-    //     };
-    //     VkSampler sampler = VK_NULL_HANDLE;
-    //     if (vkCreateSampler(ctx.device, &samplerInfo, nullptr, &sampler) != VK_SUCCESS) {
-    //         throw std::runtime_error("Failed to create sampler.");
-    //     }
-    //
-    //     texStorage.samplers.push_back(sampler);
-    // }
 }

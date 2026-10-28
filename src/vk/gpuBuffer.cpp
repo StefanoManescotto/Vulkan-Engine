@@ -1,4 +1,5 @@
 #include "vk/gpuBuffer.h"
+#include "utils.h"
 #include "vk/VulkanContext.h"
 
 #include <cstring>
@@ -24,13 +25,8 @@ namespace gpuBuffer {
             .usage = memoryUsage,
         };
 
-        // VK_CHECK( vmaCreateBuffer(ctx.allocator, &bufferCreateInfo, &allocationCreateInfo,
-        //     &gpuBuffer.buffer, &gpuBuffer.allocation, nullptr) );
-
-        if (vmaCreateBuffer(ctx.allocator, &bufferCreateInfo, &allocationCreateInfo,
-            &gpuBuffer.buffer, &gpuBuffer.allocation, nullptr) != VK_SUCCESS) {
-            throw std::runtime_error("Failed to create buffer.");
-        }
+        VK_CHECK( vmaCreateBuffer(ctx.allocator, &bufferCreateInfo, &allocationCreateInfo,
+            &gpuBuffer.buffer, &gpuBuffer.allocation, nullptr) );
         
         // BDA send device pointer
         if (bufferUsageFlag & VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT){

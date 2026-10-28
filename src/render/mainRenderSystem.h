@@ -4,8 +4,7 @@
 
 #pragma once
 
-#include "render/frameLayout.h"
-// #include "render/renderer.h"
+// #include "render/frameLayout.h"
 // #include "render/renderer.h"
 #include "render/renderSystem.h"
 #include "scene/scene.h"
@@ -63,14 +62,5 @@ public:
     void render(MainRenderContext &ctx) override;
     void render2(MainRenderContext &ctx, TextureStorage &texStorage, PipelineManager& pManager);
 
-    void init(VkDevice device, MainPipelineContext& pipelineCtx) override;
-    void init2(VkDevice device, MainPipelineContext& pipelineCtx, TextureStorage& texStorage, PipelineManager& pManager);
-
-    void createPipeline(VkDevice device, MainPipelineContext& pipelineCtx) override;
-    void createPipeline(VkDevice device, MainPipelineContext& pipelineCtx, PipelineManager& pManager);
-
     void destroyRenderSystem() override;
-
-private:
-    // std::vector<DrawItem> drawItems;
 };

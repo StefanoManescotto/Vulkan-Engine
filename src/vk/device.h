@@ -20,8 +20,7 @@ public:
   void destroyDevice();
 
   bool supportSwapchainFormat(VkFormat format) const;
-  bool supportFormat(VkFormat format,
-                      VkFormatFeatureFlags requiredFeatures) const;
+  bool supportFormat(VkFormat format, VkFormatFeatureFlags requiredFeatures) const;
 
   [[nodiscard]] VkDevice handle() const;
   [[nodiscard]] VkPhysicalDevice getPhysicalDevice() const;

@@ -42,15 +42,6 @@ uint32_t PipelineManager::getOrCreatePipeline(const PipelineKey& key, FrameLayou
 uint32_t PipelineManager::createPipeline(const PipelineConfig& config, const PipelineKey& key, FrameLayout& frameLayout) {
     Pipeline newPipeline;
 
-    // VkPushConstantRange pushConstantRange = config.pushConstantRange;
-
-    // need to define a pipeline layout
-    // VkPipelineLayoutCreateInfo pipelineLayoutInfo = config.pipelineLayoutInfo;
-
-    // if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &newPipeline.pipelineLayout) != VK_SUCCESS) {
-    //     throw std::runtime_error("Unable to create the pipeline layout");
-    // }
-
     VkPipelineVertexInputStateCreateInfo vertInputInfo {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
     };
@@ -97,7 +88,7 @@ uint32_t PipelineManager::createPipeline(const PipelineConfig& config, const Pip
 }
 
 void PipelineManager::destroyPipelines() {
-    for (Pipeline p : m_pipelines) {
+    for (Pipeline& p : m_pipelines) {
         if (p.pipelineLayout) {
             vkDestroyPipelineLayout(m_device, p.pipelineLayout, nullptr);
             p.pipelineLayout = nullptr;

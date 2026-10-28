@@ -19,7 +19,6 @@ void Transform::rotateQuat(const glm::quat& delta) {
 void Transform::rotateEuler(glm::vec3 eulerRotation) {
     m_rotation = glm::quat(eulerRotation);
     m_rotation = glm::normalize(m_rotation);
-
     m_dirty = true;
 }
 
@@ -42,12 +41,3 @@ void Transform::setTransform(glm::mat4 transformMat) {
 
     return m_transformMat;
 }
-
-// Change name to calculateMVP (?)
-// glm::mat4 Transform::calculateModelMatrix(Transform &transform, Camera &camera) {
-//     // transform->rotate(glm::vec3(20,45,0));
-//     glm::mat4 model = getModelMatrix();
-
-//     glm::mat4 mvp = camera.projection * camera.view * model;
-//     return mvp;
-// }

@@ -12,7 +12,6 @@
 #include "vk/VulkanContext.h"
 #include "vk/commandContext.h"
 #include "vk/device.h"
-// #include "scene/gameObject.h"
 #include "scene/scene.h"
 #include "vk/gpuBuffer.h"
 #include "vk/swapchain.h"
@@ -52,15 +51,10 @@ void Renderer::init(const Device* device, const VmaAllocator* allocator, const W
         m_shaderManager.getShaderModule("vertexShader"),
         m_shaderManager.getShaderModule("fragmentShader")
     };
-    // m_mainRenderSystem.init(m_device->handle(), pCtx);
 
     createCommandBuffer();
 
     createIndirectDrawBuffers(maxNodes);
-    
-    // m_textureManager.init(m_device->handle(), m_allocator);
-    // m_textureManager.addSampler();
-    // m_textureManager.loadTexture(cmdContext, "container", std::string(RESOURCES_DIR) + "container.png");
 
     TextureSystem::createDescriptorSets(device->handle(), m_texStorage);
     m_frameLayout.globalSetLayout = m_texStorage.globalDSLayout;
@@ -78,12 +72,7 @@ void Renderer::init(const Device* device, const VmaAllocator* allocator, const W
         .pushConstantRangeCount = 1,
         .pPushConstantRanges = &m_frameLayout.framePushConstant
     };
-    vkCreatePipelineLayout(device->handle(), &pipelineLayoutInfo, nullptr, &m_frameLayout.defaultPipelineLayout);
-    // assert(r == VK_SUCCESS);
-    // printf("created layout: %p\n", (void*)m_frameLayout.defaultPipelineLayout);
-    m_mainRenderSystem.init2(m_device->handle(), pCtx, m_texStorage, m_pipelineManager);
-
-    // return { .texStorage = &m_texStorage, .cmdCtx = &cmdContext };
+    VK_CHECK( vkCreatePipelineLayout(device->handle(), &pipelineLayoutInfo, nullptr, &m_frameLayout.defaultPipelineLayout) );
 }
 
 void Renderer::initImages() {
@@ -142,7 +131,6 @@ bool Renderer::beginFrame(const Window* window) {
     };
     vkWaitSemaphores(m_device->handle(), &waitInfo, UINT64_MAX);
 
-    // now it's safe to start recording commands
     currentFrameRes = m_frameResources[frameResIndex];
     currentFrameRes.signalValue = signalValue;
     vkResetCommandPool(m_device->handle(), currentFrameRes.commandPool, 0);
@@ -237,7 +225,6 @@ void Renderer::renderFrame(const Window* window, Scene &scene, GPUBufferVec &buf
     ctx.extent = swapchain.getSwapchainExtent();
     ctx.colorImage = currentFrameRes.colorImage;
     ctx.depthImage = currentFrameRes.depthImage;
-    // ctx.texManager = m_textureManager;
     ctx.indirectDrawPtr = currentFrameRes.indirectDrawPtr;
     ctx.renderItemPtr = currentFrameRes.renderItemPtr;
     
@@ -373,6 +360,17 @@ void Renderer::destroyRenderer() {
     // wait in case resources are in use
     vkDeviceWaitIdle(m_device->handle());
 
+    VulkanCtx ctx = {.device = m_device->handle(), .allocator = *m_allocator};
+
+    vkDestroyDescriptorPool(m_device->handle(), m_texStorage.descPool, nullptr);
+    vkDestroyDescriptorSetLayout(m_device->handle(), m_texStorage.globalDSLayout, nullptr);
+    for(GPUImage& g : m_texStorage.gpuImages){
+        GPUImageSystem::destroyImage(ctx, g);
+    }
+    for(VkSampler& s : m_texStorage.samplers){
+        vkDestroySampler(m_device->handle(), s, nullptr);
+    }
+
     cmdContext.destroy();
 
     // frame / sync object cleanup
@@ -380,7 +378,6 @@ void Renderer::destroyRenderer() {
         vkDestroySemaphore(m_device->handle(), timelineSemaphore, nullptr);
     }
 
-    VulkanCtx ctx = {.device = m_device->handle(), .allocator = *m_allocator};
     for (auto &res : m_frameResources) {
         vkDestroySemaphore(m_device->handle(), res.imageAcquiredSemaphore, nullptr);
         vkDestroyCommandPool(m_device->handle(), res.commandPool, nullptr); // destroys buffers implicitly
@@ -389,12 +386,10 @@ void Renderer::destroyRenderer() {
         GPUImageSystem::destroyImage(ctx, res.depthImage);
 
         vmaUnmapMemory(*m_allocator, res.indirectDrawBuffer.allocation);
-        vkDestroyBuffer(m_device->handle(), res.indirectDrawBuffer.buffer, nullptr);
-        vmaFreeMemory(*m_allocator, res.indirectDrawBuffer.allocation);
+        vmaDestroyBuffer(*m_allocator, res.indirectDrawBuffer.buffer, res.indirectDrawBuffer.allocation);
 
         vmaUnmapMemory(*m_allocator, res.renderItemBuffer.allocation);
-        vkDestroyBuffer(m_device->handle(), res.renderItemBuffer.buffer, nullptr);
-        vmaFreeMemory(*m_allocator, res.renderItemBuffer.allocation);
+        vmaDestroyBuffer(*m_allocator, res.renderItemBuffer.buffer, res.renderItemBuffer.allocation);
     }
 
     m_mainRenderSystem.destroyRenderSystem();

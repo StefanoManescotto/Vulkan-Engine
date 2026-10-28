@@ -40,31 +40,6 @@ struct GPUImageConfig {
     }
 };
 
-// class GPUImage {
-// public:
-//     void allocateImage(VkDevice device, const VmaAllocator* allocator, GPUImageConfig config);
-//     void destroyImage();
-//
-//     void transitionLayout(VkCommandBuffer cmd, VkPipelineStageFlagBits2 srcStage, VkAccessFlagBits2 srcAccess, VkPipelineStageFlagBits2 dstStage,
-//         VkAccessFlagBits2 dstAccess, VkImageLayout newLayout);
-//
-//     [[nodiscard]] VkImage getImage() const { return m_image; }
-//     [[nodiscard]] VkImageView getImageView() const { return m_imageView; }
-//     [[nodiscard]] GPUImageConfig getConfig() const { return m_config; }
-//
-//     static void copyImageToImage(VkCommandBuffer cmd, VkImage source, VkImage destination, VkExtent2D srcSize, VkExtent2D dstSize);
-//
-// private:
-//     VkImage m_image = nullptr;
-//     VkImageView m_imageView = nullptr;
-//     VkImageLayout m_currentLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-//     GPUImageConfig m_config;
-//
-//     VkDevice m_device = nullptr;
-//     VmaAllocation m_allocation = nullptr;
-//     const VmaAllocator* m_allocator = nullptr;
-// };
-
 struct GPUImage {
     VkImage image {VK_NULL_HANDLE};
     VkImageView imageView {VK_NULL_HANDLE};

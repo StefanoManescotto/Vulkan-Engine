@@ -5,7 +5,6 @@
 #include "scene/meshSystem.h"
 
 #include <cstring>
-#include <stdexcept>
 #include <volk.h>
 
 #include <vk_mem_alloc.h>
@@ -100,50 +99,10 @@ namespace MeshSystem {
 					meshVerts.idxOffset += mesh.subMeshes[j].indexCount;
 				}
 			}
+
 			meshes.push_back(std::move(mesh));
-			// TODO: test for meshes.push_back(mesh);
 			meshIds[i] = meshes.size();
 		}
 		return meshIds;
 	}
-
-	// TODO: should this be here?
-    void createBuffer(const VulkanCtx &ctx, GPUMesh &gpuMesh, const MeshContainer &mesh) {
-        VkDeviceSize vBufSize { sizeof(Vertex) * mesh.vertices.size() };
-        VkDeviceSize iBufSize { sizeof(uint32_t) * mesh.indices.size() };
-        VkBufferCreateInfo bufferCI{
-            .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-            .size = vBufSize + iBufSize,
-            .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_2_SHADER_DEVICE_ADDRESS_BIT
-        };
-
-        VmaAllocationCreateInfo vBufferAllocCI{
-            .flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_ALLOW_TRANSFER_INSTEAD_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
-            .usage = VMA_MEMORY_USAGE_AUTO
-        };
-        VmaAllocationInfo vBufferAllocInfo{};
-        VkResult result = vmaCreateBuffer(ctx.allocator, &bufferCI, &vBufferAllocCI, &gpuMesh.vertexBuffer, &gpuMesh.allocation, &vBufferAllocInfo);
-        if (result != VK_SUCCESS) {
-            throw std::runtime_error("Failed to create buffer");
-}
-
-        memcpy(vBufferAllocInfo.pMappedData, mesh.vertices.data(), vBufSize);
-        memcpy(static_cast<char *>(vBufferAllocInfo.pMappedData) + vBufSize, mesh.indices.data(), iBufSize);
-
-        VkBufferDeviceAddressInfo addressInfo{
-            .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
-            .buffer = gpuMesh.vertexBuffer
-        };
-
-        gpuMesh.vertexBufferAddress = vkGetBufferDeviceAddress(ctx.device, &addressInfo);
-        gpuMesh.indexBufferAddress = gpuMesh.vertexBufferAddress + vBufSize;
-        gpuMesh.vertexBufferSize = vBufSize;
-        gpuMesh.indexBufferSize = iBufSize;
-        gpuMesh.indexCount = static_cast<uint32_t>(mesh.indices.size());
-    }
-
-    void destroyBuffer(const VulkanCtx &ctx, GPUMesh &gpuMesh) {
-        vmaDestroyBuffer(ctx.allocator, gpuMesh.vertexBuffer, gpuMesh.allocation);
-        gpuMesh = {};
-    }
 }

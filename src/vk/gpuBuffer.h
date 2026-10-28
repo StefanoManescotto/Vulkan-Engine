@@ -21,6 +21,4 @@ struct GPUBufferVec {
 namespace gpuBuffer {
     GPUBuffer createBuffer(VulkanCtx ctx, uint64_t size, VkBufferUsageFlags bufferUsageFlagBits, VmaMemoryUsage memoryUsage, bool mappable);
     void mapCopyBufferData(VmaAllocator allocator, const GPUBuffer &buffer, size_t bufferOffset, void*  data, size_t byteSize);
-
-    // uint32_t addBuffer(std::vector<GPUBuffer> buffers);
 }

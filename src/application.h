@@ -36,8 +36,6 @@ private:
     uint32_t height = 720;
     bool running = false;
     Scene m_scene;
-    // NodeWorld m_nodeWorld;
-    // TextureManager m_textureManager;
 
     std::chrono::high_resolution_clock::time_point m_lastFrameTime;
     float m_deltaTime = 0.0f;
@@ -45,11 +43,9 @@ private:
     VkInstance vulkanInstance = nullptr;
     Device m_device;
     VmaAllocator m_allocator = nullptr;
-    Renderer renderer;
+    Renderer m_renderer;
 
     GPUBufferVec gpuBuffers;
-    VkBuffer vBuffer;
-    VmaAllocation vBufferAllocation;
     
     void initializeVulkan();
     void createVulkanInstance();
@@ -61,5 +57,3 @@ private:
     void manageInputs();
     void updateDeltaTime();
 };
-
-

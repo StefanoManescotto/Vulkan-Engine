@@ -2,6 +2,7 @@
 #include "render/renderer.h"
 #include "scene/sceneLoader.h"
 #include "vk/VulkanContext.h"
+#include "vk/gpuBuffer.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_scancode.h>
@@ -12,7 +13,6 @@
 #include <vk_mem_alloc.h>
 
 #include <fmt/printf.h>
-// #include "camera.h"
 
 void Application::manageInputs() {
     if (window.isKeyPressed(SDL_SCANCODE_ESCAPE)) {
@@ -62,10 +62,7 @@ void Application::updateDeltaTime() {
 }
 
 void Application::initialize() {
-    window.createWindow();
-
-    // m_nodeWorld.initialize(1024);
-    
+    window.createWindow();    
     
     initializeVulkan();
     m_lastFrameTime = std::chrono::high_resolution_clock::now();
@@ -82,27 +79,23 @@ void Application::initializeVulkan() {
     m_device.createDevice();
     initializeVMA();
 
-    // createBuffers();
-    // m_scene.init(m_device.handle(), m_allocator);
-    renderer.init(&m_device, &m_allocator, &window, 1024);
+    m_renderer.init(&m_device, &m_allocator, &window, 1024);
     
     VulkanCtx vkCtx = { .device = m_device.handle(), .allocator = m_allocator };
     
-    m_scene = SceneLoader::loadScene(vkCtx, renderer, 
+    m_scene = SceneLoader::loadScene(vkCtx, m_renderer, 
         std::string(SCENES_DIR) + "mario_kart/scene.gltf", gpuBuffers);
-
-    // m_textureManager.init(m_device.handle(), &m_allocator);
-    // m_textureManager.addSampler();
 }
 
 void Application::shutdown() {
     // wait in case resources are in use
     vkDeviceWaitIdle(m_device.handle());
 
-    renderer.destroyRenderer();
+    m_renderer.destroyRenderer();
 
-    // TODO: destroy scene
-    // m_scene.destroyScene();
+    for(GPUBuffer& g : gpuBuffers.buffers) {
+        vmaDestroyBuffer(m_allocator, g.buffer, g.allocation);
+    }
 
     if (m_allocator) {
         vmaDestroyAllocator(m_allocator);
@@ -122,12 +115,8 @@ void Application::shutdown() {
 
 void Application::run() {
     running = true;
-    // m_scene.loadScene(m_textureManager);
-    // int frameCounter = 0;
-    while (running) {
-        // frameCounter++;
-        // fmt::print("Frame: {}\n", frameCounter);
 
+    while (running) {
         if (!window.pollEvents()) {
             running = false;
             break;
@@ -197,5 +186,5 @@ void Application::initializeVMA() {
 }
 
 void Application::render() {
-    renderer.renderFrame(&window, m_scene, gpuBuffers);
+    m_renderer.renderFrame(&window, m_scene, gpuBuffers);
 }

@@ -36,9 +36,7 @@ public:
 	void rotateEuler(glm::vec3 eulerRotation);
 	void scale(const glm::vec3& delta);
 
-	// glm::mat4 getTransformMatrix();
 	[[nodiscard]] glm::mat4 getModelMatrix();
-	// glm::mat4 TransformcalculateModelMatrix(Transform &transform, Camera &camera);
 
 private:
 	glm::vec3 m_position = glm::vec3(0.0f, 0.0f, 0.0f);

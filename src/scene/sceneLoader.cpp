@@ -46,13 +46,9 @@ namespace SceneLoader {
             .data = reinterpret_cast<unsigned char *>(&whitePixelData),
         };
 
-        // VkCommandBuffer whiteImgCmdBuff = startTransientCommandBuffer();
         std::vector<Image> whitePixelVec;
         whitePixelVec.push_back(whitePixel);
         uint32_t whiteImgId = TextureSystem::loadGPUImages(ctx, cmd, texStorage, whitePixelVec).at(0);
-        // m_whitePixelImageId = whiteImageId;
-        // submitTransientCommandBuffer(whiteImgCmdBuff); // submit and wait
-        // vmaDestroyBuffer(m_vmaAllocator, whiteStagingBuffer.vkBuffer, whiteStagingBuffer.allocation);
 
         // fallback texture sampler
         VkSamplerCreateInfo samplerInfo {
@@ -69,7 +65,6 @@ namespace SceneLoader {
             throw std::runtime_error("Unable to create texture smapler");
         }
 
-        // store sampler and get ID
         texStorage.samplers.push_back(sampler);
         uint32_t whiteSamplerId = texStorage.samplers.size();
 
@@ -90,7 +85,7 @@ namespace SceneLoader {
             img.data = stbi_load(imagePath.c_str(), &img.width, &img.height, &img.channels, STBI_rgb_alpha);
             if(!img.data) {
                 fmt::print("Failed to load image {}\n", imagePath.c_str());
-            } else { // TODO: maybe remove this? (if removed, the channels number is 3)
+            } else { // TODO: validation error without this.
                 img.channels = 4;
             }
         }
@@ -190,9 +185,6 @@ namespace SceneLoader {
 
         const tg3_scene *scene = &model.scenes[model.default_scene != -1 ? model.default_scene : 0];
 
-        // NodeWorld nodeWorld;
-        
-        
         std::vector<std::pair<Node *, glm::mat4>> m_nodeRenderStack;
         // iterate over the scene's roots nodes, attach to existing root node (if present)
         for (int i = 0; i < scene->nodes_count; i++) {
@@ -228,8 +220,6 @@ namespace SceneLoader {
 
         
         // --- Load into buffers ---
-        // Load stage buffers
-
         GPUBuffer vertexBuffStage = gpuBuffer::createBuffer(ctx, vertexBufferBytes, 
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_AUTO, true);
 

@@ -94,23 +94,23 @@ namespace GPUImageSystem {
         VkPipelineStageFlagBits2 dstStage, VkAccessFlagBits2 dstAccess, VkImageLayout newLayout) {
 
         VkImageMemoryBarrier2 barrier {
-                .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
-                .srcStageMask = srcStage,
-                .srcAccessMask = srcAccess,
-                .dstStageMask = dstStage,
-                .dstAccessMask = dstAccess,
-                .oldLayout = gpuImage.currentLayout,
-                .newLayout = newLayout,
-                .image = gpuImage.image,
-                .subresourceRange = gpuImage.config.subresource
-            };
-            VkDependencyInfo depInfo {
-                .sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
-                .imageMemoryBarrierCount = 1,
-                .pImageMemoryBarriers = &barrier
-            };
-            vkCmdPipelineBarrier2(cmd, &depInfo);
+            .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
+            .srcStageMask = srcStage,
+            .srcAccessMask = srcAccess,
+            .dstStageMask = dstStage,
+            .dstAccessMask = dstAccess,
+            .oldLayout = gpuImage.currentLayout,
+            .newLayout = newLayout,
+            .image = gpuImage.image,
+            .subresourceRange = gpuImage.config.subresource
+        };
+        VkDependencyInfo depInfo {
+            .sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
+            .imageMemoryBarrierCount = 1,
+            .pImageMemoryBarriers = &barrier
+        };
+        vkCmdPipelineBarrier2(cmd, &depInfo);
 
-            gpuImage.currentLayout = newLayout;
+        gpuImage.currentLayout = newLayout;
     }
 }
