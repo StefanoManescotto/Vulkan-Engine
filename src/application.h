@@ -5,6 +5,8 @@
 #include <shaderc/shaderc.hpp>
 
 // #include "scene/nodeWorld.h"
+#include "scene/cameraController.h"
+#include "scene/imGuiManager.h"
 #include "vk/swapchain.h"
 #include "vk/device.h"
 #include "window.h"
@@ -36,6 +38,10 @@ private:
     uint32_t height = 720;
     bool running = false;
     Scene m_scene;
+    ImGuiManager m_guiManager;
+    CameraController m_cameraController;
+
+    bool m_isDragging = false;
 
     std::chrono::high_resolution_clock::time_point m_lastFrameTime;
     float m_deltaTime = 0.0f;

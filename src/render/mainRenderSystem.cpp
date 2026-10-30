@@ -4,6 +4,7 @@
 
 #include "render/mainRenderSystem.h"
 #include "render/renderer.h"
+#include "scene/imGuiManager.h"
 
 #include <algorithm>
 #include <glm/fwd.hpp>
@@ -24,7 +25,7 @@ struct FrameConstant {
 
 void MainRenderSystem::render(MainRenderContext &ctx){}
 
-void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorage,  PipelineManager& pManager) {
+void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorage,  PipelineManager& pManager, ImGuiManager& guiManager) {
     std::vector<DrawItem> drawItems;
     Scene scene = *ctx.scene;
 // Push root nodes to render stack
@@ -217,6 +218,7 @@ void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorag
 
 
             vkCmdDrawIndexedIndirect(ctx.cmd, ctx.indirectDrawBuffer->buffer, drawStart * sizeof(VkDrawIndexedIndirectCommand), drawCount, sizeof(VkDrawIndexedIndirectCommand));
+            guiManager.render(ctx.cmd);
         }
     }
     // end dynamic rendering

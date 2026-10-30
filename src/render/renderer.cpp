@@ -82,8 +82,6 @@ void Renderer::initImages() {
     for (FrameResources& res : m_frameResources) {
         GPUImageSystem::allocateImage(ctx, GPUImageConfig::ColorAttachment(swapchain.getSwapchainExtent(), VK_FORMAT_B8G8R8A8_SRGB), res.colorImage);
         GPUImageSystem::allocateImage(ctx, GPUImageConfig::DepthAttachment(swapchain.getSwapchainExtent(), VK_FORMAT_D32_SFLOAT), res.depthImage);
-        // res.colorImage.allocateImage(m_device->handle(), m_allocator, GPUImageConfig::ColorAttachment(swapchain.getSwapchainExtent(), VK_FORMAT_B8G8R8A8_SRGB));
-        // res.depthImage.allocateImage(m_device->handle(), m_allocator, GPUImageConfig::DepthAttachment(swapchain.getSwapchainExtent(), VK_FORMAT_D32_SFLOAT));
     }
 }
 
@@ -114,9 +112,19 @@ bool Renderer::createIndirectDrawBuffers(size_t maxNodes) {
 
 bool Renderer::beginFrame(const Window* window) {
     if (requireSwapchainRecreate) {
-        config.configExtent = { .width = window->getWidth(), .height = window->getHeight() };
+        uint32_t width = window->getWidth();
+        uint32_t height = window->getHeight();
+        if (width == 0 || height == 0) {
+            return false; 
+        }
+
+        vkDeviceWaitIdle(m_device->handle());
+        destroySyncResourcesImages();
+
+        config.configExtent = { .width = width, .height = height };
         swapchain.recreateSwapchain(window->getSurface(), config);
         requireSwapchainRecreate = false;
+        initImages();
     }
 
     const uint32_t frameResIndex = frameIndex++ % MaxFramesInFlight;
@@ -145,7 +153,6 @@ bool Renderer::beginFrame(const Window* window) {
         requireSwapchainRecreate = true;
         return false;
     } else if (acquireResult == VK_SUBOPTIMAL_KHR) {
-        // can render this frame, recreate next time around
         requireSwapchainRecreate = true;
     }
 
@@ -201,15 +208,18 @@ void Renderer::endFrame() {
         .pResults = nullptr
     };
 
-    vkQueuePresentKHR(m_device->getGraphicsQueue(), &presentInfo);
+    VkResult presentResult = vkQueuePresentKHR(m_device->getGraphicsQueue(), &presentInfo);
+    if(presentResult == VK_SUBOPTIMAL_KHR){
+        requireSwapchainRecreate = true;
+    }
 }
 
-void Renderer::renderFrame(const Window* window, Scene &scene, GPUBufferVec &buffers) {
+void Renderer::renderFrame(const Window* window, Scene &scene, GPUBufferVec &buffers, ImGuiManager& guiManager) {
     // Check if we need to recreate the swapchain
     if (!beginFrame(window)) {
         return;
     }
-    // ctx.objs = scene.renderWorld;
+
     ctx.scene = &scene;
     ctx.buffers = &buffers;
     ctx.renderItemBuffer = &currentFrameRes.renderItemBuffer;
@@ -228,7 +238,7 @@ void Renderer::renderFrame(const Window* window, Scene &scene, GPUBufferVec &buf
     ctx.indirectDrawPtr = currentFrameRes.indirectDrawPtr;
     ctx.renderItemPtr = currentFrameRes.renderItemPtr;
     
-    m_mainRenderSystem.render2(ctx, m_texStorage, m_pipelineManager);
+    m_mainRenderSystem.render2(ctx, m_texStorage, m_pipelineManager, guiManager);
 
 
     VkImageMemoryBarrier2 barriers[3] = {
@@ -356,6 +366,10 @@ void Renderer::createSyncResources() {
     }
 }
 
+void Renderer::recreateSwapchain() {
+    requireSwapchainRecreate = true;
+}
+
 void Renderer::destroyRenderer() {
     // wait in case resources are in use
     vkDeviceWaitIdle(m_device->handle());
@@ -398,4 +412,12 @@ void Renderer::destroyRenderer() {
     m_shaderManager.destroyShaders();
 
     swapchain.destroySwapchain();
+}
+
+void Renderer::destroySyncResourcesImages() {
+    VulkanCtx ctx = {.device = m_device->handle(), .allocator = *m_allocator};
+    for (auto &res : m_frameResources) {
+        GPUImageSystem::destroyImage(ctx, res.colorImage);
+        GPUImageSystem::destroyImage(ctx, res.depthImage);
+    }
 }

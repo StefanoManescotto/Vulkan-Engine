@@ -69,6 +69,8 @@ add_compile_definitions(VK_NO_PROTOTYPES)
 
 # add_executable(VulkanEngine ${SOURCES} ${HEADERS})
 
+set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/includes/imgui)
+
 set(TEST_TINY
 	includes/tinygltf.cpp
 )
@@ -78,7 +80,18 @@ file(GLOB_RECURSE ALL_SOURCES
         src/*.cpp 
 	src/*.h
 )
-add_executable(VulkanEngine ${ALL_SOURCES} ${TEST_TINY})
+add_executable(VulkanEngine 
+        ${ALL_SOURCES} 
+        ${TEST_TINY}
+
+        # IMGUI
+        ${IMGUI_DIR}/imgui.cpp
+        ${IMGUI_DIR}/imgui_draw.cpp
+        ${IMGUI_DIR}/imgui_tables.cpp
+        ${IMGUI_DIR}/imgui_widgets.cpp
+        ${IMGUI_DIR}/imgui_impl_vulkan.cpp
+        ${IMGUI_DIR}/imgui_impl_sdl3.cpp
+)
 
 target_include_directories(VulkanEngine SYSTEM PRIVATE includes)
 target_include_directories(VulkanEngine PRIVATE src)

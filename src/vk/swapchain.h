@@ -46,6 +46,9 @@ public:
     [[nodiscard]] VkImageView getSwapchainImageView(size_t imageIndex) const;
     [[nodiscard]] VkSemaphore getRenderSemaphore(size_t imageIndex) const;
     [[nodiscard]] const VkSemaphore* getPRenderSemaphore(size_t imageIndex) const;
+    [[nodiscard]] uint32_t getImageCount(){ return m_imageCount; }
+
+    constexpr static VkFormat swapchainFormat2{VK_FORMAT_B8G8R8A8_SRGB};
 private:
     constexpr static VkFormat swapchainFormat{VK_FORMAT_B8G8R8A8_SRGB};
 
@@ -57,6 +60,7 @@ private:
     std::vector<VkImage> m_swapchainImages;
     std::vector<VkImageView> m_swapchainImageViews;
     VkExtent2D m_swapchainExtent;
+    uint32_t m_imageCount = 0;
 
     std::vector<VkSemaphore> m_renderFinishedSemaphores;
 };

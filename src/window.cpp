@@ -4,6 +4,7 @@
 
 #include "window.h"
 
+#include <imgui/imgui_impl_sdl3.h>
 #include <stdexcept>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
@@ -37,6 +38,16 @@ bool Window::isKeyPressed(SDL_Scancode key) {
     return m_keyboardState[key] && !m_oldKeyboardState[key];
 }
 
+bool Window::isMouseButtonDown(uint8_t button) {
+    SDL_MouseButtonFlags buttons = SDL_GetMouseState(nullptr, nullptr);
+    return (buttons & SDL_BUTTON_MASK(button)) != 0;
+}
+
+bool Window::isMouseButtonUp(uint8_t button) {
+    SDL_MouseButtonFlags buttons = SDL_GetMouseState(nullptr, nullptr);
+    return ((SDL_BUTTON_MASK(button) & m_oldMouseState) != 0 && (buttons & SDL_BUTTON_MASK(button)) == 0);
+}
+
 void Window::createWindow() {
     if (m_window != nullptr) {
         throw std::runtime_error("Window already exists");
@@ -48,7 +59,7 @@ void Window::createWindow() {
         throw std::runtime_error("Error creating window");
     }
 
-    SDL_SetWindowRelativeMouseMode(m_window, true);
+    SDL_SetWindowRelativeMouseMode(m_window, false);
     m_oldKeyboardState.resize(SDL_SCANCODE_COUNT, false);
 }
 
@@ -64,6 +75,8 @@ bool Window::pollEvents() {
 
     SDL_Event event{0};
     while (SDL_PollEvent(&event)) {
+        ImGui_ImplSDL3_ProcessEvent(&event);
+        
         switch (event.type) {
             case SDL_EVENT_QUIT:
                 return false;
@@ -71,6 +84,7 @@ bool Window::pollEvents() {
             case SDL_EVENT_WINDOW_RESIZED:
                 m_width = event.window.data1;
                 m_height = event.window.data2;
+                m_isWindowResized = true;
                 break;
             case SDL_EVENT_MOUSE_MOTION:
                 m_mouseDelta.x += event.motion.xrel;
@@ -79,6 +93,7 @@ bool Window::pollEvents() {
                 m_mousePosition.x = event.motion.x;
                 m_mousePosition.y = event.motion.y;
                 break;
+
             // case SDL_EVENT_MOUSE_BUTTON_DOWN:
             //     m_mouseButtons[event.button.button] = true;
             //     break;
@@ -109,13 +124,19 @@ void Window::updateInputState() {
     for (int i = 0; i < SDL_SCANCODE_COUNT; i++) {
         m_oldKeyboardState[i] = m_keyboardState[i];
     }
-    // m_mouseDelta = glm::vec2(0.0f, 0.0f);
+    m_oldMouseState = SDL_GetMouseState(nullptr, nullptr);
+}
+
+void Window::warpCursor(float x, float y) {
+    SDL_WarpMouseInWindow(m_window, x, y);
 }
 
 void Window::showCursor(){
+    m_isCursorVisible = true;
     SDL_SetWindowRelativeMouseMode(m_window, false);
 }
 
 void Window::hideCursor(){
+    m_isCursorVisible = false;
     SDL_SetWindowRelativeMouseMode(m_window, true);
 }

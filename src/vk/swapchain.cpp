@@ -44,15 +44,15 @@ VkSwapchainKHR Swapchain::createSwapchain(VkSurfaceKHR surface, const SwapchainC
         throw std::runtime_error("Couldn't get the surface capabilities");
     }
 
-    uint32_t imageCount = surfaceCaps.minImageCount + 1;
-    if (surfaceCaps.maxImageCount > 0 && surfaceCaps.maxImageCount < imageCount) {
-        imageCount = surfaceCaps.maxImageCount;
+    m_imageCount = surfaceCaps.minImageCount + 1;
+    if (surfaceCaps.maxImageCount > 0 && surfaceCaps.maxImageCount < m_imageCount) {
+        m_imageCount = surfaceCaps.maxImageCount;
     }
 
     VkSwapchainCreateInfoKHR swapchainCreateInfo {
         .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
         .surface = surface,
-        .minImageCount = imageCount,
+        .minImageCount = m_imageCount,
         .imageFormat = config.imageFormat,
         .imageColorSpace = config.imageColorSpace,
         .imageExtent = config.configExtent,
@@ -69,12 +69,12 @@ VkSwapchainKHR Swapchain::createSwapchain(VkSurfaceKHR surface, const SwapchainC
 
     // grab the swapchain images
     // imageCount could be different from what is set above in .minImageCount
-    vkGetSwapchainImagesKHR(m_device, m_swapchain, &imageCount, nullptr);
-    m_swapchainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(m_device, m_swapchain, &imageCount, m_swapchainImages.data());
-    m_swapchainImageViews.resize(imageCount);
+    vkGetSwapchainImagesKHR(m_device, m_swapchain, &m_imageCount, nullptr);
+    m_swapchainImages.resize(m_imageCount);
+    vkGetSwapchainImagesKHR(m_device, m_swapchain, &m_imageCount, m_swapchainImages.data());
+    m_swapchainImageViews.resize(m_imageCount);
 
-    m_renderFinishedSemaphores.resize(imageCount);
+    m_renderFinishedSemaphores.resize(m_imageCount);
 
     // create the swapchain image views and semaphores signaling the ending of the render
     for (size_t i = 0; i < m_swapchainImages.size(); ++i) {

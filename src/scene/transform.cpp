@@ -22,6 +22,11 @@ void Transform::rotateEuler(glm::vec3 eulerRotation) {
     m_dirty = true;
 }
 
+void Transform::scale(const glm::vec3& delta){
+    m_scale += delta;
+    m_dirty = true;
+}
+
 void Transform::setTransform(glm::mat4 transformMat) {
     glm::vec3 skew;
     glm::vec4 perspective;

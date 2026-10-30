@@ -7,6 +7,7 @@
 // #include "render/frameLayout.h"
 // #include "render/renderer.h"
 #include "render/renderSystem.h"
+#include "scene/imGuiManager.h"
 #include "scene/scene.h"
 #include "scene/textureStorage.h"
 #include "vk/GPUImage.h"
@@ -60,7 +61,7 @@ struct MainPipelineContext : PipelineContext {
 class MainRenderSystem : RenderSystem<MainRenderContext, MainPipelineContext> {
 public:
     void render(MainRenderContext &ctx) override;
-    void render2(MainRenderContext &ctx, TextureStorage &texStorage, PipelineManager& pManager);
+    void render2(MainRenderContext &ctx, TextureStorage &texStorage, PipelineManager& pManager, ImGuiManager& guiManager);
 
     void destroyRenderSystem() override;
 };

@@ -3,6 +3,7 @@
 //
 #pragma once
 
+#include <cstdint>
 #include <vector>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_vulkan.h>
@@ -31,9 +32,13 @@ public:
 
     [[nodiscard]] VkSurfaceKHR getSurface() const { return m_surface; }
 
+    [[nodiscard]] bool isCursorVisible() const { return m_isCursorVisible; }
+
+    [[nodiscard]] bool isWindowResized(){ bool r = m_isWindowResized; m_isWindowResized = false; return r; }
+
     /// Return the mouse position in the window on the current frame
     [[nodiscard]] glm::vec2 getMousePosition() const { return m_mousePosition; };
-
+    
     /// Return the difference of the mouse position between frames.
     glm::vec2 getMouseDelta();
 
@@ -43,9 +48,12 @@ public:
     /// Returns true ONLY on the first frame the key was pressed.
     bool isKeyPressed(SDL_Scancode key);
 
+    bool isMouseButtonDown(uint8_t button);
+    bool isMouseButtonUp(uint8_t button);
+
     void showCursor();
     void hideCursor();
-
+    void warpCursor(float x, float y);
     // bool isMouseButtonPressed(uint8_t mouseButton) const { mouseState.; }
 
     /// Creates the SDL window.
@@ -68,11 +76,14 @@ private:
 
     uint32_t m_width = 1280;
     uint32_t m_height = 720;
+    bool m_isWindowResized = false;
 
     const bool* m_keyboardState = SDL_GetKeyboardState(nullptr);
     std::vector<bool> m_oldKeyboardState;
+    SDL_MouseButtonFlags m_oldMouseState;
     glm::vec2 m_mousePosition {0.0f};
     glm::vec2 m_mouseDelta {0.0f};
+    bool m_isCursorVisible = false;
 
     VkInstance vkInstance;
 

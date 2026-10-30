@@ -3,8 +3,12 @@
 #include "scene/sceneLoader.h"
 #include "vk/VulkanContext.h"
 #include "vk/gpuBuffer.h"
+#include "vulkanTypes.h"
+#include <glm/detail/qualifier.hpp>
+#include <imgui/imgui.h>
 
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_scancode.h>
 #define VOLK_IMPLEMENTATION
 #include <volk.h>
@@ -19,20 +23,6 @@ void Application::manageInputs() {
         running = false;
     }
 
-    // Move camera
-    if (window.isKeyDown(SDL_SCANCODE_W)) {
-        m_scene.camera.moveCamera(m_scene.camera.FORWARD, m_deltaTime);
-    }
-    if (window.isKeyDown(SDL_SCANCODE_A)) {
-        m_scene.camera.moveCamera(m_scene.camera.LEFT, m_deltaTime);
-    }
-    if (window.isKeyDown(SDL_SCANCODE_S)) {
-        m_scene.camera.moveCamera(m_scene.camera.BACKWARD, m_deltaTime);
-    }
-    if (window.isKeyDown(SDL_SCANCODE_D)) {
-        m_scene.camera.moveCamera(m_scene.camera.RIGHT, m_deltaTime);
-    }
-
     // Far plane
     if(window.isKeyDown(SDL_SCANCODE_UP)){
         m_scene.camera.farPlane++;
@@ -41,15 +31,15 @@ void Application::manageInputs() {
         m_scene.camera.farPlane--;
     }
 
-    // Show/Hide cursor
-    if(window.isKeyDown(SDL_SCANCODE_Z)){
-        window.showCursor();
+    if(!ImGui::GetIO().WantCaptureMouse){
+        m_cameraController.updateRotation(window, m_scene.camera);
     }
-    if(window.isKeyDown(SDL_SCANCODE_X)){
-        window.hideCursor();
-    }
-    
-    m_scene.camera.rotateCamera(window.getMouseDelta().x, window.getMouseDelta().y);
+    m_cameraController.updateMovement(window, m_scene.camera, m_deltaTime);
+
+    float s1 = m_guiManager.getSlider1Value();
+    Node& n = m_scene.nodeWorld.getNode(m_scene.nodeWorld.rootNodeId);
+    n.getTransform().setScale(glm::vec3(s1, s1, s1));
+    n.getTransform().setPosition(glm::vec3(m_guiManager.getSliderXValue(), m_guiManager.getSliderYValue(), m_guiManager.getSliderZValue()));
 }
 
 void Application::updateDeltaTime() {
@@ -65,6 +55,15 @@ void Application::initialize() {
     window.createWindow();    
     
     initializeVulkan();
+
+    VulkanCore vkCore = {
+        .device = m_device,
+        .instance = vulkanInstance,
+        .swapchain = m_renderer.getSwapchain()
+    };
+
+    m_guiManager.init(window.handle(), vkCore);
+
     m_lastFrameTime = std::chrono::high_resolution_clock::now();
 }
 
@@ -90,7 +89,7 @@ void Application::initializeVulkan() {
 void Application::shutdown() {
     // wait in case resources are in use
     vkDeviceWaitIdle(m_device.handle());
-
+    m_guiManager.destroy();
     m_renderer.destroyRenderer();
 
     for(GPUBuffer& g : gpuBuffers.buffers) {
@@ -117,9 +116,14 @@ void Application::run() {
     running = true;
 
     while (running) {
+        m_guiManager.beginFrame();
         if (!window.pollEvents()) {
             running = false;
             break;
+        }
+
+        if(window.isWindowResized()){
+            m_renderer.recreateSwapchain();
         }
 
         updateDeltaTime();
@@ -186,5 +190,5 @@ void Application::initializeVMA() {
 }
 
 void Application::render() {
-    m_renderer.renderFrame(&window, m_scene, gpuBuffers);
+    m_renderer.renderFrame(&window, m_scene, gpuBuffers, m_guiManager);
 }

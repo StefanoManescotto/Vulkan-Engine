@@ -7,6 +7,7 @@
 #include <array>
 
 #include "render/frameLayout.h"
+#include "scene/imGuiManager.h"
 #include "scene/nodeWorld.h"
 #include "scene/textureStorage.h"
 #include "vk/commandContext.h"
@@ -50,7 +51,7 @@ public:
     void init(const Device* device, const VmaAllocator* allocator, const Window* window, size_t maxNodes);
     // const PipelineManager& getPipelineManager() const { return m_pipelineManager; }
 
-    void renderFrame(const Window* window, Scene &scene, GPUBufferVec &buffers);
+    void renderFrame(const Window* window, Scene &scene, GPUBufferVec &buffers, ImGuiManager& guiManager);
     
     // TODO: make these const
     CommandContext& getCommandContext() { return cmdContext; }
@@ -58,6 +59,8 @@ public:
     PipelineManager& getPipelineManager() { return m_pipelineManager; }
     ShaderManager& getShaderManager() { return m_shaderManager; }
     FrameLayout& getFrameLayout() { return m_frameLayout; }
+    Swapchain& getSwapchain() { return swapchain; }
+    void recreateSwapchain();
 
     void destroyRenderer();
 private:
@@ -88,6 +91,7 @@ private:
     bool createIndirectDrawBuffers(size_t maxNodes);
     void createCommandBuffer();
     void createSyncResources();
+    void destroySyncResourcesImages();
 
     /**
      * @brief Executes operations needed for rendering
