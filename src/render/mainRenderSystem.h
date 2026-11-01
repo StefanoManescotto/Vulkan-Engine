@@ -64,4 +64,9 @@ public:
     void render2(MainRenderContext &ctx, TextureStorage &texStorage, PipelineManager& pManager, ImGuiManager& guiManager);
 
     void destroyRenderSystem() override;
+    uint32_t getDrawsCount() { return m_lastDrawsCount/3; }
+
+private:
+    std::vector<std::pair<Node *, glm::mat4>> m_nodeRenderStack;
+    uint32_t m_lastDrawsCount = 0;
 };

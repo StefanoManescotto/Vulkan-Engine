@@ -88,7 +88,7 @@ void ImGuiManager::checkImGuiResult(VkResult res){
     abort();
 }
 
-void ImGuiManager::beginFrame(){
+void ImGuiManager::beginFrame(uint32_t drawsCount){
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
@@ -97,6 +97,7 @@ void ImGuiManager::beginFrame(){
 
     if (ImGui::CollapsingHeader("Stats", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+        ImGui::Text("Draws: %u", drawsCount);
     }
 
     if (ImGui::CollapsingHeader("Scene Transform", ImGuiTreeNodeFlags_DefaultOpen)) {

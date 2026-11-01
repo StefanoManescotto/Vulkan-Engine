@@ -104,7 +104,7 @@ VkSwapchainKHR Swapchain::createSwapchain(VkSurfaceKHR surface, const SwapchainC
 }
 
 VkSwapchainKHR Swapchain::recreateSwapchain(VkSurfaceKHR surface, const SwapchainConfig& config) {
-    vkDeviceWaitIdle(m_device);
+    // vkDeviceWaitIdle(m_device);
     destroySwapchain();
     createSwapchain(surface, config);
     return m_swapchain;

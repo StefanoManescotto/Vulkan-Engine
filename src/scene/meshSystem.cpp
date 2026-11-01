@@ -3,13 +3,29 @@
 //
 
 #include "scene/meshSystem.h"
+#include "scene/MeshContainer.h"
 
 #include <cstring>
+#include <glm/common.hpp>
 #include <volk.h>
 
 #include <vk_mem_alloc.h>
 
 namespace MeshSystem {
+	void setBoundingBox(MeshContainer& meshContainer){
+		for(Mesh& m : meshContainer.meshes){
+			for(SubMesh s : m.subMeshes){
+				size_t lastVertex = s.vertexStart + s.vertexCount;
+
+				for (size_t i = s.vertexStart; i < lastVertex; ++i) {
+					const glm::vec3& pos = meshContainer.vertices[i].position;
+					m.boundingBox.min = glm::min(m.boundingBox.min, pos);
+					m.boundingBox.max = glm::max(m.boundingBox.max, pos);
+				}
+			}
+		}
+	}
+
     std::vector<uint32_t> loadMeshes(const tg3_model &model, const std::vector<uint32_t> &materialIds, MeshContainer &meshVerts) {
 		std::vector<Mesh> &meshes = meshVerts.meshes;
 		std::vector<uint32_t> meshIds(model.meshes_count);
@@ -103,6 +119,8 @@ namespace MeshSystem {
 			meshes.push_back(std::move(mesh));
 			meshIds[i] = meshes.size();
 		}
+
+		setBoundingBox(meshVerts);
 		return meshIds;
 	}
 }

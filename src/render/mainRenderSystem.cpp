@@ -7,7 +7,9 @@
 #include "scene/imGuiManager.h"
 
 #include <algorithm>
+#include <glm/ext/matrix_float4x4.hpp>
 #include <glm/fwd.hpp>
+#include <imgui/imgui.h>
 #include <vulkan/vulkan_core.h>
 
 struct MeshPushConstants {
@@ -27,16 +29,20 @@ void MainRenderSystem::render(MainRenderContext &ctx){}
 
 void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorage,  PipelineManager& pManager, ImGuiManager& guiManager) {
     std::vector<DrawItem> drawItems;
-    Scene scene = *ctx.scene;
+    Scene& scene = *ctx.scene;
 // Push root nodes to render stack
-    std::vector<std::pair<Node *, glm::mat4>> m_nodeRenderStack;
+
+    m_nodeRenderStack.clear();
+    Frustum cameraFrustum = scene.camera.getFrustum();
+    glm::mat4 viewProj = scene.camera.projection * scene.camera.view;
+
     uint32_t nodeId = scene.nodeWorld.rootNodeId;
     while(nodeId) {
         Node &node = scene.nodeWorld.getNode(nodeId);
         m_nodeRenderStack.push_back({ &node, glm::mat4(1.0) });
         nodeId = node.nextSiblingId;
     }
-    
+    m_lastDrawsCount = 0;
     // uint32_t drawIndex = 0;
     while(!m_nodeRenderStack.empty()) {
         auto [node, parentTransform] = m_nodeRenderStack.back();
@@ -45,14 +51,21 @@ void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorag
 
         if(node->meshId){
             Mesh &mesh = scene.meshContainer.meshes[node->meshId - 1];
+            BoundingBox worldBox = mesh.boundingBox.transformAABB(matWorld);
+            glm::mat4 wvp = viewProj * matWorld;
+
+            if(!worldBox.isBoxVisible(cameraFrustum)){
+                continue;
+            }
             for(SubMesh &subMesh : mesh.subMeshes) {
+                m_lastDrawsCount += subMesh.indexCount;
                 drawItems.push_back( DrawItem {
-                    .pipelineId = ctx.scene->materials[subMesh.materialId - 1].pipelineIndex,
+                    .pipelineId = scene.materials[subMesh.materialId - 1].pipelineIndex,
                     .materialIndex = subMesh.materialId - 1,
                     .indexCount = static_cast<uint32_t>(subMesh.indexCount),
                     .firstIndex = static_cast<uint32_t>(subMesh.indexStart),
                     .vertexOffset = static_cast<int32_t>(subMesh.vertexStart),
-                    .wvp = scene.camera.projection * scene.camera.view * matWorld,
+                    .wvp = wvp,
                     .worldMatrix = matWorld
                 });
             }
@@ -65,21 +78,21 @@ void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorag
 			childNodeId = child.nextSiblingId;
 		}
     }
-
-    std::sort(drawItems.begin(), drawItems.end(), [](const DrawItem& a, const DrawItem& b) {
+    
+    std::stable_sort(drawItems.begin(), drawItems.end(), [](const DrawItem& a, const DrawItem& b) {
         return a.pipelineId < b.pipelineId;
     });
 
     uint32_t drawIndex = 0;
     for (const DrawItem& d : drawItems) {
-        ctx.indirectDrawPtr[drawIndex] = VkDrawIndexedIndirectCommand{
+        ctx.indirectDrawPtr[drawIndex] = VkDrawIndexedIndirectCommand {
             .indexCount    = d.indexCount,
             .instanceCount = 1,
             .firstIndex    = d.firstIndex,
             .vertexOffset  = d.vertexOffset,
             .firstInstance = drawIndex
         };
-        ctx.renderItemPtr[drawIndex] = RenderItem{
+        ctx.renderItemPtr[drawIndex] = RenderItem {
             .wvp           = d.wvp,
             .worldMatrix   = d.worldMatrix,
             .materialIndex = d.materialIndex
@@ -187,40 +200,39 @@ void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorag
         vkCmdSetScissor(ctx.cmd, 0, 1, &scissor);
 
 
+        FrameConstants frameConsts;
+        GPUBuffer &vertBuffer = ctx.buffers->buffers[ctx.buffers->vertexBufferId - 1];
+        GPUBuffer &materialBuffer = ctx.buffers->buffers[ctx.buffers->matBufferId - 1];
+        frameConsts.vertexBufferAddress = vertBuffer.deviceAddress;
+        frameConsts.materialBufferAddress = materialBuffer.deviceAddress;
+        frameConsts.renderItemsAddress = ctx.renderItemBuffer->deviceAddress;
+
+        GPUBuffer &idxBuffer = ctx.buffers->buffers[ctx.buffers->indexBufferId - 1];
+        vkCmdBindIndexBuffer(ctx.cmd, idxBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
 
         int i = 0;
-        uint32_t currentPipeline = -1;
+        uint32_t currentPipelineId = -1;
+        Pipeline* currentPipeline;
         while(i < drawItems.size()){
-            if(drawItems.at(i).pipelineId != currentPipeline) {
-                vkCmdBindPipeline(ctx.cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pManager.getPipeline(drawItems.at(i).pipelineId).handle);
-                currentPipeline = drawItems.at(i).pipelineId;
+            if(drawItems[i].pipelineId != currentPipelineId) {
+                currentPipeline = &pManager.getPipeline(drawItems[i].pipelineId);
+                vkCmdBindPipeline(ctx.cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, currentPipeline->handle);
+                currentPipelineId = drawItems[i].pipelineId;
             }
 
             uint32_t drawStart = i;
-            while(i < drawItems.size() && drawItems.at(i).pipelineId == currentPipeline) i++;
+            while(i < drawItems.size() && drawItems[i].pipelineId == currentPipelineId) i++;
             uint32_t drawCount = i - drawStart;
 
-            vkCmdBindDescriptorSets(ctx.cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pManager.getPipeline(drawItems.at(i-1).pipelineId).pipelineLayout, 0, 1,
+            vkCmdBindDescriptorSets(ctx.cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, currentPipeline->pipelineLayout, 0, 1,
                                         &texStorage.globalDescSet, 0, nullptr);
-            
-            FrameConstants frameConsts;
-            GPUBuffer &vertBuffer = ctx.buffers->buffers[ctx.buffers->vertexBufferId - 1];
-            GPUBuffer &materialBuffer = ctx.buffers->buffers[ctx.buffers->matBufferId - 1];
-            frameConsts.vertexBufferAddress = vertBuffer.deviceAddress;
-            frameConsts.materialBufferAddress = materialBuffer.deviceAddress;
-            frameConsts.renderItemsAddress = ctx.renderItemBuffer->deviceAddress;
-
-            vkCmdPushConstants(ctx.cmd, pManager.getPipeline(drawItems.at(i-1).pipelineId).pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 
+            vkCmdPushConstants(ctx.cmd, pManager.getPipeline(currentPipelineId).pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 
                 0, sizeof(FrameConstants), &frameConsts);
 
-            GPUBuffer &idxBuffer = ctx.buffers->buffers[ctx.buffers->indexBufferId - 1];
-            vkCmdBindIndexBuffer(ctx.cmd, idxBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
-
-
             vkCmdDrawIndexedIndirect(ctx.cmd, ctx.indirectDrawBuffer->buffer, drawStart * sizeof(VkDrawIndexedIndirectCommand), drawCount, sizeof(VkDrawIndexedIndirectCommand));
-            guiManager.render(ctx.cmd);
         }
     }
+    guiManager.render(ctx.cmd);
     // end dynamic rendering
     vkCmdEndRendering(ctx.cmd);
 }

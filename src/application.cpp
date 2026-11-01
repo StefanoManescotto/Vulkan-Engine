@@ -25,10 +25,12 @@ void Application::manageInputs() {
 
     // Far plane
     if(window.isKeyDown(SDL_SCANCODE_UP)){
-        m_scene.camera.farPlane++;
+        // m_scene.camera.farPlane++;
+        SDL_SetWindowFullscreen(window.handle(), true);
     }
     if(window.isKeyDown(SDL_SCANCODE_DOWN)){
-        m_scene.camera.farPlane--;
+        // m_scene.camera.farPlane--;
+        SDL_SetWindowFullscreen(window.handle(), false);
     }
 
     if(!ImGui::GetIO().WantCaptureMouse){
@@ -82,8 +84,12 @@ void Application::initializeVulkan() {
     
     VulkanCtx vkCtx = { .device = m_device.handle(), .allocator = m_allocator };
     
+    // m_scene = SceneLoader::loadScene(vkCtx, m_renderer, 
+    //     std::string(SCENES_DIR) + "sea_keep/scene.gltf", gpuBuffers);
+    // m_scene = SceneLoader::loadScene(vkCtx, m_renderer, 
+    //     std::string(SCENES_DIR) + "mario_kart/scene.gltf", gpuBuffers);
     m_scene = SceneLoader::loadScene(vkCtx, m_renderer, 
-        std::string(SCENES_DIR) + "mario_kart/scene.gltf", gpuBuffers);
+        std::string(SCENES_DIR) + "cube/scene.gltf", gpuBuffers);
 }
 
 void Application::shutdown() {
@@ -116,7 +122,7 @@ void Application::run() {
     running = true;
 
     while (running) {
-        m_guiManager.beginFrame();
+        // m_guiManager.beginFrame();
         if (!window.pollEvents()) {
             running = false;
             break;
@@ -128,9 +134,19 @@ void Application::run() {
 
         updateDeltaTime();
         manageInputs();
-        m_scene.camera.updateMatrices(window.getWidth(), window.getHeight());
         window.updateInputState();
+        m_scene.camera.updateMatrices(window.getWidth(), window.getHeight());
+        // for (const auto& plane : m_scene.camera.getFrustum().planes) {
+        //     fmt::print("Normal length: {}\n",
+        //         glm::length(plane.normal));
+        // }
+//         for (int i = 0; i < 6; ++i) {
+//     fmt::print("Camera distance to plane {}: {}\n",
+//         i, m_scene.camera.getFrustum().planes[i].getDistance(m_scene.camera.transform.getPosition()));
+// }
         render();
+
+        // fmt::print("TESTING: {}\n", m_scene.meshContainer.indices.size()/3);
     }
 }
 

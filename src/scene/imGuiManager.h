@@ -8,7 +8,7 @@
 class ImGuiManager {
 public:
     void init(SDL_Window* window, VulkanCore& vkCore);
-    void beginFrame();
+    void beginFrame(uint32_t drawsCount);
     void render(VkCommandBuffer cmd);
     void destroy();
 
@@ -19,9 +19,9 @@ public:
 
 private:
     VkDevice m_device;
-    float slider1 = .15f;
+    float slider1 = 1.0f;
     float sliderX = .0f;
-    float sliderY = -.10f;
+    float sliderY = -.50f;
     float sliderZ = .0f;
 
     void createDescriptorPool(VkDevice device);

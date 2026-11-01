@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <vulkan/vulkan_core.h>
 
+#include "scene/imGuiManager.h"
 #include "scene/textureSystem.h"
 #include "vk/GPUImage.h"
 #include "vk/VulkanContext.h"
@@ -126,7 +127,7 @@ bool Renderer::beginFrame(const Window* window) {
         requireSwapchainRecreate = false;
         initImages();
     }
-
+    
     const uint32_t frameResIndex = frameIndex++ % MaxFramesInFlight;
     const uint64_t signalValue = nextSignalValue++;
     const uint64_t waitValue = signalValue - MaxFramesInFlight;
@@ -142,9 +143,8 @@ bool Renderer::beginFrame(const Window* window) {
     currentFrameRes = m_frameResources[frameResIndex];
     currentFrameRes.signalValue = signalValue;
     vkResetCommandPool(m_device->handle(), currentFrameRes.commandPool, 0);
-
+    
     VkSemaphore imageAcquireSemaphore = currentFrameRes.imageAcquiredSemaphore;
-
     VkResult acquireResult = vkAcquireNextImageKHR(m_device->handle(), swapchain.handle(), UINT64_MAX, imageAcquireSemaphore, VK_NULL_HANDLE,
                                                     &currentFrameRes.imageIndex);
 
@@ -219,7 +219,7 @@ void Renderer::renderFrame(const Window* window, Scene &scene, GPUBufferVec &buf
     if (!beginFrame(window)) {
         return;
     }
-
+    guiManager.beginFrame(m_mainRenderSystem.getDrawsCount());
     ctx.scene = &scene;
     ctx.buffers = &buffers;
     ctx.renderItemBuffer = &currentFrameRes.renderItemBuffer;

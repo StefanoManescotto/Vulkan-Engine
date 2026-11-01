@@ -47,5 +47,7 @@ void Camera::rotateCamera(float deltaX, float deltaY) {
 void Camera::updateMatrices(float aspectW, float aspectH) {
     aspectRatio = aspectW / aspectH;
     view = glm::lookAt(transform.getPosition(), transform.getPosition() + front, up);
-    projection = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
+    projection = glm::perspectiveRH_ZO(glm::radians(fov), aspectRatio, nearPlane, farPlane);
+
+    m_frustum.update(projection*view);
 }
