@@ -81,10 +81,10 @@ void Application::initializeVulkan() {
     
     VulkanCtx vkCtx = { .device = m_device.handle(), .allocator = m_allocator };
     
-    // m_scene = SceneLoader::loadScene(vkCtx, m_renderer, 
-    //     std::string(SCENES_DIR) + "sea_keep/scene.gltf", gpuBuffers);
     m_scene = SceneLoader::loadScene(vkCtx, m_renderer, 
-        std::string(SCENES_DIR) + "mario_kart/scene.gltf", gpuBuffers);
+        std::string(SCENES_DIR) + "sea_keep/scene.gltf", gpuBuffers);
+    // m_scene = SceneLoader::loadScene(vkCtx, m_renderer, 
+    //     std::string(SCENES_DIR) + "mario_kart/scene.gltf", gpuBuffers);
     // m_scene = SceneLoader::loadScene(vkCtx, m_renderer, 
     //     std::string(SCENES_DIR) + "cube/scene.gltf", gpuBuffers);
 }

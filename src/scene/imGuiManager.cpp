@@ -97,8 +97,7 @@ void ImGuiManager::makeNodesTree(uint32_t nodeId, NodeWorld& nodeWorld) {
         flags |= ImGuiTreeNodeFlags_Leaf;
     }
 
-    std::string label = "Node: " + std::to_string(nodeId);
-    bool opened = ImGui::TreeNodeEx(label.c_str(), flags);
+    bool opened = ImGui::TreeNodeEx((void*)(uintptr_t)nodeId, flags, "%s", currentNode.name.c_str());
     if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
         selectedNode = &currentNode;
     }

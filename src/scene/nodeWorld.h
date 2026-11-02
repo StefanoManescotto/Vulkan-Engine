@@ -2,6 +2,7 @@
 
 #include "scene/transform.h"
 #include <fmt/base.h>
+#include <string>
 #include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -10,10 +11,16 @@
 
 class Node {
 public:
+	Node(std::string nodeName){
+		name = nodeName;
+	}
+
 	uint32_t meshId = 0;
 	uint32_t parentId = 0;
 	uint32_t nextSiblingId = 0;
 	uint32_t firstChildId = 0;
+
+	std::string name;
 
 	Transform& getTransform() {
 		return m_transform;
@@ -35,10 +42,10 @@ public:
 
 	size_t getMaxNodes() const { return m_maxNodes; }
 
-	std::pair<Node &, uint32_t> createNode() {
+	std::pair<Node &, uint32_t> createNode(std::string name) {
 		// fmt::print("Size: {}\nMaxNodes: {}\n", m_nodes.size(), m_maxNodes);
 		assert(m_nodes.size() < m_maxNodes && "Node world is at capacity");
-		m_nodes.push_back(Node{});
+		m_nodes.push_back(Node{name});
 		uint32_t nodeId = m_nodes.size();
 		return { m_nodes[nodeId - 1], nodeId };
 	}

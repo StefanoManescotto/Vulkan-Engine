@@ -99,8 +99,10 @@ namespace SceneLoader {
 
     uint32_t importNode(NodeWorld &nodeWorld, const tg3_model &model, int32_t nodeIndex, uint32_t parentId, uint32_t prevSiblingId, std::vector<uint32_t> &meshIds) {
         const tg3_node &tg3Node = model.nodes[nodeIndex];
-
-        auto [node, nodeId] = nodeWorld.createNode();
+        
+        std::string nodeName = (tg3Node.name.data && tg3Node.name.len > 0) ? std::string(tg3Node.name.data, tg3Node.name.len)
+                                    : "Node " + std::to_string(nodeIndex);
+        auto [node, nodeId] = nodeWorld.createNode(nodeName);
         node.parentId = parentId;
 
         if (tg3Node.has_matrix) {
