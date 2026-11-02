@@ -1,31 +1,31 @@
 #pragma once
 
 #include <SDL3/SDL.h>
+#include <imgui/imgui.h>
 #include <volk.h>
 
+#include "scene/nodeWorld.h"
+#include "scene/scene.h"
 #include "vulkanTypes.h"
 
 class ImGuiManager {
 public:
     void init(SDL_Window* window, VulkanCore& vkCore);
-    void beginFrame(uint32_t drawsCount);
+    void beginFrame(Scene& scene, uint32_t drawsCount);
     void render(VkCommandBuffer cmd);
     void destroy();
 
-    float getSlider1Value(){ return slider1; }
-    float getSliderXValue(){ return sliderX; }
-    float getSliderYValue(){ return sliderY; }
-    float getSliderZValue(){ return sliderZ; }
-
 private:
+    void makeNodesTree(uint32_t nodeId,  NodeWorld& nodeWorld);
+    void manageInput(NodeWorld& nodeWorld);
+
     VkDevice m_device;
-    float slider1 = 1.0f;
-    float sliderX = .0f;
-    float sliderY = -.50f;
-    float sliderZ = .0f;
+    VkDescriptorPool m_descriptorPool = VK_NULL_HANDLE;
+
+    ImGuiTreeNodeFlags treeNodeFlags = /*ImGuiTreeNodeFlags_DefaultOpen |*/ ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_OpenOnArrow 
+                            | ImGuiTreeNodeFlags_SpanAvailWidth;;
+    Node* selectedNode = nullptr;
 
     void createDescriptorPool(VkDevice device);
     static void checkImGuiResult(VkResult res);
-
-    VkDescriptorPool m_descriptorPool = VK_NULL_HANDLE;
 };

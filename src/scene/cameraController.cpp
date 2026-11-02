@@ -4,15 +4,15 @@ void CameraController::updateRotation(Window& window, Camera& camera) {
     if(window.isMouseButtonDown(SDL_BUTTON_LEFT) && window.getMouseDelta() != glm::vec2{0}){
         camera.rotateCamera(window.getMouseDelta().x, window.getMouseDelta().y);
         if(!m_isDragging) {
-            window.hideCursor();
+            window.showCursor(false);
             m_isDragging = true;
-            SDL_GetMouseState(&m_anchorX, &m_anchorY);
+            window.getMouseCoordinates(m_anchorX, m_anchorY);
         }
         window.warpCursor(m_anchorX, m_anchorY);
     }
     if(window.isMouseButtonUp(SDL_BUTTON_LEFT) && m_isDragging){
         window.warpCursor(m_anchorX, m_anchorY);
-        window.showCursor();
+        window.showCursor(true);
         m_isDragging = false;
     }
 }

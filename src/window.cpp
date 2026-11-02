@@ -105,6 +105,11 @@ bool Window::pollEvents() {
     return true;
 }
 
+void Window::setFullscreen(bool fullscreen) {
+    m_isFulscreen = fullscreen;
+    SDL_SetWindowFullscreen(m_window, m_isFulscreen);
+}
+
 void Window::destroyWindow() {
     if (m_window) {
         SDL_DestroyWindow(m_window);
@@ -124,19 +129,19 @@ void Window::updateInputState() {
     for (int i = 0; i < SDL_SCANCODE_COUNT; i++) {
         m_oldKeyboardState[i] = m_keyboardState[i];
     }
-    m_oldMouseState = SDL_GetMouseState(nullptr, nullptr);
+    m_oldMouseState = SDL_GetMouseState(&m_mouseX, &m_mouseY);
 }
 
 void Window::warpCursor(float x, float y) {
     SDL_WarpMouseInWindow(m_window, x, y);
 }
 
-void Window::showCursor(){
-    m_isCursorVisible = true;
-    SDL_SetWindowRelativeMouseMode(m_window, false);
+void Window::showCursor(bool show){
+    m_isCursorVisible = show;
+    SDL_SetWindowRelativeMouseMode(m_window, !show);
 }
 
-void Window::hideCursor(){
-    m_isCursorVisible = false;
-    SDL_SetWindowRelativeMouseMode(m_window, true);
+void Window::getMouseCoordinates(float& x, float& y) {
+    x = m_mouseX;
+    y = m_mouseY;
 }

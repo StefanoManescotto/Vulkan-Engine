@@ -25,16 +25,12 @@ public:
     bool pollEvents();
 
     [[nodiscard]] SDL_Window* handle() const { return m_window; };
-
     [[nodiscard]] uint32_t getWidth() const { return m_width; }
-
     [[nodiscard]] uint32_t getHeight() const { return m_height; }
-
     [[nodiscard]] VkSurfaceKHR getSurface() const { return m_surface; }
-
     [[nodiscard]] bool isCursorVisible() const { return m_isCursorVisible; }
-
     [[nodiscard]] bool isWindowResized(){ bool r = m_isWindowResized; m_isWindowResized = false; return r; }
+    [[nodiscard]] bool isFulscreen(){ return m_isFulscreen; }
 
     /// Return the mouse position in the window on the current frame
     [[nodiscard]] glm::vec2 getMousePosition() const { return m_mousePosition; };
@@ -51,9 +47,12 @@ public:
     bool isMouseButtonDown(uint8_t button);
     bool isMouseButtonUp(uint8_t button);
 
-    void showCursor();
-    void hideCursor();
+    void setFullscreen(bool fullscreen);
+
+    void getMouseCoordinates(float& x, float& y);
+    void showCursor(bool show);
     void warpCursor(float x, float y);
+
     // bool isMouseButtonPressed(uint8_t mouseButton) const { mouseState.; }
 
     /// Creates the SDL window.
@@ -77,13 +76,16 @@ private:
     uint32_t m_width = 1280;
     uint32_t m_height = 720;
     bool m_isWindowResized = false;
+    float m_mouseX = 0, m_mouseY = 0;
 
     const bool* m_keyboardState = SDL_GetKeyboardState(nullptr);
     std::vector<bool> m_oldKeyboardState;
     SDL_MouseButtonFlags m_oldMouseState;
     glm::vec2 m_mousePosition {0.0f};
     glm::vec2 m_mouseDelta {0.0f};
+
     bool m_isCursorVisible = false;
+    bool m_isFulscreen = false;
 
     VkInstance vkInstance;
 

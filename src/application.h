@@ -41,8 +41,6 @@ private:
     ImGuiManager m_guiManager;
     CameraController m_cameraController;
 
-    bool m_isDragging = false;
-
     std::chrono::high_resolution_clock::time_point m_lastFrameTime;
     float m_deltaTime = 0.0f;
 

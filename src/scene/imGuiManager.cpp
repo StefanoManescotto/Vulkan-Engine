@@ -1,10 +1,12 @@
 #include "imGuiManager.h"
+#include "scene/nodeWorld.h"
 #include "utils.h"
 #include "vk/swapchain.h"
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_sdl3.h>
 #include <imgui/imgui_impl_vulkan.h>
+#include <string>
 #include <vulkan/vulkan_core.h>
 #include <fmt/printf.h>
 
@@ -18,7 +20,7 @@ void ImGuiManager::init(SDL_Window* window, VulkanCore& vkCore){
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableSetMousePos;
     // io.DisplaySize.x = 
 
-    ImGui::GetStyle().FontScaleMain = 1.2f;
+    ImGui::GetStyle().FontScaleMain = 1.0f;
     ImGui::StyleColorsDark();
 
     VkPipelineRenderingCreateInfo pipelineInfo = {
@@ -88,7 +90,31 @@ void ImGuiManager::checkImGuiResult(VkResult res){
     abort();
 }
 
-void ImGuiManager::beginFrame(uint32_t drawsCount){
+void ImGuiManager::makeNodesTree(uint32_t nodeId, NodeWorld& nodeWorld) {
+    Node& currentNode = nodeWorld.getNode(nodeId);
+    ImGuiTreeNodeFlags flags = treeNodeFlags;
+    if(!currentNode.firstChildId){
+        flags |= ImGuiTreeNodeFlags_Leaf;
+    }
+
+    std::string label = "Node: " + std::to_string(nodeId);
+    bool opened = ImGui::TreeNodeEx(label.c_str(), flags);
+    if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
+        selectedNode = &currentNode;
+    }
+
+    if (opened) {
+        uint32_t siblingId = currentNode.firstChildId;
+        while(siblingId) {
+            makeNodesTree(siblingId, nodeWorld);
+            siblingId = nodeWorld.getNode(siblingId).nextSiblingId;
+        }
+        
+        ImGui::TreePop();
+    }
+}
+
+void ImGuiManager::beginFrame(Scene& scene, uint32_t drawsCount){
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
@@ -100,14 +126,33 @@ void ImGuiManager::beginFrame(uint32_t drawsCount){
         ImGui::Text("Draws: %u", drawsCount);
     }
 
-    if (ImGui::CollapsingHeader("Scene Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
-        ImGui::DragFloat("Object Scale", &slider1, 0.005f, 0.001f, 10.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-        ImGui::DragFloat("Translation X", &sliderX, 0.1f); // Min/max default to unbounded if omitted/zero
-        ImGui::DragFloat("Translation Y", &sliderY, 0.1f);
-        ImGui::DragFloat("Translation Z", &sliderZ, 0.1f);
+    if (ImGui::CollapsingHeader("Scene Transform", ImGuiTreeNodeFlags_DefaultOpen)){
+        NodeWorld& nodeWorld = scene.nodeWorld;
+        uint32_t nodeId = nodeWorld.rootNodeId;
+        while(nodeId) {
+            makeNodesTree(nodeId, nodeWorld);
+            Node rootNode = nodeWorld.getNode(nodeId);
+            nodeId = rootNode.nextSiblingId;
+        }
+        manageInput(nodeWorld);
     }
 
     ImGui::End();
+}
+
+void ImGuiManager::manageInput(NodeWorld &nodeWorld) {
+    if(selectedNode != nullptr){
+        Transform& nodeTransform = selectedNode->getTransform();
+        glm::vec3 scale = nodeTransform.getScale();
+        ImGui::DragFloat("Object Scale", &scale.x, 0.005f, 0.001f, 10.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+        nodeTransform.setScale(glm::vec3(scale.x, scale.x, scale.x));
+
+        glm::vec3 pos = nodeTransform.getPosition();
+        ImGui::DragFloat("Translation X", &pos.x, 0.1f);
+        ImGui::DragFloat("Translation Y", &pos.y, 0.1f);
+        ImGui::DragFloat("Translation Z", &pos.z, 0.1f);
+        nodeTransform.setPosition(pos);
+    }
 }
 
 void ImGuiManager::render(VkCommandBuffer cmd){
@@ -122,5 +167,3 @@ void ImGuiManager::destroy(){
 
     vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);
 }
-
-

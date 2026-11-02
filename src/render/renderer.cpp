@@ -219,7 +219,7 @@ void Renderer::renderFrame(const Window* window, Scene &scene, GPUBufferVec &buf
     if (!beginFrame(window)) {
         return;
     }
-    guiManager.beginFrame(m_mainRenderSystem.getDrawsCount());
+    guiManager.beginFrame(scene, m_mainRenderSystem.getDrawsCount());
     ctx.scene = &scene;
     ctx.buffers = &buffers;
     ctx.renderItemBuffer = &currentFrameRes.renderItemBuffer;

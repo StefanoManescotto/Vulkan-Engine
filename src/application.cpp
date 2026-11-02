@@ -24,24 +24,21 @@ void Application::manageInputs() {
     }
 
     // Far plane
-    if(window.isKeyDown(SDL_SCANCODE_UP)){
-        // m_scene.camera.farPlane++;
-        SDL_SetWindowFullscreen(window.handle(), true);
-    }
-    if(window.isKeyDown(SDL_SCANCODE_DOWN)){
-        // m_scene.camera.farPlane--;
-        SDL_SetWindowFullscreen(window.handle(), false);
+    // if(window.isKeyDown(SDL_SCANCODE_UP)){
+    //     m_scene.camera.farPlane++;
+    // }
+    // if(window.isKeyDown(SDL_SCANCODE_DOWN)){
+    //     m_scene.camera.farPlane--;
+    // }
+
+    if(window.isKeyPressed(SDL_SCANCODE_F)) {
+        window.setFullscreen(!window.isFulscreen());
     }
 
     if(!ImGui::GetIO().WantCaptureMouse){
         m_cameraController.updateRotation(window, m_scene.camera);
     }
     m_cameraController.updateMovement(window, m_scene.camera, m_deltaTime);
-
-    float s1 = m_guiManager.getSlider1Value();
-    Node& n = m_scene.nodeWorld.getNode(m_scene.nodeWorld.rootNodeId);
-    n.getTransform().setScale(glm::vec3(s1, s1, s1));
-    n.getTransform().setPosition(glm::vec3(m_guiManager.getSliderXValue(), m_guiManager.getSliderYValue(), m_guiManager.getSliderZValue()));
 }
 
 void Application::updateDeltaTime() {
@@ -86,10 +83,10 @@ void Application::initializeVulkan() {
     
     // m_scene = SceneLoader::loadScene(vkCtx, m_renderer, 
     //     std::string(SCENES_DIR) + "sea_keep/scene.gltf", gpuBuffers);
-    // m_scene = SceneLoader::loadScene(vkCtx, m_renderer, 
-    //     std::string(SCENES_DIR) + "mario_kart/scene.gltf", gpuBuffers);
     m_scene = SceneLoader::loadScene(vkCtx, m_renderer, 
-        std::string(SCENES_DIR) + "cube/scene.gltf", gpuBuffers);
+        std::string(SCENES_DIR) + "mario_kart/scene.gltf", gpuBuffers);
+    // m_scene = SceneLoader::loadScene(vkCtx, m_renderer, 
+    //     std::string(SCENES_DIR) + "cube/scene.gltf", gpuBuffers);
 }
 
 void Application::shutdown() {
