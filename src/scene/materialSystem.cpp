@@ -25,17 +25,20 @@ namespace MaterialSystem {
                 });
             materialIds[i] = gpuMat.size();
             
+            std::vector<Shader> shaders;
+            shaders.push_back(renderer.getShaderManager().getShader("vertexShader"));
+            shaders.push_back(renderer.getShaderManager().getShader("fragmentShader"));
             PipelineKey key {
-                .vertShader = renderer.getShaderManager().getShaderModule("vertexShader"),
-                .fragShader = renderer.getShaderManager().getShaderModule("fragmentShader"),
+                .shaders = shaders,
                 
                 .colorAttachmentFormat = VK_FORMAT_B8G8R8A8_SRGB,
                 .depthAttachmentFormat = VK_FORMAT_D32_SFLOAT,
-                
+                .pLayout = renderer.getFrameLayout().defaultPipelineLayout,
+
                 .enableBlending = false,
                 .enableDepthTest = true
             };
-            uint32_t pIndex = renderer.getPipelineManager().getOrCreatePipeline(key, renderer.getFrameLayout());
+            uint32_t pIndex = renderer.getPipelineManager().getOrCreatePipeline(key);
 
             materials.push_back( Material {
                 .gpuMatIndex = materialIds[i],

@@ -160,8 +160,9 @@ namespace TextureSystem {
         return textureIds;
     }
 
-    void updateTextureDescriptors(const VkDevice &device, TextureStorage &texStorage, std::vector<Texture> &textures, VkDescriptorSet &descSet) {
+    void updateTextureDescriptors(const VkDevice& device, TextureStorage& texStorage, std::vector<Texture>& textures, VkDescriptorSet& descSet) {
         std::vector<VkDescriptorImageInfo> imageDescriptors;
+        
         imageDescriptors.reserve(textures.size());
 
         for (const Texture &texture : textures) {

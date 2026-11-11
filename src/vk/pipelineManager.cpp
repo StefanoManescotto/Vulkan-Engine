@@ -3,8 +3,9 @@
 #include "vk/pipeline.h"
 #include <fmt/base.h>
 #include <stdexcept>
+#include <vulkan/vulkan_core.h>
 
-uint32_t PipelineManager::getOrCreatePipeline(const PipelineKey& key, FrameLayout& frameLayout) {
+uint32_t PipelineManager::getOrCreatePipeline(const PipelineKey& key) {
     auto it = m_lookup.find(key);
     if (it != m_lookup.end()) {
         return it->second;
@@ -13,20 +14,28 @@ uint32_t PipelineManager::getOrCreatePipeline(const PipelineKey& key, FrameLayou
     PipelineConfig pipelineConfig;
     getDefaultConfigs(pipelineConfig);
 
-    pipelineConfig.shaderStages = {
-        {
+    for (Shader s : key.shaders){
+        pipelineConfig.shaderStages.push_back( VkPipelineShaderStageCreateInfo {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-            .stage = VK_SHADER_STAGE_VERTEX_BIT,
-            .module = key.vertShader,
+            .stage = s.stage,
+            .module = s.module,
             .pName = "main"
-        },
-        {
-            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-            .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-            .module = key.fragShader,
-            .pName = "main"
-        }
-    };
+        });
+    }
+    // pipelineConfig.shaderStages = {
+    //     {
+    //         .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+    //         .stage = VK_SHADER_STAGE_VERTEX_BIT,
+    //         .module = key.vertShader,
+    //         .pName = "main"
+    //     },
+    //     {
+    //         .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+    //         .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
+    //         .module = key.fragShader,
+    //         .pName = "main"
+    //     }
+    // };
 
     pipelineConfig.renderingInfo = {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
@@ -35,11 +44,14 @@ uint32_t PipelineManager::getOrCreatePipeline(const PipelineKey& key, FrameLayou
         .depthAttachmentFormat = key.depthAttachmentFormat,
         .stencilAttachmentFormat = VK_FORMAT_UNDEFINED
     };
+
+    pipelineConfig.depthStencilInfo.depthTestEnable = key.enableDepthTest;
+    pipelineConfig.depthStencilInfo.depthWriteEnable = key.enableDepthTest;
     
-    return createPipeline(pipelineConfig, key, frameLayout);
+    return createPipeline(pipelineConfig, key);
 }
 
-uint32_t PipelineManager::createPipeline(const PipelineConfig& config, const PipelineKey& key, FrameLayout& frameLayout) {
+uint32_t PipelineManager::createPipeline(const PipelineConfig& config, const PipelineKey& key) {
     Pipeline newPipeline;
 
     VkPipelineVertexInputStateCreateInfo vertInputInfo {
@@ -71,14 +83,14 @@ uint32_t PipelineManager::createPipeline(const PipelineConfig& config, const Pip
         .pDepthStencilState = &depthStencilInfo,
         .pColorBlendState = &blendInfo,
         .pDynamicState = &dynamicStateInfo,
-        .layout = frameLayout.defaultPipelineLayout,
+        .layout = key.pLayout,
         .renderPass = VK_NULL_HANDLE,
     };
     if (vkCreateGraphicsPipelines(m_device, nullptr, 1, &pipelineInfo, nullptr, &newPipeline.handle) != VK_SUCCESS) {
         throw std::runtime_error("Error creating the pipeline");
     }
 
-    newPipeline.pipelineLayout = frameLayout.defaultPipelineLayout;
+    newPipeline.pipelineLayout = key.pLayout;
     
     uint32_t index = static_cast<uint32_t>(m_pipelines.size());
     m_pipelines.push_back(newPipeline);

@@ -7,6 +7,8 @@
 #include <array>
 
 #include "render/frameLayout.h"
+// #include "render/toneMapPass.h"
+#include "render/toneMapPass.h"
 #include "scene/imGuiManager.h"
 #include "scene/nodeWorld.h"
 #include "scene/textureStorage.h"
@@ -19,7 +21,7 @@
 
 #include "volk.h"
 
-struct Window;
+class Window;
 
 struct FrameConstants {
 	uint64_t vertexBufferAddress = 0;
@@ -67,13 +69,15 @@ private:
     constexpr static uint32_t MaxFramesInFlight { 2 };
     uint64_t nextSignalValue = MaxFramesInFlight + 1;
     uint64_t frameIndex = 0;
+
     MainRenderContext ctx;
+    MainRenderSystem m_mainRenderSystem;
+    ToneMapPass m_tonePass;
 
     const Device* m_device;
     const VmaAllocator* m_allocator;
 
     std::vector<std::pair<Node *, glm::mat4>> m_nodeRenderStack;
-    MainRenderSystem m_mainRenderSystem;
     std::array<FrameResources, MaxFramesInFlight> m_frameResources;
     FrameResources currentFrameRes;
     VkSemaphore timelineSemaphore = nullptr;

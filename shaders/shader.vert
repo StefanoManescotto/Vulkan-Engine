@@ -10,6 +10,11 @@ layout(push_constant, scalar) uniform FrameConstants {
     uint64_t renderItemBufferAddress;
 } frameConsts;
 
+struct Light {
+    vec3 position;
+    vec3 color;
+};
+
 struct Vertex {
     vec3 position;
     vec3 color;

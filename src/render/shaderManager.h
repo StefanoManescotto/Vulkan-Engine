@@ -8,12 +8,9 @@
 #include <vector>
 #include <volk.h>
 #include <shaderc/shaderc.h>
+#include <vulkan/vulkan_core.h>
 
-
-struct Shader {
-    std::string name;
-    VkShaderModule module;
-};
+#include "shader.h"
 
 class ShaderManager {
 public:
@@ -21,7 +18,8 @@ public:
     void destroyShaders();
 
     void addShader(std::string fileName, shaderc_shader_kind kind, std::string shadername);
-    VkShaderModule getShaderModule(std::string shaderName);
+    Shader& getShader(const std::string shaderName);
+    VkShaderModule getShaderModule(const std::string shaderName);
 private:
     std::vector<Shader> m_shaderModules;
     VkDevice m_device;

@@ -5,8 +5,11 @@
 #include "render/shaderManager.h"
 
 #include <fstream>
+#include <shaderc/shaderc.h>
 #include <sstream>
 #include <shaderc/shaderc.hpp>
+#include <stdexcept>
+#include <vulkan/vulkan_core.h>
 
 std::string readTextFile(const std::string &filePath) {
     std::ifstream infile(filePath);
@@ -32,6 +35,16 @@ void ShaderManager::destroyShaders() {
             m.name.clear();
         }
     }
+}
+
+VkShaderStageFlagBits getVulkanStage(shaderc_shader_kind kind) {
+    switch(kind){
+        case shaderc_vertex_shader:
+            return VK_SHADER_STAGE_VERTEX_BIT;
+        case shaderc_fragment_shader:
+            return VK_SHADER_STAGE_FRAGMENT_BIT;
+    }
+    return VK_SHADER_STAGE_ALL;
 }
 
 void ShaderManager::addShader(std::string fileName, shaderc_shader_kind kind, std::string shadername) {
@@ -63,15 +76,24 @@ void ShaderManager::addShader(std::string fileName, shaderc_shader_kind kind, st
         throw std::runtime_error("Error creating shader module");
     }
 
-    Shader newShader { .name = shadername, .module = shaderModule };
+    Shader newShader { .name = shadername, .module = shaderModule, .stage = getVulkanStage(kind)};
     m_shaderModules.push_back(newShader);
 }
 
-VkShaderModule ShaderManager::getShaderModule(std::string shaderName) {
+VkShaderModule ShaderManager::getShaderModule(const std::string shaderName) {
     for (auto m : m_shaderModules) {
         if (m.name == shaderName) {
             return m.module;
         }
     }
     return nullptr;
+}
+
+Shader& ShaderManager::getShader(const std::string shaderName) {
+    for (auto& m : m_shaderModules) {
+        if (m.name == shaderName) {
+            return m;
+        }
+    }
+    throw std::runtime_error("No shader found");
 }

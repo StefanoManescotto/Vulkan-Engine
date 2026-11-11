@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <vulkan/vulkan_core.h>
 
+#include "render/toneMapPass.h"
 #include "scene/imGuiManager.h"
 #include "scene/textureSystem.h"
 #include "vk/GPUImage.h"
@@ -74,6 +75,8 @@ void Renderer::init(const Device* device, const VmaAllocator* allocator, const W
         .pPushConstantRanges = &m_frameLayout.framePushConstant
     };
     VK_CHECK( vkCreatePipelineLayout(device->handle(), &pipelineLayoutInfo, nullptr, &m_frameLayout.defaultPipelineLayout) );
+
+    m_tonePass.init(m_device, m_shaderManager, m_pipelineManager);
 }
 
 void Renderer::initImages() {
@@ -239,6 +242,14 @@ void Renderer::renderFrame(const Window* window, Scene &scene, GPUBufferVec &buf
     ctx.renderItemPtr = currentFrameRes.renderItemPtr;
     
     m_mainRenderSystem.render2(ctx, m_texStorage, m_pipelineManager, guiManager);
+
+    ToneMapContext toneContext {
+        .cmd = currentFrameRes.commandBuffer,
+        .extent = swapchain.getSwapchainExtent(),
+        .colorImage = currentFrameRes.colorImage,
+    };
+    // m_tonePass.render(m_pipelineManager, toneContext);
+
 
 
     VkImageMemoryBarrier2 barriers[3] = {

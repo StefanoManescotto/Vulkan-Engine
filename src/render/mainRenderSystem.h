@@ -38,8 +38,8 @@ struct MainRenderContext {
     GPUImage colorImage;
     GPUImage depthImage;
 
-    VkShaderModule vertexShader;
-    VkShaderModule fragmentShader;
+    // VkShaderModule vertexShader;
+    // VkShaderModule fragmentShader;
 
     VkDrawIndexedIndirectCommand *indirectDrawPtr = nullptr;
 	RenderItem *renderItemPtr = nullptr;

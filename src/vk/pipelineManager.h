@@ -6,25 +6,35 @@
 
 #include <unordered_map>
 #include <vector>
+#include <vulkan/vulkan_core.h>
 #include "render/frameLayout.h"
 
+#include "render/shader.h"
+
 struct PipelineKey {
-    VkShaderModule vertShader;
-    VkShaderModule fragShader;
+    std::vector<Shader> shaders;
     
     VkFormat colorAttachmentFormat;
     VkFormat depthAttachmentFormat;
     
+    VkPipelineLayout pLayout;
+
     bool enableBlending = false;
     bool enableDepthTest = true;
 
     bool operator==(const PipelineKey& other) const {
-        return vertShader == other.vertShader &&
-            fragShader == other.fragShader &&
+        bool shaderEqual = false;
+        for(Shader s : shaders){ // TODO: change this
+            for(Shader s2 : other.shaders){
+                shaderEqual |= (s2 == s);
+            }
+        }
+        return shaderEqual &&
             colorAttachmentFormat == other.colorAttachmentFormat &&
             depthAttachmentFormat == other.depthAttachmentFormat &&
             enableBlending == other.enableBlending &&
-            enableDepthTest == other.enableDepthTest;
+            enableDepthTest == other.enableDepthTest &&
+            pLayout == other.pLayout;
     }
 };
 
@@ -36,11 +46,15 @@ struct PipelineKeyHash {
             seed ^= h + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         };
 
-        hash_combine(std::hash<uint64_t>{}(reinterpret_cast<uint64_t>(key.vertShader)));
-        hash_combine(std::hash<uint64_t>{}(reinterpret_cast<uint64_t>(key.fragShader)));
+        for(Shader s : key.shaders){
+            hash_combine(std::hash<uint64_t>{}(reinterpret_cast<uint64_t>(s.module)));
+        }
+        // hash_combine(std::hash<uint64_t>{}(reinterpret_cast<uint64_t>(key.vertShader)));
+        // hash_combine(std::hash<uint64_t>{}(reinterpret_cast<uint64_t>(key.fragShader)));
 
         hash_combine(std::hash<int>{}(static_cast<int>(key.colorAttachmentFormat)));
         hash_combine(std::hash<int>{}(static_cast<int>(key.depthAttachmentFormat)));
+        hash_combine(std::hash<VkPipelineLayout>{}(key.pLayout));
 
         hash_combine(std::hash<bool>{}(key.enableBlending));
         hash_combine(std::hash<bool>{}(key.enableDepthTest));
@@ -81,8 +95,8 @@ struct PipelineConfig {
 class PipelineManager {
 public:
     void init(VkDevice device){ m_device = device; }
-    uint32_t createPipeline(const PipelineConfig& config,  const PipelineKey& key, FrameLayout& frameLayout);
-    uint32_t getOrCreatePipeline(const PipelineKey& key, FrameLayout& frameLayout);
+    uint32_t createPipeline(const PipelineConfig& config,  const PipelineKey& key);
+    uint32_t getOrCreatePipeline(const PipelineKey& key);
     Pipeline& getPipeline(int index) { return m_pipelines.at(index); }
     void destroyPipelines();
 
