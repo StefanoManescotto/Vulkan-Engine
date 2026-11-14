@@ -35,8 +35,8 @@ struct MainRenderContext {
 
     Scene* scene;
 
-    GPUImage colorImage;
-    GPUImage depthImage;
+    GPUImage* colorImage;
+    GPUImage* depthImage;
 
     // VkShaderModule vertexShader;
     // VkShaderModule fragmentShader;

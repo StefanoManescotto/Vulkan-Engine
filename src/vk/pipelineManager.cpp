@@ -1,5 +1,4 @@
 #include "pipelineManager.h"
-#include "render/frameLayout.h"
 #include "vk/pipeline.h"
 #include <fmt/base.h>
 #include <stdexcept>
@@ -22,20 +21,6 @@ uint32_t PipelineManager::getOrCreatePipeline(const PipelineKey& key) {
             .pName = "main"
         });
     }
-    // pipelineConfig.shaderStages = {
-    //     {
-    //         .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-    //         .stage = VK_SHADER_STAGE_VERTEX_BIT,
-    //         .module = key.vertShader,
-    //         .pName = "main"
-    //     },
-    //     {
-    //         .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-    //         .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-    //         .module = key.fragShader,
-    //         .pName = "main"
-    //     }
-    // };
 
     pipelineConfig.renderingInfo = {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,

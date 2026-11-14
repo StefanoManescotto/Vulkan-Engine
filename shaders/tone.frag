@@ -1,34 +1,32 @@
-#version 460
+#version 450
+#extension GL_EXT_debug_printf : enable
 
-#extension GL_EXT_nonuniform_qualifier : require
-#extension GL_EXT_debug_printf : require
+layout(location = 0) in vec2 vUV;
+layout(location = 0) out vec4 outColor;
 
-layout(location = 0) in vec3 inColor;
-layout(location = 1) in vec3 inNormal;
-layout(location = 2) in vec2 inUV;
-layout(location = 3) in flat uint inTextureIndex;
-layout(location = 4) in flat vec4 inMaterialBaseColor;
-layout(location = 0) out vec4 fragColor;
+layout(set = 0, binding = 0) uniform sampler2D uSceneColor;
 
-layout(set = 0, binding = 0) uniform sampler2D renderedImg;
+vec3 ACESFilm(vec3 x) {
+    float a = 2.51f;
+    float b = 0.03f;
+    float c = 2.43f;
+    float d = 0.59f;
+    float e = 0.14f;
+    return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
+}
 
 void main() {
+    vec2 uv = vec2(vUV.x, 1.0 - vUV.y);
+    // vec2 uv = vUV;
+    vec3 color = texture(uSceneColor, uv).rgb;
+    // color = color / (1 + color);
+    color = ACESFilm(color);
+    outColor = vec4(color.x, color.y, color.z, 1.0); // passthrough
+    // if (ivec2(gl_FragCoord.xy) == ivec2(400, 300)) {
+    //     debugPrintfEXT("uv = %v2f, color = %v3f", uv, color);
+    // }
 
-    float roughness = 0.5;
-    // You can print strings, floats, vectors, and integers
-    debugPrintfEXT("Current roughness value: %f", roughness);
-    // vec3 nNormal = normalize(inNormal);
-    // vec3 lightDirection = normalize(vec3(0, -1, -1));
-    // float d = max(dot(nNormal, -lightDirection), 0);
-    // vec4 texColor = texture(renderedImg, inUV);
 
-    // // two-tone ambient light
-	// vec3 skyColor = vec3(0.15, 0.18, 0.25);
-	// vec3 groundColor = vec3(0.05, 0.03, 0.02);
-	// float t = nNormal.y * 0.5 + 0.5;
-	// vec3 hemiAmbient = mix(groundColor, skyColor, t);
-
-    // vec3 finalColor = inColor * texColor.rgb * inMaterialBaseColor.rgb;
-	// vec3 litColor = finalColor * d + finalColor * hemiAmbient;
-	// fragColor = vec4(litColor, texColor.a);
+    // outColor = vec4(texelFetch(uSceneColor, ivec2(gl_FragCoord.xy), 0).rgb, 1.0);
+    // texelFetch(uSceneColor, ivec2(gl_FragCoord.xy), 0);
 }

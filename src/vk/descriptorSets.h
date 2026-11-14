@@ -16,8 +16,10 @@ public:
     void updateTextureDescriptors(const uint32_t setIndex, const GPUImage* imageViews, const VkSampler* samplers, const size_t imageCount);
     void updateUniformDescriptors(const uint32_t setIndex, const VkBuffer buffer, size_t range, uint32_t offset = 0);
 
+    void destroyDescriptors();
+
     VkDescriptorSet& getDescriptorSet(){ return m_descSets; }
-    VkDescriptorSetLayout getDescLayout(const uint32_t index) { return m_descLayout; }
+    VkDescriptorSetLayout& getDescLayout(const uint32_t index) { return m_descLayout; }
 
 private:
     VkDevice m_device;

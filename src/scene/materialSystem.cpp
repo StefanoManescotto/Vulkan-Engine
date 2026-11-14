@@ -31,7 +31,7 @@ namespace MaterialSystem {
             PipelineKey key {
                 .shaders = shaders,
                 
-                .colorAttachmentFormat = VK_FORMAT_B8G8R8A8_SRGB,
+                .colorAttachmentFormat = VK_FORMAT_R16G16B16A16_SFLOAT,
                 .depthAttachmentFormat = VK_FORMAT_D32_SFLOAT,
                 .pLayout = renderer.getFrameLayout().defaultPipelineLayout,
 

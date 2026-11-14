@@ -4,6 +4,7 @@
 
 #include "render/renderer.h"
 
+#include <imgui/imgui_internal.h>
 #include <stdexcept>
 #include <vulkan/vulkan_core.h>
 
@@ -76,7 +77,8 @@ void Renderer::init(const Device* device, const VmaAllocator* allocator, const W
     };
     VK_CHECK( vkCreatePipelineLayout(device->handle(), &pipelineLayoutInfo, nullptr, &m_frameLayout.defaultPipelineLayout) );
 
-    m_tonePass.init(m_device, m_shaderManager, m_pipelineManager);
+
+    m_tonePass.init(m_device, m_shaderManager, m_pipelineManager, m_frameResources[0].ds.getDescLayout(0));
 }
 
 void Renderer::initImages() {
@@ -84,8 +86,27 @@ void Renderer::initImages() {
     imgConfig.extent = swapchain.getSwapchainExtent();
     VulkanCtx ctx = {.device = m_device->handle(), .allocator = *m_allocator};
     for (FrameResources& res : m_frameResources) {
+        // GPUImageConfig geometryImage = GPUImageConfig::ColorAttachment(swapchain.getSwapchainExtent(), VK_FORMAT_B8G8R8A8_SRGB);
+        // geometryImage.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
         GPUImageSystem::allocateImage(ctx, GPUImageConfig::ColorAttachment(swapchain.getSwapchainExtent(), VK_FORMAT_B8G8R8A8_SRGB), res.colorImage);
+        GPUImageSystem::allocateImage(ctx, GPUImageConfig::ColorAttachment(swapchain.getSwapchainExtent(), VK_FORMAT_R16G16B16A16_SFLOAT), res.geometryImage);
         GPUImageSystem::allocateImage(ctx, GPUImageConfig::DepthAttachment(swapchain.getSwapchainExtent(), VK_FORMAT_D32_SFLOAT), res.depthImage);
+    
+    
+        VkSamplerCreateInfo samplerInfo{};
+        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        samplerInfo.magFilter = VK_FILTER_LINEAR;
+        samplerInfo.minFilter = VK_FILTER_LINEAR;
+        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        vkCreateSampler(m_device->handle(), &samplerInfo, nullptr, &res.geometrySampler);
+
+        DescriptorConfig dsConfigs {
+            .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+            .count = 1,
+            .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+        };
+        res.ds.createDescriptorSetsImages(m_device->handle(), 1, dsConfigs);
     }
 }
 
@@ -222,7 +243,7 @@ void Renderer::renderFrame(const Window* window, Scene &scene, GPUBufferVec &buf
     if (!beginFrame(window)) {
         return;
     }
-    guiManager.beginFrame(scene, m_mainRenderSystem.getDrawsCount());
+    // guiManager.beginFrame(scene, m_mainRenderSystem.getDrawsCount());
     ctx.scene = &scene;
     ctx.buffers = &buffers;
     ctx.renderItemBuffer = &currentFrameRes.renderItemBuffer;
@@ -236,8 +257,8 @@ void Renderer::renderFrame(const Window* window, Scene &scene, GPUBufferVec &buf
 
     ctx.cmd = currentFrameRes.commandBuffer;
     ctx.extent = swapchain.getSwapchainExtent();
-    ctx.colorImage = currentFrameRes.colorImage;
-    ctx.depthImage = currentFrameRes.depthImage;
+    ctx.colorImage = &currentFrameRes.geometryImage;
+    ctx.depthImage = &currentFrameRes.depthImage;
     ctx.indirectDrawPtr = currentFrameRes.indirectDrawPtr;
     ctx.renderItemPtr = currentFrameRes.renderItemPtr;
     
@@ -246,12 +267,25 @@ void Renderer::renderFrame(const Window* window, Scene &scene, GPUBufferVec &buf
     ToneMapContext toneContext {
         .cmd = currentFrameRes.commandBuffer,
         .extent = swapchain.getSwapchainExtent(),
-        .colorImage = currentFrameRes.colorImage,
+        .colorImage = &currentFrameRes.colorImage,
+        .sceneImage = &currentFrameRes.geometryImage,
+        .sceneSampler = currentFrameRes.geometrySampler,
+        .ds = &currentFrameRes.ds
     };
-    // m_tonePass.render(m_pipelineManager, toneContext);
+    m_tonePass.render(m_pipelineManager, toneContext);
 
+    GuiPassCtx guiCtx {
+        .cmd = currentFrameRes.commandBuffer,
+        .extent = swapchain.getSwapchainExtent(),
+        .colorImage = &currentFrameRes.colorImage,
+        .guiManager = &guiManager,
+        .scene = &scene,
+        .nDraws = m_mainRenderSystem.getDrawsCount()
+    };
+    m_guiPass.render(guiCtx);
 
-
+    // GPUImageSystem::transitionLayout(ctx.colorImage, ctx.cmd, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT, 
+    //     VK_PIPELINE_STAGE_2_COPY_BIT, VK_ACCESS_2_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
     VkImageMemoryBarrier2 barriers[3] = {
         {
             .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
@@ -261,7 +295,7 @@ void Renderer::renderFrame(const Window* window, Scene &scene, GPUBufferVec &buf
             .dstAccessMask = VK_ACCESS_2_TRANSFER_READ_BIT,
             .oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
             .newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-            .image = ctx.colorImage.image,
+            .image = currentFrameRes.colorImage.image,
             .subresourceRange {
                 .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
                 .baseMipLevel = 0,
@@ -297,7 +331,7 @@ void Renderer::renderFrame(const Window* window, Scene &scene, GPUBufferVec &buf
     vkCmdPipelineBarrier2(currentFrameRes.commandBuffer, &presentDepInfo);
 
     VkExtent2D extent = swapchain.getSwapchainExtent();
-    GPUImageSystem::copyImageToImage(ctx.cmd, ctx.colorImage.image, swapchain.getSwapchainImage(currentFrameRes.imageIndex),
+    GPUImageSystem::copyImageToImage(ctx.cmd, currentFrameRes.colorImage.image, swapchain.getSwapchainImage(currentFrameRes.imageIndex),
                             extent, extent);
 
     VkImageMemoryBarrier2 presentBarrier = {
@@ -409,6 +443,10 @@ void Renderer::destroyRenderer() {
 
         GPUImageSystem::destroyImage(ctx, res.colorImage);
         GPUImageSystem::destroyImage(ctx, res.depthImage);
+        GPUImageSystem::destroyImage(ctx, res.geometryImage);
+
+        vkDestroySampler(m_device->handle(), res.geometrySampler, nullptr);
+        res.ds.destroyDescriptors();
 
         vmaUnmapMemory(*m_allocator, res.indirectDrawBuffer.allocation);
         vmaDestroyBuffer(*m_allocator, res.indirectDrawBuffer.buffer, res.indirectDrawBuffer.allocation);
@@ -430,5 +468,6 @@ void Renderer::destroySyncResourcesImages() {
     for (auto &res : m_frameResources) {
         GPUImageSystem::destroyImage(ctx, res.colorImage);
         GPUImageSystem::destroyImage(ctx, res.depthImage);
+        GPUImageSystem::destroyImage(ctx, res.geometryImage);
     }
 }

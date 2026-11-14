@@ -32,7 +32,7 @@ void DescriptorSets::updateTextureDescriptors(const uint32_t setIndex, const GPU
         imageDescriptors.push_back({
             .sampler = samplers[i],
             .imageView = gpuImages[i].imageView,
-            .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL 
+            .imageLayout = gpuImages[i].currentLayout 
         });
     }
 
@@ -172,4 +172,9 @@ bool DescriptorSets::createDescriptorSetsUniform(const VkDevice& device, const s
     VK_CHECK( vkAllocateDescriptorSets(device, &descSetAllocInfo, &m_descSets) );
     
     return true;
+}
+
+void DescriptorSets::destroyDescriptors(){
+    vkDestroyDescriptorPool(m_device, m_descPool, nullptr);
+    vkDestroyDescriptorSetLayout(m_device, m_descLayout, nullptr);
 }

@@ -167,8 +167,19 @@ void Application::createVulkanInstance() {
         "VK_LAYER_KHRONOS_validation"
     };
 
+    VkValidationFeatureEnableEXT enables[] = {
+        VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT
+    };
+
+    VkValidationFeaturesEXT validationFeatures{};
+    validationFeatures.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT;
+
+    validationFeatures.enabledValidationFeatureCount = 1;
+    validationFeatures.pEnabledValidationFeatures = enables;
+
     VkInstanceCreateInfo instCreateInfo {
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+        .pNext = &validationFeatures,
         .pApplicationInfo = &appInfo,
         .enabledLayerCount = static_cast<uint32_t>(requestedLayers.size()),
         .ppEnabledLayerNames = requestedLayers.data(),

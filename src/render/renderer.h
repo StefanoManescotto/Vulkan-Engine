@@ -8,6 +8,7 @@
 
 #include "render/frameLayout.h"
 // #include "render/toneMapPass.h"
+#include "render/imguiPass.h"
 #include "render/toneMapPass.h"
 #include "scene/imGuiManager.h"
 #include "scene/nodeWorld.h"
@@ -38,7 +39,10 @@ struct FrameResources {
     uint64_t signalValue = 0;
 
     GPUImage colorImage;
+    GPUImage geometryImage;
+    VkSampler geometrySampler;
     GPUImage depthImage;
+    DescriptorSets ds;
 
     GPUBuffer indirectDrawBuffer;
 	GPUBuffer renderItemBuffer;
@@ -73,6 +77,7 @@ private:
     MainRenderContext ctx;
     MainRenderSystem m_mainRenderSystem;
     ToneMapPass m_tonePass;
+    ImGuiPass m_guiPass;
 
     const Device* m_device;
     const VmaAllocator* m_allocator;

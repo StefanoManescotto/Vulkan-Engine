@@ -5,6 +5,7 @@
 #include "render/mainRenderSystem.h"
 #include "render/renderer.h"
 #include "scene/imGuiManager.h"
+#include "vk/GPUImageSystem.h"
 
 #include <algorithm>
 #include <glm/ext/matrix_float4x4.hpp>
@@ -100,49 +101,10 @@ void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorag
         drawIndex++;
     }
 
-    std::vector<VkImageMemoryBarrier2> layoutBarriers {
-        {
-            .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
-            .srcStageMask = VK_PIPELINE_STAGE_NONE,
-            .srcAccessMask = 0,
-            .dstStageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT,
-            .dstAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
-            .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-            .newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-            .image = ctx.colorImage.image,
-            .subresourceRange {
-                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                .baseMipLevel = 0,
-                .levelCount = 1,
-                .baseArrayLayer = 0,
-                .layerCount = 1,
-            }
-        },
-        {
-            .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
-            .srcStageMask = VK_PIPELINE_STAGE_NONE,
-            .srcAccessMask = 0,
-            .dstStageMask = VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT,
-            // both specified to control memory access at both stages (write)
-            .dstAccessMask = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-            .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-            .newLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
-            .image = ctx.depthImage.image,
-            .subresourceRange {
-                .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                .baseMipLevel = 0,
-                .levelCount = 1,
-                .baseArrayLayer = 0,
-                .layerCount = 1,
-            }
-        }
-    };
-    VkDependencyInfo depInfo {
-        .sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO,
-        .imageMemoryBarrierCount = static_cast<uint32_t>(layoutBarriers.size()),
-        .pImageMemoryBarriers = layoutBarriers.data()
-    };
-    vkCmdPipelineBarrier2(ctx.cmd, &depInfo);
+    GPUImageSystem::transitionLayout(*ctx.colorImage, ctx.cmd, VK_PIPELINE_STAGE_NONE, 0, 
+        VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+    GPUImageSystem::transitionLayout(*ctx.depthImage, ctx.cmd, VK_PIPELINE_STAGE_NONE, 0, 
+            VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT, VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL);
 
     VkClearValue clearColor { .color = {
         0.12f,  // red
@@ -153,7 +115,7 @@ void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorag
 
     VkRenderingAttachmentInfo colorAttachInfo {
         .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-        .imageView = ctx.colorImage.imageView,
+        .imageView = ctx.colorImage->imageView,
         .imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR, // clear the image
         .storeOp = VK_ATTACHMENT_STORE_OP_STORE, // keep data for presentation
@@ -161,7 +123,7 @@ void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorag
     };
     VkRenderingAttachmentInfo depthAttachInfo {
         .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-        .imageView = ctx.depthImage.imageView,
+        .imageView = ctx.depthImage->imageView,
         .imageLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR, // clear the depth data
         .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE, // don't care after rendering
@@ -232,7 +194,7 @@ void MainRenderSystem::render2(MainRenderContext& ctx, TextureStorage &texStorag
             vkCmdDrawIndexedIndirect(ctx.cmd, ctx.indirectDrawBuffer->buffer, drawStart * sizeof(VkDrawIndexedIndirectCommand), drawCount, sizeof(VkDrawIndexedIndirectCommand));
         }
     }
-    guiManager.render(ctx.cmd);
+    // guiManager.render(ctx.cmd);
     // end dynamic rendering
     vkCmdEndRendering(ctx.cmd);
 }

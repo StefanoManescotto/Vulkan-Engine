@@ -35,7 +35,10 @@ struct ToneMapContext {
 
     // Scene* scene;
 
-    GPUImage colorImage;
+    GPUImage* colorImage;
+    GPUImage* sceneImage;
+    VkSampler sceneSampler;
+    DescriptorSets* ds;
     // GPUImage depthImage;
 
     // VkShaderModule vertexShader;
@@ -60,12 +63,12 @@ struct ToneMapContext {
 
 class ToneMapPass {
 public:
-    void init(const Device* device, ShaderManager& sManager, PipelineManager& pManager);
+    void init(const Device* device, ShaderManager& sManager, PipelineManager& pManager, VkDescriptorSetLayout dsLayout);
     void render(PipelineManager& pManager, ToneMapContext& ctx);
 
     void destroyRenderSystem();
 
 private:
-    Pipeline* tonePipeline = nullptr;
-    DescriptorSets m_dsSet;
+    uint32_t m_pipelineIndex = UINT32_MAX;
+    // DescriptorSets m_dsSet;
 };
