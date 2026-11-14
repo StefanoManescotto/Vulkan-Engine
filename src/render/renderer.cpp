@@ -91,22 +91,6 @@ void Renderer::initImages() {
         GPUImageSystem::allocateImage(ctx, GPUImageConfig::ColorAttachment(swapchain.getSwapchainExtent(), VK_FORMAT_B8G8R8A8_SRGB), res.colorImage);
         GPUImageSystem::allocateImage(ctx, GPUImageConfig::ColorAttachment(swapchain.getSwapchainExtent(), VK_FORMAT_R16G16B16A16_SFLOAT), res.geometryImage);
         GPUImageSystem::allocateImage(ctx, GPUImageConfig::DepthAttachment(swapchain.getSwapchainExtent(), VK_FORMAT_D32_SFLOAT), res.depthImage);
-    
-    
-        VkSamplerCreateInfo samplerInfo{};
-        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-        samplerInfo.magFilter = VK_FILTER_LINEAR;
-        samplerInfo.minFilter = VK_FILTER_LINEAR;
-        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-        vkCreateSampler(m_device->handle(), &samplerInfo, nullptr, &res.geometrySampler);
-
-        DescriptorConfig dsConfigs {
-            .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-            .count = 1,
-            .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
-        };
-        res.ds.createDescriptorSetsImages(m_device->handle(), 1, dsConfigs);
     }
 }
 
@@ -269,7 +253,6 @@ void Renderer::renderFrame(const Window* window, Scene &scene, GPUBufferVec &buf
         .extent = swapchain.getSwapchainExtent(),
         .colorImage = &currentFrameRes.colorImage,
         .sceneImage = &currentFrameRes.geometryImage,
-        .sceneSampler = currentFrameRes.geometrySampler,
         .ds = &currentFrameRes.ds
     };
     m_tonePass.render(m_pipelineManager, toneContext);
@@ -408,6 +391,13 @@ void Renderer::createSyncResources() {
         if (vkCreateSemaphore(m_device->handle(), &semaphoreInfo, nullptr, &res.imageAcquiredSemaphore) != VK_SUCCESS) {
             throw std::runtime_error("Error creating the per-frame image-acquire semaphore");
         }
+
+        DescriptorConfig dsConfigs {
+            .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+            .count = 1,
+            .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
+        };
+        res.ds.createDescriptorSetsImages(m_device->handle(), 1, dsConfigs);
     }
 }
 
@@ -456,6 +446,7 @@ void Renderer::destroyRenderer() {
     }
 
     m_mainRenderSystem.destroyRenderSystem();
+    m_tonePass.destroyRenderSystem();
 
     m_pipelineManager.destroyPipelines();
     m_shaderManager.destroyShaders();

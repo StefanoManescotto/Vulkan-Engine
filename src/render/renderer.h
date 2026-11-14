@@ -5,6 +5,7 @@
 #pragma once
 
 #include <array>
+#include <vulkan/vulkan_core.h>
 
 #include "render/frameLayout.h"
 // #include "render/toneMapPass.h"
@@ -31,16 +32,16 @@ struct FrameConstants {
 };
 
 struct FrameResources {
-    VkCommandPool commandPool = nullptr;
-    VkCommandBuffer commandBuffer = nullptr;
+    VkCommandPool commandPool = VK_NULL_HANDLE;
+    VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
 
-    VkSemaphore imageAcquiredSemaphore = nullptr;
+    VkSemaphore imageAcquiredSemaphore = VK_NULL_HANDLE;
     uint32_t imageIndex = std::numeric_limits<uint32_t>::max();
     uint64_t signalValue = 0;
 
     GPUImage colorImage;
     GPUImage geometryImage;
-    VkSampler geometrySampler;
+    VkSampler geometrySampler = VK_NULL_HANDLE;
     GPUImage depthImage;
     DescriptorSets ds;
 

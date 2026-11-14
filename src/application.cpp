@@ -133,17 +133,8 @@ void Application::run() {
         manageInputs();
         window.updateInputState();
         m_scene.camera.updateMatrices(window.getWidth(), window.getHeight());
-        // for (const auto& plane : m_scene.camera.getFrustum().planes) {
-        //     fmt::print("Normal length: {}\n",
-        //         glm::length(plane.normal));
-        // }
-//         for (int i = 0; i < 6; ++i) {
-//     fmt::print("Camera distance to plane {}: {}\n",
-//         i, m_scene.camera.getFrustum().planes[i].getDistance(m_scene.camera.transform.getPosition()));
-// }
-        render();
 
-        // fmt::print("TESTING: {}\n", m_scene.meshContainer.indices.size()/3);
+        render();
     }
 }
 

@@ -6,14 +6,18 @@
 #include <vulkan/vulkan_core.h>
 
 void ToneMapPass::init(const Device* device, ShaderManager& sManager, PipelineManager& pManager, VkDescriptorSetLayout dsLayout){
+    m_device = device->handle();
+
+    VkSamplerCreateInfo samplerInfo{};
+    samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    samplerInfo.magFilter = VK_FILTER_LINEAR;
+    samplerInfo.minFilter = VK_FILTER_LINEAR;
+    samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    vkCreateSampler(device->handle(), &samplerInfo, nullptr, &sceneSampler);
+
     VkPipelineLayout pLayout;
-    DescriptorConfig dsConfigs {
-        .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-        .count = 1,
-        .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT,
-    };
-    // m_dsSet.createDescriptorSetsImages(device->handle(), 1, dsConfigs);
-    // std::array<VkDescriptorSetLayout, 1> dsLayouts { m_dsSet.getDescLayout(0) };
+
     VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
         .setLayoutCount = 1,
@@ -43,7 +47,7 @@ void ToneMapPass::init(const Device* device, ShaderManager& sManager, PipelineMa
 
 void ToneMapPass::render(PipelineManager& pManager, ToneMapContext& ctx) { 
     Pipeline& tonePipeline = pManager.getPipeline(m_pipelineIndex);
-
+    
     GPUImageSystem::transitionLayout(*ctx.colorImage, ctx.cmd, VK_PIPELINE_STAGE_NONE, 0, 
         VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
     GPUImageSystem::transitionLayout(*ctx.sceneImage, ctx.cmd, VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT, VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT, 
@@ -77,7 +81,6 @@ void ToneMapPass::render(PipelineManager& pManager, ToneMapContext& ctx) {
         .pDepthAttachment = nullptr
     };
 
-    // begin dynamic rendering
     vkCmdBeginRendering(ctx.cmd, &renderingInfo);
     {
         VkViewport viewport{
@@ -97,17 +100,16 @@ void ToneMapPass::render(PipelineManager& pManager, ToneMapContext& ctx) {
         vkCmdSetScissor(ctx.cmd, 0, 1, &scissor);
 
         vkCmdBindPipeline(ctx.cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, tonePipeline.handle);
-        // VkDescriptorSet set = m_dsSet.getDescriptorSet();
-        ctx.ds->updateTextureDescriptors(0, ctx.sceneImage, &ctx.sceneSampler, 1);
+
+        ctx.ds->updateTextureDescriptors(0, ctx.sceneImage, &sceneSampler, 1);
         vkCmdBindDescriptorSets(ctx.cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, tonePipeline.pipelineLayout, 0, 1,
                                 &ctx.ds->getDescriptorSet(), 0, nullptr);
         vkCmdDraw(ctx.cmd, 3, 1, 0, 0);
-        // vkCmdDrawIndexedIndirect(ctx.cmd, ctx.indirectDrawBuffer->buffer, drawStart * sizeof(VkDrawIndexedIndirectCommand), drawCount, sizeof(VkDrawIndexedIndirectCommand));
     }
 
     vkCmdEndRendering(ctx.cmd);
 }
 
 void ToneMapPass::destroyRenderSystem(){
-    
+    vkDestroySampler(m_device, sceneSampler, nullptr);
 }
